@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300;
+package ca.ucalgary.seng300.app;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

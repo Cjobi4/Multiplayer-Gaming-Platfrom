@@ -27,6 +27,7 @@
       <artifactId>javafx-fxml</artifactId>
       <version>${javafx.version}</version>
     </dependency>
+    <!-- TODO: Quality & Testing to add JUnit 5 -->
   </dependencies>
 
   <build>
@@ -48,7 +49,7 @@
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.8</version>
         <configuration>
-          <mainClass>ca.ucalgary.seng300.MainApp</mainClass>
+          <mainClass>ca.ucalgary.seng300.app.MainApp</mainClass>
         </configuration>
       </plugin>
 
