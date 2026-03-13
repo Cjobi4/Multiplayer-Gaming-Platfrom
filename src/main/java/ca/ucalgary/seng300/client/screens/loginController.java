@@ -30,8 +30,9 @@ public class loginController {
             stage.setScene(loginScene);
             stage.setTitle("Main Page"); //Change stage title to reflect current scene
             stage.show();
+
         } catch (IOException e) {
-            System.err.println("Error: Could not load loginPage.fxml. Check file path!");
+            System.err.println("Error: Could not load mainPage.fxml. Check file path!");
         }
 
     }
