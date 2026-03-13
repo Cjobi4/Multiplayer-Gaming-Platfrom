@@ -9,7 +9,7 @@
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="800.0">
          <children>
-            <Button fx:id="gameSelectButton" layoutX="298.0" layoutY="287.0" mnemonicParsing="false" onAction="#onOpponentSelectButtonClick" text="Proceed to Opponent Select Screen" />
+            <Button fx:id="gameSelectButton" layoutX="298.0" layoutY="287.0" mnemonicParsing="false" onAction="#onGameSelectButtonClick" text="Proceed to Opponent Select Screen" />
          </children>
       </AnchorPane>
    </children>

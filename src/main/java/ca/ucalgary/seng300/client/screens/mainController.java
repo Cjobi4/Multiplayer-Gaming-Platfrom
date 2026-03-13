@@ -16,7 +16,7 @@ public class mainController {
     public Button gameSelectButton;
 
     @FXML
-    protected void onOpponentSelectButtonClick(ActionEvent event) {
+    protected void onGameSelectButtonClick(ActionEvent event) {
         try {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/opponentSelectPage.fxml"));
