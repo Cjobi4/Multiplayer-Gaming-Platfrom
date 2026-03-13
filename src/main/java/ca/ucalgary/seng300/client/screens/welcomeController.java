@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class welcomeController {
+
     public Button welcomeButton;
 
     @FXML
@@ -27,7 +28,7 @@ public class welcomeController {
             //Create new scene and set it on the stage
             Scene loginScene = new Scene(loginRoot, 600, 400);
             stage.setScene(loginScene);
-            stage.setTitle("Login Screen");
+            stage.setTitle("Login Screen"); //Change stage title to reflect current scene
             stage.show();
 
         } catch (IOException e) {
