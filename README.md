@@ -1,140 +1,71 @@
-# First-Day Setup Checklist — JavaFX Maven Project
+# Online Multiplayer Game Platform
 
-Use this checklist **before you start working** on the project.  
-If all items pass, your environment is correctly set up.
+A turn-based online multiplayer game platform built with JavaFX for SENG 300.
 
----
+## Prerequisites
 
-## 1. Required Software
+- **JDK 25**
+- **Git**
 
-Confirm you have **all** of the following:
+## Build Instructions
 
-- ✅ **JDK 25** installed
-- ✅ **IntelliJ IDEA** (Community or Ultimate)
-- ✅ Git installed
-
-> ⚠ **IntelliJ is the expected IDE for this course.**  
-> Students using any other IDE may encounter setup and collaboration issues when working in groups that use IntelliJ exclusively.  
-> If you use something other than IntelliJ, you are responsible for resolving any IDE-specific issues.
-
----
-
-## 2. Clone the Repository
-
-Clone the starter repository using Git (HTTPS or SSH):
-
-```
-git clone <repo-url>
-cd <repo-directory>
+```bash
+./mvnw clean compile
 ```
 
-Do not copy files manually between machines.
+## Run Instructions
 
----
-
-## 3. Open the Project in IntelliJ
-
-1. Open IntelliJ IDEA
-2. Choose Open
-3. Select the root folder of the repository
-4. When prompted:
-    - Trust the project
-    - Allow IntelliJ to import the Maven project
-
-IntelliJ should detect this as a Maven project automatically.
-
----
-
-## 4. Verify the JDK in IntelliJ
-
-In IntelliJ:
-
-1. File -> Project Structure -> Project
-2. Confirm:
-    - Project SDK: JDK 25
-    - Language level: 25
-
-If this is incorrect, fix it before continuing.
-
----
-
-## 5. Do NOT Run MainApp Directly
-
-Do not click the green Run button on MainApp.
-
-Doing so will result in the following error:
-
-```
-JavaFX runtime components are missing
-```
-
-This project must be run using Maven, which correctly configures JavaFX.
-
----
-
-## 6. Run the Project (Choose One Method)
-
-### Option A - Run in IntelliJ (recommended)
-
-1. Open the Maven tool window
-2. Expand:
-   Project
-   -> Plugins
-   -> javafx
-3. Double-click:
-   javafx:run
-
-A JavaFX window should open.
-
----
-
-### Option B - Run from the Terminal (Maven Wrapper)
-
-This project uses the Maven Wrapper.
-You do not need to install Maven.
-
-Windows (PowerShell):
-
-```
-.\mvnw.cmd javafx:run
-```
-
-macOS or Linux:
-
-```
+```bash
 ./mvnw javafx:run
 ```
 
-First run note:
-The first run may take one to two minutes while dependencies download. This is normal.
+## Test Instructions
 
----
+```bash
+./mvnw test
+```
 
-## 7. Expected Result
+## Project Structure
 
-If everything is correct:
-- A JavaFX window opens
-- No JavaFX runtime errors appear
-- No additional setup is required
+```
+project-root/
+├── docs/                  # Design documents and diagrams
+│   ├── architecture/      # System-wide architecture
+│   ├── platform-core/     # Platform Core designs
+│   ├── client-ui/         # Client/UI designs
+│   ├── rules-validation/  # Rules & Validation designs
+│   ├── quality-testing/   # Test plans
+│   └── integration-release/  # I&R process docs
+├── src/
+│   ├── main/
+│   │   ├── java/ca/ucalgary/seng300/
+│   │   │   ├── app/       # Application entry point
+│   │   │   ├── shared/    # Cross-team contracts
+│   │   │   ├── core/      # Platform Core
+│   │   │   ├── rules/     # Rules & Validation
+│   │   │   ├── client/    # Client/UI
+│   │   │   └── games/     # Sample game implementations
+│   │   └── resources/     # FXML, CSS, images
+│   └── test/              # JUnit test suite
+├── scripts/               # Utility scripts
+├── CHANGELOG.md           # Version history
+├── CURRENT_STATE.md       # Feature status matrix
+└── team.md                # Sub-team roster
+```
 
-You are ready to start the project.
+## Key Documents
 
----
+- [Team Roster](team.md)
+- [Current State](CURRENT_STATE.md)
+- [Changelog](CHANGELOG.md)
+- [Documentation Guide](docs/README.md)
 
-## 8. Common Problems (Quick Check)
+## Sub-Team Responsibilities
 
-If something goes wrong, check these first:
-
-- Running MainApp directly instead of javafx:run
-- Wrong JDK selected in IntelliJ
-- Installing JavaFX manually
-- Using mvn instead of mvnw or mvnw.cmd
-
-If the JavaFX window opens, your setup is correct.
-
----
-
-## Summary
-
-If the project runs using javafx:run, your setup is correct and you may begin work.
-
+| Sub-Team | Package | Responsibilities |
+|---|---|---|
+| Platform Core | `core/` | Identity, game registry, rooms, matchmaking, turn engine, persistence |
+| Client/UI | `client/` | JavaFX screens, shared UI components, game rendering |
+| Rules & Validation | `rules/` | Move validation pipeline, leaderboard scoring |
+| Quality & Testing | `test/.../integration/` | Integration tests, test plans, demo verification |
+| Integration & Release | Root files, `scripts/` | Build config, branching workflow, release process |
