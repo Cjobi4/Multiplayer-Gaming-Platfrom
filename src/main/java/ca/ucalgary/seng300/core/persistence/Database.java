@@ -7,6 +7,8 @@ import java.sql.*;
 
 public class Database
 {
+    private static final String url = "jdbc:sqlite:database.db";
+
     private static Connection conn;
     private static Statement stmt;
     private static String salt = "salt";
@@ -18,8 +20,6 @@ public class Database
      */
     private static void connect()
     {
-        String url = "jdbc:sqlite:database.db";
-
         try
         {
             //connect to the database
