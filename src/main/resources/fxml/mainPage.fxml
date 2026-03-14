@@ -7,27 +7,76 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
 <HBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.mainController">
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="800.0">
          <children>
-            <Button fx:id="gameSelectButton" layoutX="232.0" layoutY="534.0" mnemonicParsing="false" onAction="#onGameSelectButtonClick" text="Proceed to Opponent Select Screen" />
-            <BorderPane prefHeight="600.0" prefWidth="662.0">
+            <Button fx:id="gameSelectButton" layoutX="265.0" layoutY="472.0" mnemonicParsing="false" onAction="#onGameSelectButtonClick" prefHeight="92.0" prefWidth="205.0" text="Play">
+               <font>
+                  <Font size="48.0" />
+               </font></Button>
+            <BorderPane prefHeight="600.0" prefWidth="800.0">
                <top>
-                  <HBox alignment="CENTER_LEFT" prefHeight="57.0" prefWidth="662.0" spacing="14.0" style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 5;" BorderPane.alignment="CENTER_LEFT">
+                  <HBox alignment="CENTER_LEFT" prefHeight="57.0" prefWidth="797.0" spacing="14.0" style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 5;" BorderPane.alignment="CENTER_LEFT">
                      <children>
                         <Label prefHeight="17.0" prefWidth="70.0" text="|ChangeLog|" />
                         <Label alignment="CENTER" prefHeight="17.0" prefWidth="32.0" text="|Info|" />
                         <Label prefHeight="17.0" prefWidth="100.0" text="|Admin Control|" textFill="#2c0cbf" />
-                        <Pane prefHeight="53.0" prefWidth="329.0" />
-                        <Button mnemonicParsing="false" text="Button" />
+                        <Pane prefHeight="53.0" prefWidth="450.0" />
+                        <Button mnemonicParsing="false" text="Log Out" />
                      </children>
                      <BorderPane.margin>
                         <Insets />
                      </BorderPane.margin>
                   </HBox>
                </top>
+               <center>
+                  <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Pane prefHeight="543.0" prefWidth="223.0">
+                           <children>
+                              <HBox alignment="TOP_CENTER" layoutX="15.0" layoutY="27.0" prefHeight="466.0" prefWidth="193.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+                                 <children>
+                                    <Label text="Leaderboard">
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="473.0" prefWidth="269.0">
+                           <children>
+                              <HBox alignment="TOP_CENTER" layoutX="20.0" layoutY="26.0" prefHeight="266.0" prefWidth="235.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+                                 <children>
+                                    <Label text="Game List">
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </Pane>
+                        <Pane prefHeight="543.0" prefWidth="309.0">
+                           <children>
+                              <HBox alignment="TOP_CENTER" layoutX="26.0" layoutY="20.0" prefHeight="473.0" prefWidth="267.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+                                 <children>
+                                    <Label text="Game">
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </Pane>
+                     </children>
+                  </HBox>
+               </center>
             </BorderPane>
          </children>
       </AnchorPane>
