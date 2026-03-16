@@ -20,6 +20,28 @@ public class Network {
 
     public static byte[] generateSharedKey(byte[] serverPubKeyBytes) throws Exception {
 
+        // build public key from serverPubKeyBytes
+        KeyFactory clientKeyFactory = KeyFactory.getInstance("DH");
+        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(serverPubKeyBytes);
+        PublicKey serverPublicKey = clientKeyFactory.generatePublic(x509KeySpec);
+
+        // ensuring same dh parameters are used on client and server side (g and m)
+        DHParameterSpec dhServerParameterSpec = ((DHPublicKey) serverPublicKey).getParams();
+
+        // making the public/private key pair using server parameters
+        KeyPairGenerator clientKeyPairGen = KeyPairGenerator.getInstance("DH");
+        clientKeyPairGen.initialize(dhServerParameterSpec);
+        KeyPair clientKeyPair = clientKeyPairGen.generateKeyPair();
+
+        // creating key agreement object
+        KeyAgreement clientKeyAgreement = KeyAgreement.getInstance("DH");
+        clientKeyAgreement.init(clientKeyPair.getPrivate());
+
+        // combining server's key with client's, generating shared key
+        clientKeyAgreement.doPhase(serverPublicKey, true);
+        sharedKey = clientKeyAgreement.generateSecret();
+
+        return clientKeyPair.getPublic().getEncoded();
     }
 
     public static void AESKeyInitial(){
