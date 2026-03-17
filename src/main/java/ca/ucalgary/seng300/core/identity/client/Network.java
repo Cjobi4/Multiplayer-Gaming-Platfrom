@@ -109,6 +109,7 @@ public class Network {
     }
 
     /** encryption method
+     *  takes some string and returns the encrypted byte array
      *
      * @param plainText
      * @return
@@ -137,13 +138,32 @@ public class Network {
     }
 
     /** decryption method
+     *  takes an encrypted byte array and turns it into a string
      *
      * @param cipherText
      * @return
      */
-    public static String decrypt(byte[] cipherText) {
+    public static String decrypt(byte[] cipherText) throws Exception {
 
+        // extracting nonce from cipher text (first 12 bytes)
+        byte[] nonce = new byte[12];
+        System.arraycopy(cipherText, 0, nonce, 0, 12);
 
+        // copying everything after nonce (encrypted data)
+        byte[] cipherTextMessage = new byte[cipherText.length - 12];
+        System.arraycopy(cipherText, 12, cipherTextMessage, 0, cipherText.length - 12);
+
+        // recreating gcm parameters, ensuring decryption uses 'same settings' as encryption
+        GCMParameterSpec gcmParamSpec = new GCMParameterSpec(128, nonce);
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+
+        // setting up for decyption
+        cipher.init(Cipher.DECRYPT_MODE, AESKey, gcmParamSpec);
+
+        // decrypting
+        byte[] plainText = cipher.doFinal(cipherTextMessage);
+
+        return new String(plainText, StandardCharsets.UTF_8);
     }
 
 }
