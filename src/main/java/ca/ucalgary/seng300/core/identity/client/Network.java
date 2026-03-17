@@ -8,6 +8,7 @@ import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
@@ -44,8 +45,33 @@ public class Network {
         return clientKeyPair.getPublic().getEncoded();
     }
 
+
     public static void AESKeyInitial(){
 
+        try {
+            // check if previous key store exists
+            File file = new File("./passwords.jks");
+            KeyStore ks = KeyStore.getInstance("pkcs12");
+            char[] pwd = "password".toCharArray();
+
+            // make new one if doesn't exist
+            if (!file.exists()) {
+                ks.load(null, pwd);
+                AESGenerateKey(ks);
+            } else {
+                // trying to load the file
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    ks.load(fis,pwd);
+                }
+                AESKey = (SecretKey) ks.getKey("key", pwd);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // create secure RNG
+        sRan = new SecureRandom();
     }
 
     private static void AESGenerateKey(KeyStore ks) {
