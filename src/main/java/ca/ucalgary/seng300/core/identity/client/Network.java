@@ -108,23 +108,42 @@ public class Network {
 
     }
 
-    /**
+    /** encryption method
      *
-     * @param plaintext
+     * @param plainText
      * @return
      */
-    public static byte[] encrypt(String plaintext) {
+    public static byte[] encrypt(String plainText) throws Exception {
 
+        // makes 12 byte long nonce (random value) as per NIST standards
+        // important a new one is generated for each encryption
+        byte[] nonce = new byte[12];
+        sRan.nextBytes(nonce);
+        GCMParameterSpec gcmParamSpec = new GCMParameterSpec(128, nonce);
+
+        // creating cipher and setting up encryption algorithm
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, AESKey, gcmParamSpec);
+
+        // encrypting text
+        byte[] cipherTextTag = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+
+        // combining encrypted text with nonce, copying to beginning of message
+        byte[] message = new byte[nonce.length + cipherTextTag.length];
+        System.arraycopy(nonce, 0, message, 0, 12);
+        System.arraycopy(cipherTextTag, 0, message, 12, cipherTextTag.length);
+
+        return message;
     }
 
-    /**
+    /** decryption method
      *
      * @param cipherText
      * @return
      */
     public static String decrypt(byte[] cipherText) {
 
-    }
 
+    }
 
 }
