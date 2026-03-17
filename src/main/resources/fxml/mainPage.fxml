@@ -7,6 +7,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
 <HBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.mainController">
@@ -63,15 +65,21 @@
                         </Pane>
                         <Pane prefHeight="543.0" prefWidth="309.0">
                            <children>
-                              <HBox alignment="TOP_CENTER" layoutX="26.0" layoutY="20.0" prefHeight="473.0" prefWidth="267.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+                              <StackPane layoutX="26.0" layoutY="20.0">
                                  <children>
-                                    <Label text="Game">
-                                       <font>
-                                          <Font size="24.0" />
-                                       </font>
-                                    </Label>
+                                    <HBox alignment="TOP_CENTER" prefHeight="473.0" prefWidth="267.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+                                       <children>
+                                          <Label text="Game">
+                                             <font>
+                                                <Font size="24.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d4dbe1" height="192.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+                                    <Label text="ThumbNail" />
                                  </children>
-                              </HBox>
+                              </StackPane>
                            </children>
                         </Pane>
                      </children>
