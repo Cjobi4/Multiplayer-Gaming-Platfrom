@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -12,40 +13,63 @@
          <children>
             <VBox prefHeight="47.0" prefWidth="600.0" style="-fx-background-color: #e4e4f7;">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Game Title" textAlignment="CENTER" wrappingWidth="799.4575653076172">
-                     <font>
-                        <Font name="Times New Roman" size="29.0" />
-                     </font>
-                  </Text>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Text layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Title" textAlignment="CENTER" wrappingWidth="799.4575653076172">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </AnchorPane>
                </children>
             </VBox>
-            <HBox prefHeight="395.0" prefWidth="800.0" style="-fx-background-color: #ffffff;" />
+            <HBox prefHeight="395.0" prefWidth="800.0" style="-fx-background-color: #ffffff;">
+               <children>
+                  <AnchorPane prefHeight="395.0" prefWidth="800.0">
+                     <children>
+                        <Label layoutX="309.0" layoutY="187.0" text="Game will be displayed here...">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </children></HBox>
             <VBox prefHeight="100.0" prefWidth="800.0" style="-fx-background-color: #f2f2ff;">
                <children>
-                  <Text lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Person A: Hello!" textAlignment="JUSTIFY">
-                     <font>
-                        <Font name="Times New Roman" size="19.0" />
-                     </font>
-                  </Text>
-                  <Text layoutX="10.0" layoutY="27.0" lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Person B: Hi!" textAlignment="JUSTIFY">
-                     <font>
-                        <Font name="Times New Roman" size="19.0" />
-                     </font>
-                  </Text>
-                  <Text layoutX="10.0" layoutY="49.0" lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Person A: How are you?" textAlignment="JUSTIFY">
-                     <font>
-                        <Font name="Times New Roman" size="19.0" />
-                     </font>
-                  </Text>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Text layoutX="14.0" layoutY="21.0" lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Person A: Hello!" textAlignment="JUSTIFY">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                        <Text layoutX="14.0" layoutY="44.0" lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Person B: Hi!" textAlignment="JUSTIFY">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                        <Text layoutX="14.0" layoutY="69.0" lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Person A: How are you?" textAlignment="JUSTIFY">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </AnchorPane>
                </children>
             </VBox>
             <VBox prefHeight="64.0" prefWidth="800.0" style="-fx-background-color: #e4e4f7;">
                <children>
-                  <Text lineSpacing="10.0" opacity="0.26" strokeType="OUTSIDE" strokeWidth="0.0" text="type here to chat" wrappingWidth="598.8791351318359">
-                     <font>
-                        <Font name="Times New Roman" size="19.0" />
-                     </font>
-                  </Text>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Text layoutX="14.0" layoutY="19.0" lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Type here to chat...." textAlignment="JUSTIFY">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </AnchorPane>
                </children>
             </VBox>
          </children>
