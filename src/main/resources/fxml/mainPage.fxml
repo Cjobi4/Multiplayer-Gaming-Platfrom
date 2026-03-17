@@ -11,9 +11,9 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.mainController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #f2f2ff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.mainController">
    <top>
-      <HBox alignment="CENTER_LEFT" prefHeight="57.0" spacing="14.0" style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 5;">
+      <HBox alignment="CENTER_LEFT" prefHeight="57.0" spacing="14.0" style="-fx-border-color: #808080; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-color: #e4e4f7;">
          <children>
             <Label text="|ChangeLog|" />
             <Label text="|Info|" />
@@ -29,11 +29,11 @@
    <center>
       <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="TOP_CENTER" prefWidth="220.0" spacing="10.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+            <VBox alignment="TOP_CENTER" prefWidth="220.0" spacing="10.0" style="-fx-border-color: #808080; -fx-border-radius: 5; -fx-background-color: #ffffffff;">
                <children>
                   <Label text="Leaderboard">
                      <font>
-                        <Font size="24.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
                </children>
@@ -44,18 +44,18 @@
 
             <VBox alignment="TOP_CENTER" prefWidth="260.0" spacing="20.0">
                <children>
-                  <VBox alignment="TOP_CENTER" prefHeight="300.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+                  <VBox alignment="TOP_CENTER" prefHeight="300.0" style="-fx-border-color: #808080; -fx-border-radius: 5; -fx-background-color: #ffffff;">
                      <children>
                         <Label text="Game List">
                            <font>
-                              <Font size="24.0" />
+                              <Font size="18.0" />
                            </font>
                         </Label>
                      </children>
                   </VBox>
-                  <Button fx:id="gameSelectButton" mnemonicParsing="false" onAction="#onGameSelectButtonClick" prefHeight="80.0" prefWidth="180.0" text="Play">
+                  <Button fx:id="gameSelectButton" mnemonicParsing="false" onAction="#onGameSelectButtonClick" prefHeight="55.0" prefWidth="215.0" text="Select Opponent">
                      <font>
-                        <Font size="36.0" />
+                        <Font size="24.0" />
                      </font>
                   </Button>
                </children>
@@ -64,11 +64,11 @@
                </padding>
             </VBox>
 
-            <VBox alignment="TOP_CENTER" prefWidth="300.0" style="-fx-border-color: black; -fx-border-radius: 5;">
+            <VBox alignment="TOP_CENTER" prefWidth="300.0" style="-fx-border-color: #808080; -fx-border-radius: 5; -fx-background-color: #ffffff;">
                <children>
                   <Label text="Game Details">
                      <font>
-                        <Font size="24.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
                   <StackPane prefHeight="200.0" prefWidth="200.0">
