@@ -14,11 +14,18 @@ import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
+
 public class Network {
     private static byte[] sharedKey = null;
     private static SecretKey AESKey;
     private static SecureRandom sRan;
 
+    /** Method for creating the shared secret/key
+     *
+     * @param serverPubKeyBytes
+     * @return
+     * @throws Exception
+     */
     public static byte[] generateSharedKey(byte[] serverPubKeyBytes) throws Exception {
 
         // build public key from serverPubKeyBytes
@@ -45,7 +52,9 @@ public class Network {
         return clientKeyPair.getPublic().getEncoded();
     }
 
-
+    /** Ensuring program has everything it needs to encrypt/decrypt, preparation
+     *
+     */
     public static void AESKeyInitial(){
 
         try {
@@ -74,14 +83,45 @@ public class Network {
         sRan = new SecureRandom();
     }
 
-    private static void AESGenerateKey(KeyStore ks) {
+    /** Turning the shared key into a usable AES encryption key
+     *
+     * @param ks
+     * @throws Exception
+     */
+    private static void AESGenerateKey(KeyStore ks) throws Exception {
+
+        // using shared key to generate hash
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(sharedKey);
+
+        // use first 16 bytes of hash to make key
+        byte[] shortHash = new byte[16];
+        System.arraycopy(hash, 0, shortHash, 0, 16);
+        AESKey = new SecretKeySpec(shortHash, "AES");
+
+        // convert key to secret key
+        KeyStore.SecretKeyEntry secKey = new KeyStore.SecretKeyEntry(AESKey);
+        KeyStore.ProtectionParameter proPara = new KeyStore.PasswordProtection("password".toCharArray());
+
+        // adding secret key to key store
+        ks.setEntry("key", secKey, proPara);
 
     }
 
+    /**
+     *
+     * @param plaintext
+     * @return
+     */
     public static byte[] encrypt(String plaintext) {
 
     }
 
+    /**
+     *
+     * @param cipherText
+     * @return
+     */
     public static String decrypt(byte[] cipherText) {
 
     }
