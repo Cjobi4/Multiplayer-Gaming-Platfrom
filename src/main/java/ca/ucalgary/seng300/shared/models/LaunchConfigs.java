@@ -9,5 +9,17 @@ package ca.ucalgary.seng300.shared.models;
  * <p>TODO: Define configuration fields and validation logic.</p>
  */
 public class LaunchConfigs {
-    // TODO: Implement launch configuration model — placeholder for Platform Core
+
+    private String gameId;
+    private String gameUrl;
+    private Boolean openInNewTab;
+    private Boolean fullscreen;
+
+    public String getUrl() {
+        return gameUrl;
+    }
+
+    public Boolean validate() {
+        return gameUrl != null && !gameUrl.isEmpty();
+    }
 }
