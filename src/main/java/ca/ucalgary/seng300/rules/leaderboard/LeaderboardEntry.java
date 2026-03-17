@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.shared.models;
+package ca.ucalgary.seng300.rules.leaderboard;
 
 /**
  * Represents a single entry in the leaderboard.
