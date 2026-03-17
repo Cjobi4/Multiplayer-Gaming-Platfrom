@@ -11,5 +11,23 @@ package ca.ucalgary.seng300.shared.models;
  * comparable ordering for leaderboard sorting.</p>
  */
 public class LeaderboardEntry {
-    // TODO: Implement leaderboard entry model — placeholder for Rules & Validation
+    private int rank;
+    private String playerId;
+    private String playerName;
+    private int score;
+
+    public void setRank(int rank)
+    {
+        this.rank = rank;
+    }
+
+    public int compareTo(LeaderboardEntry e)
+    {
+        return Integer.compare(e.score, this.score);
+    }
+
+    public String toDisplay()
+    {
+        return rank + ". " + playerName + " - " + score;
+    }
 }
