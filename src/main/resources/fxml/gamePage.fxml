@@ -37,7 +37,7 @@
             <Insets />
          </opaqueInsets>
       </ScrollPane>
-      <Text layoutX="6.0" layoutY="261.0" opacity="0.52" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Chat">
+      <Text layoutX="6.0" layoutY="261.0" opacity="0.52" strokeType="OUTSIDE" strokeWidth="0.0" text="Live Chat">
          <font>
             <Font name="Times New Roman" size="16.0" />
          </font>
