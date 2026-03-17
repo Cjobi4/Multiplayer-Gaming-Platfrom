@@ -22,11 +22,6 @@ public class MainApp extends Application {
         stage.setScene(scene);
         stage.show();
 
-//        Label label = new Label("JavaFX 25 + JDK 25 OK");
-//        Scene scene = new Scene(label, 600, 400);
-//        stage.setScene(scene);
-//        stage.setTitle("Starter");
-//        stage.show();
     }
 
     public static void main(String[] args) {
