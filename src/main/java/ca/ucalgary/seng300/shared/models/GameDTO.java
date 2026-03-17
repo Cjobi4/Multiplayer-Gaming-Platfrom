@@ -9,5 +9,8 @@ package ca.ucalgary.seng300.shared.models;
  * <p>TODO: Define fields mirroring Game and implement serialization support.</p>
  */
 public class GameDTO {
-    // TODO: Implement game DTO — placeholder for cross-team use
+
+    public String id;
+    public String title;
+    public String gameUrl;
 }
