@@ -1,5 +1,8 @@
 package ca.ucalgary.seng300.core;
 
+import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.shared.models.Game;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +18,7 @@ public class GameRegistryTest {
     @BeforeEach
     void setUp() {
         gameRegistry = GameRegistry.getInstance();
-        gameRegistry.listAll().clear();
+        gameRegistry.ListAll().clear();
     }
 
     @Test
@@ -25,7 +28,7 @@ public class GameRegistryTest {
 
         // 2. Act
         gameRegistry.register(game);
-        List<Game> games = gameRegistry.listAll();
+        List<Game> games = gameRegistry.ListAll();
 
         // 3. AssertEquals
         int expectedSize = 1;
@@ -76,7 +79,7 @@ public class GameRegistryTest {
         int expectedSize = 3;
 
         // 3. AssertEquals
-        assertEquals(expectedSize, gameRegistry.listAll().size(), "Game Registry size should be equal to expected size of: " + expectedSize);
+        assertEquals(expectedSize, gameRegistry.ListAll().size(), "Game Registry size should be equal to expected size of: " + expectedSize);
     }
 
     @Test
@@ -89,7 +92,7 @@ public class GameRegistryTest {
         gameRegistry.unregister("game1");
 
         // 3. assertion
-        assertTrue(gameRegistry.listAll().isEmpty(), "Game registry should be empty.");
+        assertTrue(gameRegistry.ListAll().isEmpty(), "Game registry should be empty.");
     }
 
     @Test
@@ -110,7 +113,7 @@ public class GameRegistryTest {
         int expectedSize = 1;
 
         // 3. AssertEquals
-        assertEquals(expectedSize, gameRegistry.listAll().size(), "Game registry size should be equal to " + expectedSize + " after removal of 2/3 games.");
+        assertEquals(expectedSize, gameRegistry.ListAll().size(), "Game registry size should be equal to " + expectedSize + " after removal of 2/3 games.");
     }
 
     @Test
@@ -124,7 +127,7 @@ public class GameRegistryTest {
         int expectedSize = 1;
 
         // 3. assertion
-        assertEquals(expectedSize, gameRegistry.listAll().size(),  "Game registry size should be equal to expected size of: " + expectedSize);
+        assertEquals(expectedSize, gameRegistry.ListAll().size(),  "Game registry size should be equal to expected size of: " + expectedSize);
     }
 
     @Test
@@ -149,7 +152,7 @@ public class GameRegistryTest {
         gameRegistry.register(game3);
 
         // 2. act
-        List<Game> games = gameRegistry.listAll();
+        List<Game> games = gameRegistry.ListAll();
         int expectedSize = 3;
 
         // 3. assertions
