@@ -21,6 +21,7 @@ public class Network
 {
     private static KeyAgreement serverKeyAgreement = null;
     private static HashMap<UUID, SecretKey> keyList = new HashMap<UUID, SecretKey>();
+    //need to be careful with multithreading if multiple users accessing at once, value may change unexpectedly
     private static SecretKey AESKey;
     private static SecureRandom sRan;
 
@@ -48,7 +49,15 @@ public class Network
             {
                 //if a incoming connection is detected, accept it
                 Socket client = port.accept();
-                handleClient(client);
+
+                //create a new thread to handle the client
+                new Thread(new Runnable()
+                {
+                    @Override
+                    public void run() {handleClient(client);}
+                }).start();
+
+                //handleClient(client);
             }
 
         } catch (IOException e) {
@@ -62,9 +71,20 @@ public class Network
      */
     private static void handleClient(Socket client)
     {
+        boolean encryptionEstablished = establishEncryption(client);
+    }
+
+    /**
+     * Establishes a secure AES key between both the server and client. If the server-client already had one, use that.
+     * Otherwise, if not, create a new clientID and AES key for use. If the process fails, return false. Otherwise if
+     * it succeeds return true.
+     * @param client The client computer the connection is being established with.
+     * @return True if an AES key is established, false if it fails.
+     */
+    private static boolean establishEncryption(Socket client)
+    {
         try
         {
-            /////////////////////////////////////// CLIENT ID COLLECTION ///////////////////////////////////
             UUID clientID;
 
             //first check to see if client has a clientID
@@ -95,9 +115,8 @@ public class Network
                 System.out.println("public key received");  //for debug
 
                 //...and create the shared secret and use it to make the AES key
-                generateAESKey(clientID, generateSharedKey(clientPublicKey));
+                generateAESKey(clientID, generateSharedKey(clientPublicKey));   //automatically added to the keyList
                 System.out.println("shared key generated"); //for debug
-
 
                 //need a flag to let client know if clientID + key pair should be overwritten?
                 /*if server and client connect so client has clientID and then server is restarted, clientID record is
@@ -114,10 +133,13 @@ public class Network
                 //let client know their key was accepted
                 client.getOutputStream().write(1);
             }
+
+            //if everything worked, let system know
+            return true;
         } catch (Exception e)
         {
-            //ask validation what they want to do here
-            throw new RuntimeException(e);
+            //notify something went wrong
+            return false;
         }
     }
 
