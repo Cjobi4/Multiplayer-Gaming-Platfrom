@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.games.tictactoe;
 
+//Note*** using the abbreviation "ttt" in place of tic tac toe for some coding aspects
+
 public class TicTacToeBoard {
     //this is my board class for the tic tac toe game!
 
@@ -23,4 +25,30 @@ public class TicTacToeBoard {
             }
         }
     }
+
+    //this is my getter for getting the whole board
+    public char[][] getBoard(){
+        //return the entire board
+        return board;
+    }
+    //this is my function for checking if a cell is empty
+    public boolean isCellEmpty(int row, int col){
+        //check boolean (true or false) if a cell is empty
+        return board[row][col] == ' ';
+    }
+
+    //this is my function for getting the value within a cell (empty, X, O)
+    public char getCellInfo(int row, int col) {
+        //return the value stored within a specific cell
+        return board[row][col];
+    }
+
+    //this is my function for setting a cell to a given value (empty, X or O)
+    public void setCellInfo(int row, int col, char tttValue) {
+        //set a specific cell to a specific value
+        board[row][col] = tttValue;
+        //ttt = tic tac toe just using an abbreviation for code, will put note at top of doc!
+    }
+
+
 }
