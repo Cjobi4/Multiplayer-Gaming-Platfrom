@@ -20,7 +20,7 @@ import java.util.UUID;
 public class Network
 {
     private static KeyAgreement serverKeyAgreement = null;
-    private static HashMap<String, SecretKey> keyList = new HashMap<String, SecretKey>();
+    private static HashMap<UUID, SecretKey> keyList = new HashMap<UUID, SecretKey>();
     private static SecretKey AESKey;
     private static SecureRandom sRan;
 
@@ -56,6 +56,10 @@ public class Network
         }
     }
 
+    /**
+     * Runs when a client connects to the server computer, handles all communications and requests between them.
+     * @param client The port the client is connecting to the server from.
+     */
     private static void handleClient(Socket client)
     {
         try
@@ -69,39 +73,52 @@ public class Network
             String clientIDString = new String(clientIDBytes, StandardCharsets.UTF_8);
             System.out.println(clientIDString);     //for debug
 
-            //if they already have one...
-            if (!clientIDString.equals("new"))
-            {
-
-
-
-            }
 
             //if they didn't have one or there isn't a key associated with this client ID...
             if (clientIDString.equals("new") || !keyList.containsKey(clientIDString))
             {
+                //let client know they're getting assigned a new clientID
+                client.getOutputStream().write(0);
+
                 //create a new clientID for them
                 clientID = UUID.randomUUID();
+
+                //create a public key and send it to the client
+                byte[] serverPublicKey = generatePublicKey();
+                client.getOutputStream().write(ByteBuffer.allocate(4).putInt(serverPublicKey.length).array());
+                client.getOutputStream().write(serverPublicKey);
+                System.out.println("public key sent");  //for debug
+
+                //take the client's public key...
+                int keyLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                byte[] clientPublicKey = client.getInputStream().readNBytes(keyLength);
+                System.out.println("public key received");  //for debug
+
+                //...and create the shared secret and use it to make the AES key
+                generateAESKey(clientID, generateSharedKey(clientPublicKey));
+                System.out.println("shared key generated"); //for debug
 
 
                 //need a flag to let client know if clientID + key pair should be overwritten?
                 /*if server and client connect so client has clientID and then server is restarted, clientID record is
                 lost only on server side. Client still thinks has valid clientID. Need way to tell client to disregard
                 current clientID and accept a new one.
-
                  */
             }else   //if they did have one...
             {
                 clientID = UUID.fromString(clientIDString);
 
                 //retrieve their encryption key
-                AESKey = keyList.get(clientIDString);
+                AESKey = keyList.get(clientID);
+
+                //let client know their key was accepted
+                client.getOutputStream().write(1);
             }
         } catch (Exception e)
         {
             //ask validation what they want to do here
             throw new RuntimeException(e);
-        }   //missing catch statment
+        }
     }
 
 
@@ -159,7 +176,7 @@ public class Network
      * @param sharedSecret The shared secret between the client and server computers.
      * @throws Exception If the SHA-256 algorithm can't be found, will throw an Exception
      */
-    private static void generateAESKey(String clientID, byte[] sharedSecret) throws Exception
+    private static void generateAESKey(UUID clientID, byte[] sharedSecret) throws Exception
     {
         //use the shared secret to generate a hash
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
