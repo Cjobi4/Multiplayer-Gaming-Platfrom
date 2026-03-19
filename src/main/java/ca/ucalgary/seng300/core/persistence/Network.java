@@ -1,7 +1,9 @@
 package ca.ucalgary.seng300.core.persistence;
 
+import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,6 +22,7 @@ public class Network
     private static KeyAgreement serverKeyAgreement = null;
     private static HashMap<String, SecretKey> keyList = new HashMap<String, SecretKey>();
     private static SecretKey AESKey;
+    private static SecureRandom sRan;
 
     /**
      * Turns the current computer into a working database server. Initializes the database tables and connection with
@@ -32,6 +35,9 @@ public class Network
         {
             //first initialize the database
             Database.databaseInitial();
+
+            //initialize the Secure Random generator for nonces
+            sRan = new SecureRandom();
 
             //then start listening for client connections
             ServerSocket port = new ServerSocket(14001, 100, InetAddress.getByName("0.0.0.0"));
@@ -91,7 +97,9 @@ public class Network
                 //retrieve their encryption key
                 AESKey = keyList.get(clientIDString);
             }
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
+            //ask validation what they want to do here
             throw new RuntimeException(e);
         }   //missing catch statment
     }
@@ -102,7 +110,7 @@ public class Network
      * 'g' value, and the 'g^a' value. The private key is the 'a' value. The public key is returned (and later sent
      * to the client), while the private key is saved in the serverKeyAgreement for later use.
      * @return The public key in byte[] format.
-     * @throws Exception If the Diffie-Hellman protocol can't be found, will throw a NoSuchAlgorithmException
+     * @throws Exception If the Diffie-Hellman protocol can't be found, will throw an Exception
      */
     private static byte[] generatePublicKey() throws Exception
     {
@@ -125,7 +133,7 @@ public class Network
      * server's 'a' value to g^b, before applying modulus 'm' to the whole expression.
      * @param clientPubKeyBytes The public key of the client in byte[] format
      * @return The shared secret, in byte[] format
-     * @throws Exception If the Diffie-Hellman protocol can't be found, will throw a NoSuchAlgorithmException
+     * @throws Exception If the Diffie-Hellman protocol can't be found, will throw an Exception
      */
     private static byte[] generateSharedKey(byte[] clientPubKeyBytes) throws Exception
     {
@@ -149,9 +157,9 @@ public class Network
      * clientID.
      * @param clientID  The clientID of the client computer the AES key is being generated for.
      * @param sharedSecret The shared secret between the client and server computers.
-     * @throws Exception If the SHA-256 algorithm can't be found, will throw a NoSuchAlgorithmException
+     * @throws Exception If the SHA-256 algorithm can't be found, will throw an Exception
      */
-    public static void generateAESKey(String clientID, byte[] sharedSecret) throws Exception
+    private static void generateAESKey(String clientID, byte[] sharedSecret) throws Exception
     {
         //use the shared secret to generate a hash
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -164,5 +172,65 @@ public class Network
 
         //add it to the list
         keyList.put(clientID, AESKey);
+    }
+
+    /**
+     * Given a plaintext in string format, encrypts it and converts it into a byte[] format for transmission. The first
+     * 12 bytes is the nonce, an extra string of bits that ensures the same messages sent multiple times will always
+     * result in different ciphertexts. The encrypted message is then appended onto the end of this nonce.
+     * @param plainText The string to be encrypted with AES
+     * @return The string encrypted with AES and in byte[] format, preceded by 12 bytes of nonce.
+     * @throws Exception If the AES GCM mode algorithm can't be found, will throw an Exception
+     */
+    private static byte[] encrypt(String plainText) throws Exception
+    {
+        //makes 12 byte long nonce according to NIST standards
+        byte[] nonce = new byte[12];
+        sRan.nextBytes(nonce);
+        GCMParameterSpec gcmParamSpec = new GCMParameterSpec(128, nonce);
+
+        //create a cipher for the CURRENT AESKey
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, AESKey, gcmParamSpec);
+
+        //the encrypted plaintext WITHOUT the nonce
+        byte[] cipherTextTag = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+
+        //add the nonce to the start of the message
+        byte[] message = new byte[nonce.length + cipherTextTag.length];
+        System.arraycopy(nonce, 0, message, 0, 12);
+        System.arraycopy(cipherTextTag, 0, message, 12, cipherTextTag.length);
+
+        return message;
+    }
+
+    /**
+     * Given an encrypted cipherText in byte[] format, decrypts it back into the original plaintext.
+     * @param cipherText The AES encrypted message in byte[] format
+     * @return The decrypted plaintext in string format
+     * @throws Exception If the AES GCM mode algorithm can't be found, will throw an Exception. Or if the message has
+     * been altered AFTER the encryption was performed (i.e. some bits are lost/changed), the message will not be
+     * decrypted properly and will throw an exception.
+     */
+    private static String decrypt(byte[] cipherText) throws Exception
+    {
+        //collect the nonce (first 12 bytes of the message)
+        byte[] nonce = new byte[12];
+        System.arraycopy(cipherText, 0, nonce, 0, 12);
+
+        //separate the encrypted plaintext from the nonce
+        byte[] cipherTextMessage = new byte[cipherText.length - 12];
+        System.arraycopy(cipherText, 12, cipherTextMessage, 0, cipherText.length - 12);
+
+        //create a cipher for the AES GCM algorithm
+        GCMParameterSpec gcmParamSpec = new GCMParameterSpec(128, nonce);
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(Cipher.DECRYPT_MODE, AESKey, gcmParamSpec);
+
+        //decrypt the message
+        byte[] plainText = cipher.doFinal(cipherTextMessage);
+
+        //and convert it back into a string
+        return new String(plainText, StandardCharsets.UTF_8);
     }
 }
