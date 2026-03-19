@@ -91,6 +91,8 @@ public class Network
                 //retrieve their encryption key
                 AESKey = keyList.get(clientIDString);
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }   //missing catch statment
     }
 
