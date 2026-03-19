@@ -18,3 +18,11 @@ out/
 
 # --- Logs ---
 *.log
+
+### Windows ###
+Thumbs.db
+Desktop.ini
+
+### Java build ###
+*.class
+*.jar

@@ -1,21 +1,32 @@
-# Starter Documentation Files #
+# Documentation Directory
 
-## Design Diagrams Overview ##
+<!-- PLACEHOLDER -- to be expanded as documentation grows -->
 
-The design diagrams in this directory are provided as starter references to help you reason about the system architecture and behavior. They are not guaranteed to be complete or optimal. You are expected to critically review, critique, and adapt these diagrams as part of your design work. If you change or replace any diagram, you should be able to explain why your version better represents the system.
+This directory contains all non-code project artifacts: design documents, diagrams, planning docs, and presentations. It is organized by component to mirror the source package structure.
 
-### State Diagrams ###
+## Directory Layout
 
-State diagrams describe how the system or a major component transitions between states over time in response to events. They are especially useful for reasoning about game flow, turn handling, and session lifecycle (for example, waiting for players, active play, and game completion). The provided state diagrams focus on what states exist and when transitions occur, not on low-level implementation details. You may simplify or expand these diagrams as long as the overall behavior remains clear and consistent.
+| Directory | Owning Team | Contents |
+|---|---|---|
+| `architecture/` | Integration & Release / Platform Core | System-wide architecture diagrams and decision records |
+| `platform-core/` | Platform Core | Designs for identity, game registry, rooms, matchmaking, turn engine, persistence |
+| `client-ui/` | Client/UI | UI/UX designs, screen flows, wireframes, game rendering conventions |
+| `rules-validation/` | Rules & Validation | Move validation pipeline and leaderboard subsystem designs |
+| `quality-testing/` | Quality & Testing | Test plans, test case specifications, coverage reports |
+| `integration-release/` | Integration & Release | Process docs, integration issue logs, presentations |
 
-### Structure (Class/Architecture) Diagrams ###
+## File Naming Conventions
 
-Structure diagrams show the static organization of the system: key components, their responsibilities, and how they relate to one another. These diagrams emphasize separation of concerns, such as the distinction between platform services, game logic, persistence, and the GUI. The provided diagrams are intentionally high-level and may omit fields or methods. You are free to rename, split, or merge components as needed, provided your design still respects the intended architectural boundaries.
+- **Directories:** lowercase, hyphenated (e.g., `rooms-and-matchmaking/`)
+- **Diagrams (PNG/SVG):** kebab-case with diagram type suffix (e.g., `login-sequence-diagram.png`)
+- **Documents (PDF):** kebab-case with component prefix (e.g., `database-use-case-descriptions.pdf`)
+- **Drawio source files:** kebab-case matching the rendered PNG (e.g., `leaderboard-use-case.drawio`)
+- **Markdown docs:** kebab-case (e.g., `integration-release-plan.md`)
+- **README files:** Always `README.md` (uppercase)
 
-### Use Case Diagrams ###
+## Adding a New Document
 
-Use case diagrams illustrate how a player interacts with the system through the GUI. They focus on user-visible actions and navigation, not internal algorithms. The provided use cases are simplified and represent typical or important flows rather than every possible edge case. You should treat them as examples of how to model user interaction and extend or refine them to match your final design.
-
-### Sequence Diagrams ###
-
-Sequence diagrams describe how components interact over time to complete a specific task, such as logging in, joining a game, making a move, or ending a game. They highlight the order of messages between the GUI, platform services, and game logic. These diagrams are particularly useful for validating responsibilities and ensuring that state changes flow through the correct components. The provided sequences are representative, not exhaustive.
+1. Determine the owning component directory.
+2. Name the file using the conventions above.
+3. Place the file in the appropriate sub-directory.
+4. Update the component's `README.md` to list the new file.
