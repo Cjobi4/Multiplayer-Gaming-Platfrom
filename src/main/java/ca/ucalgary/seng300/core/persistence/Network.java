@@ -14,15 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.UUID;
 
 public class Network
 {
-    private static KeyAgreement serverKeyAgreement = null;
-    private static HashMap<UUID, SecretKey> keyList = new HashMap<UUID, SecretKey>();
-    //need to be careful with multithreading if multiple users accessing at once, value may change unexpectedly
-    private static SecretKey AESKey;
+    private static Hashtable<UUID, SecretKey> keyList = new Hashtable<UUID, SecretKey>();
     private static SecureRandom sRan;
 
     /**
@@ -71,21 +68,36 @@ public class Network
      */
     private static void handleClient(Socket client)
     {
-        boolean encryptionEstablished = establishEncryption(client);
+        //establish an encryption key with the client
+        SecretKey AESKey = establishEncryption(client);
+
+        //if it failed, try again one more time
+        if (AESKey == null)
+        {
+            AESKey = establishEncryption(client);
+        }
+
+        //if it fails again, do something?
+        if (AESKey == null)
+        {
+            //ask validation here, maybe shut down server
+        }
     }
 
     /**
      * Establishes a secure AES key between both the server and client. If the server-client already had one, use that.
-     * Otherwise, if not, create a new clientID and AES key for use. If the process fails, return false. Otherwise if
-     * it succeeds return true.
+     * Otherwise, if not, create a new clientID and AES key for use. Return the created/found AES key for use with the
+     * client.
      * @param client The client computer the connection is being established with.
-     * @return True if an AES key is established, false if it fails.
+     * @return An AES key (of type SecretKey) for use with the client, or null if one could not be created or found.
      */
-    private static boolean establishEncryption(Socket client)
+    private static SecretKey establishEncryption(Socket client)
     {
         try
         {
             UUID clientID;
+            SecretKey AESKey;
+            KeyAgreement serverKeyAgreement = KeyAgreement.getInstance("DH");
 
             //first check to see if client has a clientID
             int clientIDLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
@@ -104,7 +116,7 @@ public class Network
                 clientID = UUID.randomUUID();
 
                 //create a public key and send it to the client
-                byte[] serverPublicKey = generatePublicKey();
+                byte[] serverPublicKey = generatePublicKey(serverKeyAgreement);
                 client.getOutputStream().write(ByteBuffer.allocate(4).putInt(serverPublicKey.length).array());
                 client.getOutputStream().write(serverPublicKey);
                 System.out.println("public key sent");  //for debug
@@ -115,7 +127,7 @@ public class Network
                 System.out.println("public key received");  //for debug
 
                 //...and create the shared secret and use it to make the AES key
-                generateAESKey(clientID, generateSharedKey(clientPublicKey));   //automatically added to the keyList
+                AESKey = generateAESKey(clientID, generateSharedKey(serverKeyAgreement, clientPublicKey));   //automatically added to the keyList
                 System.out.println("shared key generated"); //for debug
 
                 //need a flag to let client know if clientID + key pair should be overwritten?
@@ -134,12 +146,12 @@ public class Network
                 client.getOutputStream().write(1);
             }
 
-            //if everything worked, let system know
-            return true;
+            //if everything worked, return the AES key being used
+            return AESKey;
         } catch (Exception e)
         {
-            //notify something went wrong
-            return false;
+            //if something went wrong and no AES key is made/found, return null
+            return null;
         }
     }
 
@@ -148,10 +160,11 @@ public class Network
      * Creates a public-private key pair for the Diffie-Hellman protocol. The public key contains the modulus 'm', the
      * 'g' value, and the 'g^a' value. The private key is the 'a' value. The public key is returned (and later sent
      * to the client), while the private key is saved in the serverKeyAgreement for later use.
+     * @param serverKeyAgreement The KeyAgreement object that handles the key exchange
      * @return The public key in byte[] format.
      * @throws Exception If the Diffie-Hellman protocol can't be found, will throw an Exception
      */
-    private static byte[] generatePublicKey() throws Exception
+    private static byte[] generatePublicKey(KeyAgreement serverKeyAgreement) throws Exception
     {
         //create a public-private key pair
         KeyPairGenerator serverKeyPairGen = KeyPairGenerator.getInstance("DH"); //DH = Diffie-Hellman
@@ -159,7 +172,6 @@ public class Network
         KeyPair serverKeyPair = serverKeyPairGen.generateKeyPair();
 
         //handles exchange protocol
-        serverKeyAgreement = KeyAgreement.getInstance("DH");
         serverKeyAgreement.init(serverKeyPair.getPrivate());
 
         //turn the public key into a byte array and send
@@ -170,11 +182,12 @@ public class Network
      * Using the client's public key and the private key previously created in generatePublicKey(), creates a shared
      * secret (matching byte[] between the client and server). In Diffie-Hellman terms, this function applies the
      * server's 'a' value to g^b, before applying modulus 'm' to the whole expression.
+     * @param serverKeyAgreement The KeyAgreement object that handles the key exchange
      * @param clientPubKeyBytes The public key of the client in byte[] format
      * @return The shared secret, in byte[] format
      * @throws Exception If the Diffie-Hellman protocol can't be found, will throw an Exception
      */
-    private static byte[] generateSharedKey(byte[] clientPubKeyBytes) throws Exception
+    private static byte[] generateSharedKey(KeyAgreement serverKeyAgreement, byte[] clientPubKeyBytes) throws Exception
     {
         //server converts client's public key back into readable format
         KeyFactory serverKeyFactory = KeyFactory.getInstance("DH");
@@ -198,7 +211,7 @@ public class Network
      * @param sharedSecret The shared secret between the client and server computers.
      * @throws Exception If the SHA-256 algorithm can't be found, will throw an Exception
      */
-    private static void generateAESKey(UUID clientID, byte[] sharedSecret) throws Exception
+    private static SecretKey generateAESKey(UUID clientID, byte[] sharedSecret) throws Exception
     {
         //use the shared secret to generate a hash
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -207,10 +220,12 @@ public class Network
         //then use the first 16 bytes of that hash to make the key
         byte[] shortHash = new byte[16];
         System.arraycopy(hash, 0, shortHash, 0, 16);
-        AESKey = new SecretKeySpec(shortHash, "AES");
+        SecretKey AESKey = new SecretKeySpec(shortHash, "AES");
 
         //add it to the list
         keyList.put(clientID, AESKey);
+
+        return AESKey;
     }
 
     /**
@@ -218,10 +233,11 @@ public class Network
      * 12 bytes is the nonce, an extra string of bits that ensures the same messages sent multiple times will always
      * result in different ciphertexts. The encrypted message is then appended onto the end of this nonce.
      * @param plainText The string to be encrypted with AES
+     * @param AESKey The SecretKey the message should be encrypted with
      * @return The string encrypted with AES and in byte[] format, preceded by 12 bytes of nonce.
      * @throws Exception If the AES GCM mode algorithm can't be found, will throw an Exception
      */
-    private static byte[] encrypt(String plainText) throws Exception
+    private static byte[] encrypt(String plainText, SecretKey AESKey) throws Exception
     {
         //makes 12 byte long nonce according to NIST standards
         byte[] nonce = new byte[12];
@@ -246,12 +262,13 @@ public class Network
     /**
      * Given an encrypted cipherText in byte[] format, decrypts it back into the original plaintext.
      * @param cipherText The AES encrypted message in byte[] format
+     * @param AESKey The SecretKey the message was encrypted with
      * @return The decrypted plaintext in string format
      * @throws Exception If the AES GCM mode algorithm can't be found, will throw an Exception. Or if the message has
      * been altered AFTER the encryption was performed (i.e. some bits are lost/changed), the message will not be
      * decrypted properly and will throw an exception.
      */
-    private static String decrypt(byte[] cipherText) throws Exception
+    private static String decrypt(byte[] cipherText, SecretKey AESKey) throws Exception
     {
         //collect the nonce (first 12 bytes of the message)
         byte[] nonce = new byte[12];

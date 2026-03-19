@@ -11,7 +11,7 @@ public class Database
 
     private static Connection conn;
     private static Statement stmt;
-    private static String salt = "salt";
+    private static final String salt = "salt";
 
     /**
      * establishes a connection with the database.db file that contains all the information. If database.db doesn't
