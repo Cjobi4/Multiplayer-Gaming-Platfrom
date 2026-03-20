@@ -1,6 +1,6 @@
-package ca.ucalgary.seng300;
+package ca.ucalgary.seng300.games.connectfour;
 
-public class Board {
+public class connectFour {
 
     /**
      * No piece in board (empty)
