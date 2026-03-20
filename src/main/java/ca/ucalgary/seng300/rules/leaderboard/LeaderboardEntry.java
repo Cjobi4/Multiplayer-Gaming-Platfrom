@@ -16,6 +16,20 @@ public class LeaderboardEntry {
     private String playerName;
     private int score;
 
+    public LeaderboardEntry(int rank, String uid, String userName, int score){
+        this.rank = rank;
+        this.playerId = uid;
+        this.playerName = userName;
+        this.score = score;
+    }
+
+    public LeaderboardEntry(){ // default or dummy constructor
+        this.rank = 0;
+        this.playerId = "N/A";
+        this.playerName = "N/A";
+        this.score = -1;
+    }
+
     public void setRank(int rank)
     {
         this.rank = rank;
@@ -24,6 +38,14 @@ public class LeaderboardEntry {
     public int compareTo(LeaderboardEntry e)
     {
         return Integer.compare(e.score, this.score);
+    }
+
+    public int getScore(){
+        return this.score;
+    }
+
+    public String getPlayerId(){
+        return this.playerId;
     }
 
     public String toDisplay()

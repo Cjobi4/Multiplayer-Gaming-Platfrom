@@ -1,15 +1,24 @@
 package ca.ucalgary.seng300.rules;
 
-//TODO: Test base leaderboard whenever finished
 
+import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class LeaderboardLogicTest {
 
+    private LeaderBoard testLeaderboard; // create testLeaderBoard
+
     @BeforeEach
-    //TODO: Create "test" leaderboards with a few entries
+    void makeDummyBoard(){ // populate testLeaderBoard
+
+    }
+
+    @Test
+    void addScore(){
+
+    }
 
     @Test
     void requestTopScoreDistinct(){
@@ -30,4 +39,6 @@ public class LeaderboardLogicTest {
     void deleteScore(){
         //TODO: Delete a score based on certain UID
     }
+
+
 }
