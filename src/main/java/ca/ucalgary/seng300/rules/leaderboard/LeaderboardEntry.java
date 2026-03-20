@@ -16,6 +16,7 @@ public class LeaderboardEntry {
     private String playerName;
     private int score;
 
+    // base constructor
     public LeaderboardEntry(int rank, String uid, String userName, int score){
         this.rank = rank;
         this.playerId = uid;
@@ -46,6 +47,10 @@ public class LeaderboardEntry {
 
     public String getPlayerId(){
         return this.playerId;
+    }
+
+    public String getPlayerName(){
+        return this.playerName;
     }
 
     public String toDisplay()

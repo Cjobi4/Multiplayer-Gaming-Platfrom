@@ -15,7 +15,7 @@ import java.util.Map;
  *
  * using the shared LeaderboardEntry model.</p>
  */
-public class LeaderBoard {
+public class LeaderBoard{
 
     private Map<String, LeaderboardEntry> tempDatabase = new HashMap(); // hashmap to store leaderboard entries
     // VERY temporary. Only here for the purposes of testing
@@ -25,9 +25,6 @@ public class LeaderBoard {
      * Very basic placeholder so we can complete testing
      * Feel free to change attributes to better suit the final product
      */
-    public LeaderBoard(){
-
-    }
 
     /**
      * Adds a score to the leaderboard
@@ -35,6 +32,7 @@ public class LeaderBoard {
      * @param newEntry is simply the new entry
      */
     public void submitScore(String uid, LeaderboardEntry newEntry){
+        tempDatabase.remove(uid); // removes if already exists
         tempDatabase.put(uid, newEntry); // basic addition function
         // definitely add on more later
     }
@@ -46,11 +44,30 @@ public class LeaderBoard {
         // default value of -1 if the uid doesn't exist
     }
 
+    public String getName(String uid){
+        LeaderboardEntry toReturn = tempDatabase.getOrDefault(uid, new LeaderboardEntry());
+
+        return toReturn.getPlayerName();
+    }
+
+    public int getTopScore(){
+        List<LeaderboardEntry> copy = new ArrayList<>(); // arraylist of lb entries
+
+        for(LeaderboardEntry entry : tempDatabase.values()){
+            copy.add(new LeaderboardEntry(0," ", " ", entry.getScore()));
+            // for our copy we only care about score
+        }
+
+        copy.sort((a,b) -> Integer.compare(b.getScore(), a.getScore()));
+        // sort highest to lowest
+        return copy.getFirst().getScore();
+    }
+
     public List<LeaderboardEntry> getTopPlayers(int count){ // retrieves top x players based on score
         List<LeaderboardEntry> copy = new ArrayList<>(); // arraylist of lb entries
 
         for(LeaderboardEntry entry : tempDatabase.values()){
-            copy.add(new LeaderboardEntry(0,entry.getPlayerId(), " ", entry.getScore()));
+            copy.add(new LeaderboardEntry(0,entry.getPlayerId(), entry.getPlayerName(), entry.getScore()));
             // for our copy we only care about ID and score
         }
 
@@ -62,7 +79,16 @@ public class LeaderBoard {
         }
 
         return copy.subList(0, count); // return x amount of players
-        // returns a LeaderboardEntry with ONLY score/UID
+    }
+
+    /**
+     * Helper function for printing out lists of lb entries
+     * Should be used in conjunction with getTopPlayers
+     */
+    public void printTopPlayers(List<LeaderboardEntry> printList){
+        for(LeaderboardEntry entry : printList){
+            System.out.println("Score: " + entry.getScore() + " Player: " + entry.getPlayerName() + " UID:" + entry.getPlayerId());
+        }
     }
 
 }
