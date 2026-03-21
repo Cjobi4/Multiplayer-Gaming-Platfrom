@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.games;
+package main.java.ca.ucalgary.seng300.games;
 
 /**
  * Game Controller Class
@@ -8,13 +8,21 @@ package ca.ucalgary.seng300.games;
  * </p>
  * @author Jonathan Hooi
  * @email jonathan.hooi@ucalgary.ca
- * @version 0.1 03/19/2026
+ * @version 0.1.1 03/20/2026
  * @implNote Construction of this Class made with respect to Player Profiles Stats Persistence
  * Diagram from Project Iteration 1
  */
 public class GameController implements GameEngine {
+    private Player currentActivePlayer;
+    private String turnOrder;
+
     //TODO: Constructor method stub
     GameController() {
+
+    }
+
+    //TODO: method stub
+    public void makeMove() {
 
     }
     //TODO: method stub

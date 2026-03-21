@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.games;
+package main.java.ca.ucalgary.seng300.games;
 
 /**
  * TEMPORARY CLASS TO SUPPRESS ERRORS
