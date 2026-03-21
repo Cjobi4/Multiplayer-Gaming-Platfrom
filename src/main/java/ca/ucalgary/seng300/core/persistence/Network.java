@@ -135,6 +135,12 @@ public class Network
                 lost only on server side. Client still thinks has valid clientID. Need way to tell client to disregard
                 current clientID and accept a new one.
                  */
+
+                //finally encrypt the newly created clientID and give it to the client
+                clientIDBytes = encrypt(clientIDString, AESKey);
+                client.getOutputStream().write(ByteBuffer.allocate(4).putInt(clientIDBytes.length).array());
+                client.getOutputStream().write(clientIDBytes);
+                System.out.println("clientID: " + clientID.toString()); //for debug
             }else   //if they did have one...
             {
                 clientID = UUID.fromString(clientIDString);

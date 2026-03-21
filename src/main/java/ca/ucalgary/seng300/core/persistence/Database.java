@@ -49,7 +49,8 @@ public class Database
 
             //create a table to hold user login info (if it doesn't already exist)
             stmt.execute("CREATE TABLE IF NOT EXISTS userLoginInfo ("
-                    + "username TEXT PRIMARY KEY,"
+                    + "userid INTEGER PRIMARY KEY,"
+                    + "username TEXT NOT NULL,"
                     + "password TEXT NOT NULL);");
 
 
@@ -63,7 +64,12 @@ public class Database
             {
                 //create the hashed password
                 String hashedPassword = hash("password");
-                stmt.execute("INSERT INTO userLoginInfo(username, password) VALUES (user, " + hashedPassword + ")");
+
+                //must use prepared statement and not statement bc special characters in hash will disrupt command
+                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(userid, username, password) VALUES(0, ?, ?)");
+                pstmt.setString(1, "user");
+                pstmt.setString(2, hashedPassword);
+                pstmt.executeUpdate();
             }
 
         } catch (SQLException e)
