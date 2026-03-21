@@ -48,39 +48,18 @@ public class Network
                 Socket client = port.accept();
 
                 //create a new thread to handle the client
-                new Thread(new Runnable()
+                Session newSesh = new Session(client);
+                newSesh.start();
+
+                /*new Thread(new Runnable()
                 {
                     @Override
                     public void run() {handleClient(client);}
-                }).start();
-
-                //handleClient(client);
+                }).start();*/
             }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Runs when a client connects to the server computer, handles all communications and requests between them.
-     * @param client The port the client is connecting to the server from.
-     */
-    private static void handleClient(Socket client)
-    {
-        //establish an encryption key with the client
-        SecretKey AESKey = establishEncryption(client);
-
-        //if it failed, try again one more time
-        if (AESKey == null)
-        {
-            AESKey = establishEncryption(client);
-        }
-
-        //if it fails again, do something?
-        if (AESKey == null)
-        {
-            //ask validation here, maybe shut down server
         }
     }
 
@@ -91,7 +70,7 @@ public class Network
      * @param client The client computer the connection is being established with.
      * @return An AES key (of type SecretKey) for use with the client, or null if one could not be created or found.
      */
-    private static SecretKey establishEncryption(Socket client)
+    public static SecretKey establishEncryption(Socket client)
     {
         try
         {

@@ -1,7 +1,9 @@
 package ca.ucalgary.seng300;
 
-public class ServerMain {
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
+public class ServerMain
+{
+    public static void main(String[] args)
+    {
+        Network.launchNetwork();
     }
 }
