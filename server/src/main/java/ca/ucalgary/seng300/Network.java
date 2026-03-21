@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.core.persistence;
+package ca.ucalgary.seng300;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;

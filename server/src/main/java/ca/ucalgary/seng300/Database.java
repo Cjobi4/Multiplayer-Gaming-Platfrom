@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.core.persistence;
+package ca.ucalgary.seng300;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
