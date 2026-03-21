@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<HBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.welcomeController">
+   <children>
+      <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #f2f2ff;">
+         <children>
+            <Button fx:id="welcomeButton" layoutX="213.0" layoutY="174.0" mnemonicParsing="false" onAction="#onWelcomeButtonClick" prefHeight="25.0" prefWidth="173.0" text="Proceed to Login" />
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="154.0" layoutY="143.0" prefHeight="17.0" prefWidth="292.0" text="Welcome to (insert project name here lol)!" textAlignment="CENTER">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+         </children>
+      </AnchorPane>
+   </children>
+</HBox>
