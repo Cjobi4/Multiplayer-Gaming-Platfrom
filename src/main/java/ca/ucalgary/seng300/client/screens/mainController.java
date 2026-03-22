@@ -36,7 +36,6 @@ public class mainController {
         } catch (IOException e) {
             System.err.println("Error: Could not load opponentSelectPage.fxml. Check file path!");
         }
-
     }
 
     @FXML
@@ -60,4 +59,5 @@ public class mainController {
 
         }
 
-    }}
+    }
+}
