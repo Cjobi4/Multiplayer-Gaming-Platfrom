@@ -22,5 +22,7 @@
       <Label layoutX="305.0" layoutY="255.0" text="Score:" />
       <Label layoutX="306.0" layoutY="283.0" text="Ranking:" />
       <ListView layoutX="305.0" layoutY="306.0" prefHeight="136.0" prefWidth="164.0" />
+      <Label layoutX="369.0" layoutY="227.0" prefHeight="17.0" prefWidth="109.0" text="Calgary" />
+      <Label layoutX="348.0" layoutY="255.0" prefHeight="17.0" prefWidth="72.0" text="0000000" />
    </children>
 </AnchorPane>
