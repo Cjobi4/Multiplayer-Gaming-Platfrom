@@ -10,11 +10,12 @@
    <children>
       <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #f2f2ff;">
          <children>
-            <Button fx:id="welcomeButton" layoutX="213.0" layoutY="174.0" mnemonicParsing="false" onAction="#onWelcomeButtonClick" prefHeight="25.0" prefWidth="173.0" text="Proceed to Login" />
-            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="154.0" layoutY="143.0" prefHeight="17.0" prefWidth="292.0" text="Welcome to (insert project name here lol)!" textAlignment="CENTER">
+            <Button fx:id="welcomeButton" layoutX="305.0" layoutY="149.0" mnemonicParsing="false" onAction="#onWelcomeButtonClick" prefHeight="25.0" prefWidth="115.0" text="Login" />
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="100.0" layoutY="50.0" prefHeight="31.0" prefWidth="409.0" text="Welcome to (insert project name here lol)!" textAlignment="CENTER">
                <font>
-                  <Font size="14.0" />
+                  <Font size="21.0" />
                </font></Label>
+            <Button fx:id="createAccountButton" layoutX="177.0" layoutY="149.0" mnemonicParsing="false" onAction="#onCreateAccountButtonClick" prefHeight="25.0" prefWidth="115.0" text="Create Account" />
          </children>
       </AnchorPane>
    </children>
