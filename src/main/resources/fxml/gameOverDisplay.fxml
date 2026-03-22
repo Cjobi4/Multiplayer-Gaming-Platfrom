@@ -12,5 +12,6 @@
             <Font size="40.0" />
          </font>
       </Label>
+      <Button layoutX="205.0" layoutY="397.0" mnemonicParsing="false" text="New Game" />
    </children>
 </AnchorPane>
