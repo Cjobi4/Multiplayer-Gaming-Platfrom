@@ -29,7 +29,7 @@
                </font>
             </Label>
             <TextField layoutX="226.0" layoutY="168.0" prefHeight="25.0" prefWidth="243.0" />
-            <Button fx:id="ContinueButton" layoutX="226.0" layoutY="240.0" mnemonicParsing="false" text="Create Account And Continue" />
+            <Button fx:id="continueButton" layoutX="226.0" layoutY="240.0" mnemonicParsing="false" onAction="#onContinueButtonClick" text="Create Account And Continue" />
             <Label layoutX="226.0" layoutY="209.0" prefHeight="17.0" prefWidth="243.0" text="ERROR FIELD" textFill="RED" />
             <Button fx:id="backButton" layoutX="14.0" layoutY="361.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" text="Back" />
          </children>
