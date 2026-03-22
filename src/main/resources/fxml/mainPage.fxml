@@ -19,7 +19,7 @@
             <Label text="|Info|" />
             <Label text="|Admin Control|" textFill="#2c0cbf" />
             <Pane HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" text="Log Out" />
+            <Button fx:id="logOutButton" mnemonicParsing="false" onAction="#onBackButtonClick" text="Log Out" />
          </children>
          <padding>
             <Insets left="10.0" right="10.0" />

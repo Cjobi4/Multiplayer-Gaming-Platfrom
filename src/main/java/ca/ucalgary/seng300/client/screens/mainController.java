@@ -15,6 +15,7 @@ public class mainController {
 
     public Button gameSelectButton;
     public Button backButton;
+    public Button logOutButton;
 
     @FXML
     protected void onGameSelectButtonClick(ActionEvent event) {
