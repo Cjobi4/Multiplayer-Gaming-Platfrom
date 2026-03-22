@@ -4,20 +4,20 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-
 <AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #f2f2ff;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.gameOverController">
    <children>
-      <Label layoutX="205.0" layoutY="128.0" prefHeight="62.0" prefWidth="195.0" text="Game Over">
+      <Label layoutX="303.0" layoutY="135.0" prefHeight="62.0" prefWidth="195.0" text="Game Over">
          <font>
             <Font size="40.0" />
          </font>
       </Label>
-      <Button layoutX="210.0" layoutY="397.0" mnemonicParsing="false" text="New Game" />
-      <Button layoutX="322.0" layoutY="397.0" mnemonicParsing="false" text="Main Menu" />
-      <Label layoutX="210.0" layoutY="349.0" text="Do you want to retry?">
+      <Button layoutX="307.0" layoutY="397.0" mnemonicParsing="false" text="New Game" />
+      <Button layoutX="420.0" layoutY="397.0" mnemonicParsing="false" text="Main Menu" />
+      <Label layoutX="307.0" layoutY="350.0" text="Do you want to retry?">
          <font>
             <Font size="21.0" />
          </font>
       </Label>
+      <Label layoutX="303.0" layoutY="232.0" text="Username" />
    </children>
 </AnchorPane>
