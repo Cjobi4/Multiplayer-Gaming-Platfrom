@@ -13,12 +13,29 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
-
+import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class Network {
     private static byte[] sharedKey = null;
     private static SecretKey AESKey;
     private static SecureRandom sRan;
+
+    private static final String serverIP ="10.2.1.179";
+    private static final int serverPort = 501;
+    private Socket socket;
+
+    /** Constructor
+     *
+     * @throws Exception
+     */
+    public Network() throws Exception {
+        socket = new Socket(serverIP, serverPort);
+    }
+
+
+
 
     /** Method for creating the shared secret/key
      *
