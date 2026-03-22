@@ -12,7 +12,12 @@
             <Font size="40.0" />
          </font>
       </Label>
-      <Button layoutX="205.0" layoutY="397.0" mnemonicParsing="false" text="New Game" />
-      <Button layoutX="336.0" layoutY="397.0" mnemonicParsing="false" text="Main Menu" />
+      <Button layoutX="210.0" layoutY="397.0" mnemonicParsing="false" text="New Game" />
+      <Button layoutX="322.0" layoutY="397.0" mnemonicParsing="false" text="Main Menu" />
+      <Label layoutX="210.0" layoutY="349.0" text="Do you want to retry?">
+         <font>
+            <Font size="21.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
