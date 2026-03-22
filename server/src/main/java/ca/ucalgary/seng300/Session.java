@@ -24,9 +24,6 @@ public class Session extends Thread
         loggedIn = false;
     }
 
-    /**
-     * Runs immediately after the new Session thread is created. Handles the connection with the client.
-     */
     public void run()
     {
         //establish an encryption key with the client
@@ -46,13 +43,8 @@ public class Session extends Thread
                 //byte[] message = client.getInputStream().readNBytes(messageLength);
 
                 //process the request
-                try
-                {
-                    processRequest(requestType, AESKey);
-                } catch (Exception e)
-                {
-                    throw new RuntimeException(e);
-                }
+                processRequest(requestType, AESKey);
+
             }
 
         } catch (Exception e) //if an exception happens, it will kill the thread automatically
@@ -60,6 +52,13 @@ public class Session extends Thread
             throw new RuntimeException(e);
         }
     }
+
+    /*@Override //maybe not necessary? perhaps notify client of connection closing first?
+    public void setUncaughtExceptionHandler(UncaughtExceptionHandler eh)
+    {
+        //if something goes wrong, kill the thread
+        Thread.currentThread().interrupt();
+    }*/
 
 
     /**
@@ -78,27 +77,6 @@ public class Session extends Thread
         {
             case 0:
 
-                break;
-            case 1:     //if it was a register account request...
-                //collect the username
-                messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
-                messageBytes = client.getInputStream().readNBytes(messageLength);
-                String newUsername = new String(messageBytes, StandardCharsets.UTF_8);
-
-                //collect the password
-                messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
-                messageBytes = client.getInputStream().readNBytes(messageLength);
-                String newPassword = new String(messageBytes, StandardCharsets.UTF_8);
-
-                //check if it was successful
-                userID = Database.createAccount(newUsername, newPassword);
-
-                if (userID != -1)
-                {
-                    //if it was, save the username for the session
-                    username = newUsername;
-                    loggedIn = true;
-                }   //otherwise do nothing
                 break;
             case 2:     //if it was a login request...
                 //collect the username
@@ -121,6 +99,12 @@ public class Session extends Thread
                     loggedIn = true;
                 }   //otherwise do nothing
                 break;
+            case 3:     //if it was a logout request
+                Database.logOut(userID);
+
+                //close the connection with the client
+                Thread.currentThread().interrupt();
+                break;
         }
 
         //only one Session can run this block at a time
@@ -129,8 +113,26 @@ public class Session extends Thread
             //handles requests that CANNOT happen simultaneously (i.e. database writing)
             switch (requestType)
             {
-                case 3:
+                case 1:     //if it was a register account request...
+                    //collect the username
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    String newUsername = new String(messageBytes, StandardCharsets.UTF_8);
 
+                    //collect the password
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    String newPassword = new String(messageBytes, StandardCharsets.UTF_8);
+
+                    //check if it was successful
+                    userID = Database.createAccount(newUsername, newPassword);
+
+                    if (userID != -1)
+                    {
+                        //if it was, save the username for the session
+                        username = newUsername;
+                        loggedIn = true;
+                    }   //otherwise do nothing
                     break;
                 case 4:
 

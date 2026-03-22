@@ -124,6 +124,39 @@ public class Database
     }
 
     /**
+     * Given a username and password, creates a new account with those credentials. No login attempt is additionally
+     * required, the user is logged in as the account is created.
+     * @param username The username for the new account in String format
+     * @param password The password for the new account in String format. Should be not be hashed.
+     * @return If the account is created successfully, the newly assigned userid is returned. Otherwise, if the account
+     * creation fails, -1 is returned.
+     */
+    public static int createAccount(String username, String password)
+    {
+        try
+        {
+            //hash the password first
+            String hashedPassword = hash(password);
+
+            //then add it to the database
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(userid, username, password) VALUES(?, ?, ?)");
+            pstmt.setString(1, Integer.toString(nextAvailID));
+            pstmt.setString(2, username);
+            pstmt.setString(3, hashedPassword);
+            pstmt.executeUpdate();
+
+            //update list of logged-in users
+            loggedInUsers.put(nextAvailID, true);
+            nextAvailID++;
+
+            return nextAvailID - 1;
+        } catch (Exception e) //if something goes wrong, assume invalid input and reject acount creation
+        {
+            return -1;
+        }
+    }
+
+    /**
      * Given a username and password, checks to see if a set of login credentials should be accepted. If a match is
      * found, the user is added to the HashTable loggedInUsers and the userid is returned.
      * @param username The username to be tested in String format
@@ -161,36 +194,9 @@ public class Database
         }
     }
 
-    /**
-     * Given a username and password, creates a new account with those credentials. No login attempt is additionally
-     * required, the user is logged in as the account is created.
-     * @param username The username for the new account in String format
-     * @param password The password for the new account in String format. Should be not be hashed.
-     * @return If the account is created successfully, the newly assigned userid is returned. Otherwise, if the account
-     * creation fails, -1 is returned.
-     */
-    public static int createAccount(String username, String password)
+    public static void logOut(int userID)
     {
-        try
-        {
-            //hash the password first
-            String hashedPassword = hash(password);
-
-            //then add it to the database
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(userid, username, password) VALUES(?, ?, ?)");
-            pstmt.setString(1, Integer.toString(nextAvailID));
-            pstmt.setString(2, "user");
-            pstmt.setString(3, hashedPassword);
-            pstmt.executeUpdate();
-
-            //update list of logged-in users
-            loggedInUsers.put(nextAvailID, true);
-            nextAvailID++;
-
-            return nextAvailID - 1;
-        } catch (Exception e) //if something goes wrong, assume invalid input and reject acount creation
-        {
-            return -1;
-        }
+        //remove the user from the list of logged-in users
+        loggedInUsers.remove(userID);
     }
 }
