@@ -6,20 +6,21 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #f2f2ff;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.gameOverController">
    <children>
-      <Label layoutX="303.0" layoutY="135.0" prefHeight="62.0" prefWidth="195.0" text="Game Over">
+      <Label layoutX="263.0" layoutY="112.0" prefHeight="63.0" prefWidth="249.0" text="Game Over">
          <font>
-            <Font size="40.0" />
+            <Font size="50.0" />
          </font>
       </Label>
-      <Button layoutX="307.0" layoutY="397.0" mnemonicParsing="false" text="New Game" />
-      <Button layoutX="420.0" layoutY="397.0" mnemonicParsing="false" text="Main Menu" />
-      <Label layoutX="307.0" layoutY="350.0" text="Do you want to retry?">
+      <Button layoutX="306.0" layoutY="499.0" mnemonicParsing="false" text="New Game" />
+      <Button layoutX="400.0" layoutY="499.0" mnemonicParsing="false" text="Main Menu" />
+      <Label layoutX="307.0" layoutY="458.0" text="Do you want to retry?">
          <font>
             <Font size="21.0" />
          </font>
       </Label>
-      <Label layoutX="303.0" layoutY="232.0" text="Username" />
-      <Label layoutX="307.0" layoutY="273.0" text="Score" />
-      <Label layoutX="301.0" layoutY="317.0" text="Ranking" />
+      <Label layoutX="300.0" layoutY="227.0" text="Username:" />
+      <Label layoutX="305.0" layoutY="255.0" text="Score:" />
+      <Label layoutX="306.0" layoutY="283.0" text="Ranking:" />
+      <ListView layoutX="305.0" layoutY="306.0" prefHeight="136.0" prefWidth="164.0" />
    </children>
 </AnchorPane>
