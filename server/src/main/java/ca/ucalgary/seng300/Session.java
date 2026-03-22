@@ -2,6 +2,8 @@ package ca.ucalgary.seng300;
 
 import javax.crypto.SecretKey;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class Session extends Thread
 {
@@ -44,7 +46,13 @@ public class Session extends Thread
                 //byte[] message = client.getInputStream().readNBytes(messageLength);
 
                 //process the request
-                processRequest(requestType, AESKey);
+                try
+                {
+                    processRequest(requestType, AESKey);
+                } catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
             }
 
         } catch (Exception e) //if an exception happens, it will kill the thread automatically
@@ -60,16 +68,58 @@ public class Session extends Thread
      * @param requestType The integer corresponding to the request type.
      * @param AESKey The encryption key currently in use for this session.
      */
-    private void processRequest(int requestType, SecretKey AESKey)
+    private void processRequest(int requestType, SecretKey AESKey) throws Exception
     {
+        int messageLength;
+        byte messageBytes[];
+
         //handles requests that CAN happen simultaneously (i.e. database reading)
         switch (requestType)
         {
             case 0:
 
                 break;
-            case 1:
+            case 1:     //if it was a register account request...
+                //collect the username
+                messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                messageBytes = client.getInputStream().readNBytes(messageLength);
+                String newUsername = new String(messageBytes, StandardCharsets.UTF_8);
 
+                //collect the password
+                messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                messageBytes = client.getInputStream().readNBytes(messageLength);
+                String newPassword = new String(messageBytes, StandardCharsets.UTF_8);
+
+                //check if it was successful
+                userID = Database.createAccount(newUsername, newPassword);
+
+                if (userID != -1)
+                {
+                    //if it was, save the username for the session
+                    username = newUsername;
+                    loggedIn = true;
+                }   //otherwise do nothing
+                break;
+            case 2:     //if it was a login request...
+                //collect the username
+                messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                messageBytes = client.getInputStream().readNBytes(messageLength);
+                String usernameInput = new String(messageBytes, StandardCharsets.UTF_8);
+
+                //collect the password
+                messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                messageBytes = client.getInputStream().readNBytes(messageLength);
+                String passwordInput = new String(messageBytes, StandardCharsets.UTF_8);
+
+                //check if it was successful
+                userID = Database.checkLoginCredentials(usernameInput, passwordInput);
+
+                if (userID != -1)
+                {
+                    //if it was, save the username for the session
+                    username = usernameInput;
+                    loggedIn = true;
+                }   //otherwise do nothing
                 break;
         }
 
@@ -79,10 +129,10 @@ public class Session extends Thread
             //handles requests that CANNOT happen simultaneously (i.e. database writing)
             switch (requestType)
             {
-                case 2:
+                case 3:
 
                     break;
-                case 3:
+                case 4:
 
                     break;
             }

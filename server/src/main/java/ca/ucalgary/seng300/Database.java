@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.Hashtable;
 
 public class Database
 {
@@ -12,6 +13,8 @@ public class Database
     private static Connection conn;
     private static Statement stmt;
     private static final String salt = "salt";
+    private static Hashtable<Integer, Boolean> loggedInUsers = new Hashtable<>();
+    private static int nextAvailID;     //the next available userID to be assigned
 
     /**
      * establishes a connection with the database.db file that contains all the information. If database.db doesn't
@@ -70,6 +73,13 @@ public class Database
                 pstmt.setString(1, "user");
                 pstmt.setString(2, hashedPassword);
                 pstmt.executeUpdate();
+
+                //update the next available userid
+                nextAvailID = 1;
+            }else   //if the table is not empty...
+            {
+                //set the next available userid
+                nextAvailID = rs.getInt(1);
             }
 
         } catch (SQLException e)
@@ -110,6 +120,77 @@ public class Database
         } catch (NoSuchAlgorithmException e) //if cannot find SHA-256 algorithm, return blank string
         {
             return "";
+        }
+    }
+
+    /**
+     * Given a username and password, checks to see if a set of login credentials should be accepted. If a match is
+     * found, the user is added to the HashTable loggedInUsers and the userid is returned.
+     * @param username The username to be tested in String format
+     * @param password The password to be tested in String format. Should be not be hashed.
+     * @return If a match was found, the corresponding userid is returned. Otherwise, if no match is found or the query
+     * fails, -1 is returned instead.
+     */
+    public static int checkLoginCredentials(String username, String password)
+    {
+        try
+        {
+            //hash the password first
+            String hashedPassword = hash(password);
+
+            //then check for matches in the database
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM userLoginInfo WHERE (username = ?) AND (password = ?) LIMIT 1;");
+            pstmt.setString(1, username);
+            pstmt.setString(2, hashedPassword);
+            ResultSet rs = pstmt.executeQuery();
+
+            //check results of query, if at a match was found allow access
+            if (rs.next())
+            {
+                //add it to the list of logged-in users
+                loggedInUsers.put(rs.getInt("userid"), true);
+
+                return rs.getInt("userid");
+            }else
+            {
+                return -1;
+            }
+        } catch (Exception e) //if something goes wrong, assume invalid input and reject login
+        {
+            return -1;
+        }
+    }
+
+    /**
+     * Given a username and password, creates a new account with those credentials. No login attempt is additionally
+     * required, the user is logged in as the account is created.
+     * @param username The username for the new account in String format
+     * @param password The password for the new account in String format. Should be not be hashed.
+     * @return If the account is created successfully, the newly assigned userid is returned. Otherwise, if the account
+     * creation fails, -1 is returned.
+     */
+    public static int createAccount(String username, String password)
+    {
+        try
+        {
+            //hash the password first
+            String hashedPassword = hash(password);
+
+            //then add it to the database
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(userid, username, password) VALUES(?, ?, ?)");
+            pstmt.setString(1, Integer.toString(nextAvailID));
+            pstmt.setString(2, "user");
+            pstmt.setString(3, hashedPassword);
+            pstmt.executeUpdate();
+
+            //update list of logged-in users
+            loggedInUsers.put(nextAvailID, true);
+            nextAvailID++;
+
+            return nextAvailID - 1;
+        } catch (Exception e) //if something goes wrong, assume invalid input and reject acount creation
+        {
+            return -1;
         }
     }
 }
