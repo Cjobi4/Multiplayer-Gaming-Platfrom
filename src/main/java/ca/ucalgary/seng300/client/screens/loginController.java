@@ -20,14 +20,14 @@ public class loginController {
         try {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mainPage.fxml"));
-            Parent loginRoot = loader.load();
+            Parent MainRoot = loader.load();
 
             //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
             //Create new scene and set it on the stage
-            Scene loginScene = new Scene(loginRoot, 800, 600);
-            stage.setScene(loginScene);
+            Scene MainScene = new Scene(MainRoot, 800, 600);
+            stage.setScene(MainScene);
             stage.setTitle("Main Page"); //Change stage title to reflect current scene
             stage.show();
 

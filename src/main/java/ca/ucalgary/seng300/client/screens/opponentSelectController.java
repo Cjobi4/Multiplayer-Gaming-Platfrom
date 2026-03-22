@@ -19,14 +19,14 @@ public class opponentSelectController {
         try {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gamePage.fxml"));
-            Parent loginRoot = loader.load();
+            Parent gameRoot = loader.load();
 
             //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
             //Create new scene and set it on the stage
-            Scene loginScene = new Scene(loginRoot, 800, 600);
-            stage.setScene(loginScene);
+            Scene gameScene = new Scene(gameRoot, 800, 600);
+            stage.setScene(gameScene);
             stage.setTitle("Game"); //Change stage title to reflect current scene
             stage.show();
 
