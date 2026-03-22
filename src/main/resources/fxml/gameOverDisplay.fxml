@@ -19,5 +19,6 @@
          </font>
       </Label>
       <Label layoutX="303.0" layoutY="232.0" text="Username" />
+      <Label layoutX="307.0" layoutY="273.0" text="Score" />
    </children>
 </AnchorPane>
