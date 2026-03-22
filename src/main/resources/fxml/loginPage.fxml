@@ -12,7 +12,7 @@
       <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #f2f2ff;">
          <children>
             <Button fx:id="loginButton" layoutX="251.0" layoutY="232.0" mnemonicParsing="false" onAction="#onLoginButtonClick" text="Login" />
-            <Label layoutX="272.0" layoutY="50.0" prefHeight="39.0" prefWidth="54.0" text="Login" textAlignment="CENTER">
+            <Label layoutX="270.0" layoutY="50.0" prefHeight="39.0" prefWidth="54.0" text="Login" textAlignment="CENTER">
                <font>
                   <Font size="21.0" />
                </font>
@@ -22,7 +22,7 @@
             <TextField layoutX="251.0" layoutY="147.0" />
             <TextField layoutX="251.0" layoutY="188.0" prefHeight="25.0" prefWidth="149.0" />
             <Button fx:id="createAccountButton" layoutX="300.0" layoutY="232.0" mnemonicParsing="false" onAction="#onCreateAccountButtonClick" prefHeight="25.0" prefWidth="101.0" text="Create Account" />
-            <Label layoutX="267.0" layoutY="273.0" text="Forgot password?" />
+            <Button fx:id="backButton" layoutX="14.0" layoutY="360.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" text="Back" />
          </children>
       </AnchorPane>
    </children>
