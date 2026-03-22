@@ -34,7 +34,27 @@ public class Network {
         socket = new Socket(serverIP, serverPort);
     }
 
+    /** Method for sending encrypted parameters for request
+     *
+     * @param value
+     * @throws Exception
+     */
+    private void sendRequestParameter(String value) throws Exception {
 
+        // encrypting parameter
+        byte[] encryptedParam = encrypt(value);
+
+        // allocating space for total length of message
+        byte[] message = ByteBuffer.allocate(4 + encryptedParam.length)
+                        // write the encrypted parameter (nonce + ciphertext) length as first 4 bytes
+                        .putInt(encryptedParam.length)
+                                // append the encrypted parameter
+                                .put(encryptedParam)
+                                        .array();
+
+        // send complete message to server
+        socket.getOutputStream().write(message);
+    }
 
 
     /** Method for creating the shared secret/key
