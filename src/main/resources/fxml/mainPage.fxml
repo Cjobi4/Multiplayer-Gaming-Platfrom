@@ -98,7 +98,7 @@
               <buttons>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="🔍" />
                   <TextField prefHeight="26.0" />
-                <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="167.0" text="Log Out" />
+                <Button mnemonicParsing="false" onAction="#handleLogout" prefHeight="26.0" prefWidth="167.0" text="Log Out" />
               </buttons>
             </ButtonBar>
          </children></HBox>
