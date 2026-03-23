@@ -50,7 +50,7 @@
                </font>
             </Label>
             <Button fx:id="newOpponentButton" layoutX="186.0" layoutY="478.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="135.0" text="Select New Opponent" />
-            <Button fx:id="playAgainButton" layoutX="332.0" layoutY="478.0" mnemonicParsing="false" prefHeight="15.0" prefWidth="135.0" text="Play Again" />
+            <Button fx:id="playAgainButton" layoutX="332.0" layoutY="478.0" mnemonicParsing="false" onAction="#onPlayAgainButtonClick" prefHeight="15.0" prefWidth="135.0" text="Play Again" />
          </children>
       </AnchorPane>
    </children>
