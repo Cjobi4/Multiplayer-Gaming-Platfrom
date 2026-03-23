@@ -16,7 +16,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #f2f2ff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.mainController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #f2f2ff;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.mainController">
    <center>
       <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -44,7 +44,7 @@
                         </Label>
                      </children>
                   </VBox>
-                  <Button fx:id="gameSelectButton" mnemonicParsing="false" onAction="#onGameSelectButtonClick" prefHeight="55.0" prefWidth="215.0" text="Select Opponent">
+                  <Button fx:id="gameSelectButton" mnemonicParsing="false" onAction="#onGameSelectButtonClick" prefHeight="55.0" prefWidth="215.0" styleClass="basic-button" text="Select Opponent">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -98,7 +98,7 @@
               <buttons>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="🔍" />
                   <TextField prefHeight="26.0" />
-                <Button mnemonicParsing="false" onAction="#handleLogout" prefHeight="26.0" prefWidth="167.0" text="Log Out" />
+                <Button mnemonicParsing="false" onAction="#handleLogout" prefHeight="26.0" prefWidth="167.0" styleClass="basic-button" text="Log Out" />
               </buttons>
             </ButtonBar>
          </children></HBox>
