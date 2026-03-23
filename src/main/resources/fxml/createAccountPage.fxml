@@ -7,8 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-
-<HBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.createAccountController">
+<HBox stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.createAccountController">
    <children>
       <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #f2f2ff;">
          <children>
@@ -29,9 +28,9 @@
                </font>
             </Label>
             <TextField layoutX="226.0" layoutY="168.0" prefHeight="25.0" prefWidth="243.0" />
-            <Button fx:id="continueButton" layoutX="226.0" layoutY="240.0" mnemonicParsing="false" onAction="#onContinueButtonClick" text="Create Account And Continue" />
+            <Button fx:id="continueButton" layoutX="226.0" layoutY="240.0" mnemonicParsing="false" onAction="#onContinueButtonClick" styleClass="basic-button" text="Create Account And Continue" />
             <Label layoutX="226.0" layoutY="209.0" prefHeight="17.0" prefWidth="243.0" text="ERROR FIELD" textFill="RED" />
-            <Button fx:id="backButton" layoutX="14.0" layoutY="361.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" text="Back" />
+            <Button fx:id="backButton" layoutX="14.0" layoutY="361.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" styleClass="basic-button" text="Back" />
          </children>
       </AnchorPane>
    </children>
