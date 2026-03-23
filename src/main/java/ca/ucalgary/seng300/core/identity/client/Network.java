@@ -26,6 +26,12 @@ public class Network {
     private static final int serverPort = 501;
     private Socket socket;
 
+    public static final byte pings = 0;
+    public static final byte create_account = 1;
+    public static final byte login = 2;
+    public static final byte logout = 3;
+
+
     /** Constructor
      *
      * @throws Exception
@@ -55,6 +61,8 @@ public class Network {
         // send complete message to server
         socket.getOutputStream().write(message);
     }
+
+
 
 
     /** Method for creating the shared secret/key
