@@ -11,51 +11,52 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class mainController {
-
-    public Button gameSelectButton;
+public class createAccountController {
     public Button backButton;
-    public Button logOutButton;
+    public Button continueButton;
 
     @FXML
-    protected void onGameSelectButtonClick(ActionEvent event) {
+    protected void onContinueButtonClick(ActionEvent event) {
         try {
             //Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/opponentSelectPage.fxml"));
-            Parent opponentRoot = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mainPage.fxml"));
+            Parent MainRoot = loader.load();
 
             //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
             //Create new scene and set it on the stage
-            Scene opponentScene = new Scene(opponentRoot, 800, 600);
-            stage.setScene(opponentScene);
-            stage.setTitle("Opponent Select"); //Change stage title to reflect current scene
+            Scene MainScene = new Scene(MainRoot, 800, 600);
+            stage.setScene(MainScene);
+            stage.setTitle("Main Page"); //Change stage title to reflect current scene
             stage.show();
 
         } catch (IOException e) {
-            System.err.println("Error: Could not load opponentSelectPage.fxml. Check file path!");
+            System.err.println("Error: Could not load mainPage.fxml. Check file path!");
         }
+
     }
+
+
 
     @FXML
     protected void onBackButtonClick(ActionEvent event) {
         try {
             //Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/loginPage.fxml"));
-            Parent loginRoot = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/welcomePage.fxml"));
+            Parent welcomeRoot = loader.load();
 
             //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
             //Create new scene and set it on the stage
-            Scene loginScene = new Scene(loginRoot, 600, 400);
-            stage.setScene(loginScene);
-            stage.setTitle("Login Screen"); //Change stage title to reflect current scene
+            Scene welcomeScene = new Scene(welcomeRoot, 600, 400);
+            stage.setScene(welcomeScene);
+            stage.setTitle("Welcome!"); //Change stage title to reflect current scene
             stage.show();
 
         } catch (IOException e) {
-            System.err.println("Error: Could not load loginPage.fxml. Check file path!");
+            System.err.println("Error: Could not load welcomePage.fxml. Check file path!");
 
         }
 

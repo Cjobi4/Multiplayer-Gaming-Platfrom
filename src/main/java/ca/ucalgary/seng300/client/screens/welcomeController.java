@@ -14,6 +14,7 @@ import java.io.IOException;
 public class welcomeController {
 
     public Button welcomeButton;
+    public Button createAccountButton;
 
     @FXML
     protected void onWelcomeButtonClick(ActionEvent event) {
@@ -33,6 +34,29 @@ public class welcomeController {
 
         } catch (IOException e) {
             System.err.println("Error: Could not load loginPage.fxml. Check file path!");
+
+        }
+
+    }
+
+    @FXML
+    protected void onCreateAccountButtonClick(ActionEvent event) {
+        try {
+            //Load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/createAccountPage.fxml"));
+            Parent createAccountRoot = loader.load();
+
+            //Get current stage from the button click
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            //Create new scene and set it on the stage
+            Scene createAccountScene = new Scene(createAccountRoot, 600, 400);
+            stage.setScene(createAccountScene);
+            stage.setTitle("Create Account"); //Change stage title to reflect current scene
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load createAccountPage.fxml. Check file path!");
 
         }
 
