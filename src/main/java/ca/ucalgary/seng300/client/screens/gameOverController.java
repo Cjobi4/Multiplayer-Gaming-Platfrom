@@ -59,5 +59,26 @@ public class gameOverController {
         }
     }
 
+    @FXML
+    protected void onReturnToMainButtonClick(ActionEvent event) {
+        try {
+            //Load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mainPage.fxml"));
+            Parent MainRoot = loader.load();
+
+            //Get current stage from the button click
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            //Create new scene and set it on the stage
+            Scene MainScene = new Scene(MainRoot, 800, 600);
+            stage.setScene(MainScene);
+            stage.setTitle("Main Page"); //Change stage title to reflect current scene
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load mainPage.fxml. Check file path!");
+        }
+    }
+
 
 }
