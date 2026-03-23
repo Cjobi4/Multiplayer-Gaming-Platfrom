@@ -34,7 +34,6 @@ public class createAccountController {
         } catch (IOException e) {
             System.err.println("Error: Could not load mainPage.fxml. Check file path!");
         }
-
     }
 
 
