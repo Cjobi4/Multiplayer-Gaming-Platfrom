@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.opponentSelectController">
+<HBox stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.opponentSelectController">
    <children>
       <AnchorPane prefHeight="600" prefWidth="800" style="-fx-background-color: #f2f2ff;">
          <children>
@@ -30,7 +30,7 @@
                <children>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <Button fx:id="opponentSelectedButton" layoutX="48.0" layoutY="-15.0" mnemonicParsing="false" onAction="#onOpponentSelectedButtonClick" prefHeight="57.0" prefWidth="138.0" text="Play!">
+                        <Button fx:id="opponentSelectedButton" layoutX="48.0" layoutY="-15.0" mnemonicParsing="false" onAction="#onOpponentSelectedButtonClick" prefHeight="57.0" prefWidth="138.0" styleClass="basic-button" text="Play!">
                            <font>
                               <Font size="24.0" />
                            </font></Button>
@@ -38,7 +38,7 @@
                   </AnchorPane>
                </children>
             </HBox>
-            <Button fx:id="backButton" layoutX="14.0" layoutY="560.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" text="Back" />
+            <Button fx:id="backButton" layoutX="14.0" layoutY="560.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" styleClass="basic-button" text="Back" />
          </children>
       </AnchorPane>
    </children>
