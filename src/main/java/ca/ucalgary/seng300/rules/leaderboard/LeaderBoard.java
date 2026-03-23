@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class LeaderBoard{
 
-    private Map<String, LeaderboardEntry> tempDatabase = new HashMap(); // hashmap to store leaderboard entries
+    private Map<Integer, LeaderboardEntry> tempDatabase = new HashMap(); // hashmap to store leaderboard entries
     // VERY temporary. Only here for the purposes of testing
     // redundant store of UID for querying purposes
     /**
@@ -31,20 +31,20 @@ public class LeaderBoard{
      * @param uid is the id of the user
      * @param newEntry is simply the new entry
      */
-    public void submitScore(String uid, LeaderboardEntry newEntry){
+    public void submitScore(int uid, LeaderboardEntry newEntry){
         tempDatabase.remove(uid); // removes if already exists
         tempDatabase.put(uid, newEntry); // basic addition function
         // definitely add on more later
     }
 
-    public int getScore(String uid){ // retrieves score of given uid
+    public int getScore(int uid){ // retrieves score of given uid
         LeaderboardEntry toReturn = tempDatabase.getOrDefault(uid, new LeaderboardEntry());
 
-        return toReturn.getScore();
+        return toReturn.getWins();
         // default value of -1 if the uid doesn't exist
     }
 
-    public String getName(String uid){
+    public String getName(int uid){
         LeaderboardEntry toReturn = tempDatabase.getOrDefault(uid, new LeaderboardEntry());
 
         return toReturn.getPlayerName();
@@ -54,24 +54,24 @@ public class LeaderBoard{
         List<LeaderboardEntry> copy = new ArrayList<>(); // arraylist of lb entries
 
         for(LeaderboardEntry entry : tempDatabase.values()){
-            copy.add(new LeaderboardEntry(0," ", " ", entry.getScore()));
+            copy.add(new LeaderboardEntry(entry.getRank(), entry.getPlayerID(), entry.getPlayerName(), entry.getWins(), entry.getMatches()));
             // for our copy we only care about score
         }
 
-        copy.sort((a,b) -> Integer.compare(b.getScore(), a.getScore()));
+        copy.sort((a,b) -> Integer.compare(b.getWins(), a.getWins()));
         // sort highest to lowest
-        return copy.getFirst().getScore();
+        return copy.getFirst().getWins();
     }
 
     public List<LeaderboardEntry> getTopPlayers(int count){ // retrieves top x players based on score
         List<LeaderboardEntry> copy = new ArrayList<>(); // arraylist of lb entries
 
         for(LeaderboardEntry entry : tempDatabase.values()){
-            copy.add(new LeaderboardEntry(0,entry.getPlayerId(), entry.getPlayerName(), entry.getScore()));
+            copy.add(new LeaderboardEntry(entry.getRank(),entry.getPlayerID(), entry.getPlayerName(), entry.getWins(), entry.getMatches()));
             // for our copy we only care about ID and score
         }
 
-        copy.sort((a,b) -> Integer.compare(b.getScore(), a.getScore()));
+        copy.sort((a,b) -> Integer.compare(b.getWins(), a.getWins()));
         // sort highest to lowest
 
         if(count > copy.size()){
@@ -87,7 +87,7 @@ public class LeaderBoard{
      */
     public void printTopPlayers(List<LeaderboardEntry> printList){
         for(LeaderboardEntry entry : printList){
-            System.out.println("Score: " + entry.getScore() + " Player: " + entry.getPlayerName() + " UID:" + entry.getPlayerId());
+            System.out.println("Wins: " + entry.getWins() + " Player: " + entry.getPlayerName() + " UID:" + entry.getPlayerID());
         }
     }
 

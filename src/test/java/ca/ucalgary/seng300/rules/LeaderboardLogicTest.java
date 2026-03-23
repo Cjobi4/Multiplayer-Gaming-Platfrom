@@ -22,29 +22,29 @@ public class LeaderboardLogicTest {
 
     @BeforeEach
     void makeDummyBoard(){ // base LeaderboardEntries
-        LeaderboardEntry basicEntry = new LeaderboardEntry(0, "1", "basic", 123);
-        LeaderboardEntry lowestScore = new LeaderboardEntry(0, "2", "lowest", 10);
-        LeaderboardEntry middleScore = new LeaderboardEntry(0, "3", "medium", 300);
-        LeaderboardEntry highestScore = new LeaderboardEntry(0, "4", "highest", 600);
+        LeaderboardEntry basicEntry = new LeaderboardEntry(0, 1, "basic", 4, 10);
+        LeaderboardEntry lowestScore = new LeaderboardEntry(0, 2, "lowest", 1, 10);
+        LeaderboardEntry middleScore = new LeaderboardEntry(0, 3, "medium", 5, 10);
+        LeaderboardEntry highestScore = new LeaderboardEntry(0, 4, "highest", 10, 10);
 
-        testLeaderboard.submitScore("1", basicEntry);
-        testLeaderboard.submitScore("2", lowestScore);
-        testLeaderboard.submitScore("3", middleScore);
-        testLeaderboard.submitScore("4", highestScore);
+        testLeaderboard.submitScore(1, basicEntry);
+        testLeaderboard.submitScore(2, lowestScore);
+        testLeaderboard.submitScore(3, middleScore);
+        testLeaderboard.submitScore(4, highestScore);
         // add the entries to the leaderboard
     }
 
     @Test
     void addScore(){
-        LeaderboardEntry toAdd = new LeaderboardEntry(0, "5", "test", 500);
-        testLeaderboard.submitScore("5", toAdd);
+        LeaderboardEntry toAdd = new LeaderboardEntry(0, 5, "test", 7, 15);
+        testLeaderboard.submitScore(5, toAdd);
 
-        Assertions.assertEquals(500, testLeaderboard.getScore("5"));
+        Assertions.assertEquals(7, testLeaderboard.getScore(5));
     }
 
     @Test
     void requestTopScoreDistinct(){
-        Assertions.assertEquals(600, testLeaderboard.getTopScore());
+        Assertions.assertEquals(10, testLeaderboard.getTopScore());
     }
 
     /**
@@ -52,26 +52,26 @@ public class LeaderboardLogicTest {
      */
     @Test
     void modifyScore(){
-        LeaderboardEntry rewrite = new LeaderboardEntry(0, "1", "newBasic", 321);
-        testLeaderboard.submitScore("1", rewrite);
+        LeaderboardEntry rewrite = new LeaderboardEntry(0, 1, "newBasic", 6, 12);
+        testLeaderboard.submitScore(1, rewrite);
         // modify most parameters of the basic entry
 
-        Assertions.assertEquals(321, testLeaderboard.getScore("1"));
-        Assertions.assertEquals("newBasic", testLeaderboard.getName("1"));
+        Assertions.assertEquals(6, testLeaderboard.getScore(1));
+        Assertions.assertEquals("newBasic", testLeaderboard.getName(1));
     }
 
     @Test
     void requestUserScore(){
-        Assertions.assertEquals(300, testLeaderboard.getScore("3"));
+        Assertions.assertEquals(5, testLeaderboard.getScore(3));
     }
 
     @Test
     void requestTopFour(){
         List<LeaderboardEntry> testList = testLeaderboard.getTopPlayers(4);
 
-        Assertions.assertEquals(600, testList.getFirst().getScore());
-        Assertions.assertEquals(300, testList.get(1).getScore());
-        Assertions.assertEquals(123, testList.get(2).getScore());
-        Assertions.assertEquals(10, testList.get(3).getScore());
+        Assertions.assertEquals(10, testList.getFirst().getWins());
+        Assertions.assertEquals(5, testList.get(1).getWins());
+        Assertions.assertEquals(4, testList.get(2).getWins());
+        Assertions.assertEquals(1, testList.get(3).getWins());
     }
 }
