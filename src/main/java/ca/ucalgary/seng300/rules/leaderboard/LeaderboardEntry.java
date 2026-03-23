@@ -12,49 +12,36 @@ package ca.ucalgary.seng300.rules.leaderboard;
  */
 public class LeaderboardEntry {
     private int rank;
-    private String playerId;
+    private int playerID;
     private String playerName;
-    private int score;
-
-    // base constructor
-    public LeaderboardEntry(int rank, String uid, String userName, int score){
-        this.rank = rank;
-        this.playerId = uid;
-        this.playerName = userName;
-        this.score = score;
-    }
-
-    public LeaderboardEntry(){ // default or dummy constructor
-        this.rank = 0;
-        this.playerId = "N/A";
-        this.playerName = "N/A";
-        this.score = -1;
-    }
-
-    public void setRank(int rank)
-    {
-        this.rank = rank;
-    }
+    private int wins;
+    private int matches;
 
     public int compareTo(LeaderboardEntry e)
     {
-        return Integer.compare(e.score, this.score);
+        return Integer.compare(e.wins, this.wins);
     }
 
-    public int getScore(){
-        return this.score;
+    public String toDisplay(){
+        return String.format("%d. %s: %d wins", rank, playerName, wins);
     }
 
-    public String getPlayerId(){
-        return this.playerId;
-    }
 
+
+    // getters
+    public int getPlayerID(){
+        return playerID;
+    }
+    public int getRank(){
+        return rank;
+    }
     public String getPlayerName(){
-        return this.playerName;
+        return playerName;
     }
-
-    public String toDisplay()
-    {
-        return rank + ". " + playerName + " - " + score;
+    public int getWins(){
+        return wins;
+    }
+    public int getMatches(){
+        return matches;
     }
 }

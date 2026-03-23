@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.core.persistence;
+package ca.ucalgary.seng300;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -11,7 +11,7 @@ public class Database
 
     private static Connection conn;
     private static Statement stmt;
-    private static String salt = "salt";
+    private static final String salt = "salt";
 
     /**
      * establishes a connection with the database.db file that contains all the information. If database.db doesn't
@@ -49,7 +49,8 @@ public class Database
 
             //create a table to hold user login info (if it doesn't already exist)
             stmt.execute("CREATE TABLE IF NOT EXISTS userLoginInfo ("
-                    + "username TEXT PRIMARY KEY,"
+                    + "userid INTEGER PRIMARY KEY,"
+                    + "username TEXT NOT NULL,"
                     + "password TEXT NOT NULL);");
 
 
@@ -63,7 +64,12 @@ public class Database
             {
                 //create the hashed password
                 String hashedPassword = hash("password");
-                stmt.execute("INSERT INTO userLoginInfo(username, password) VALUES (user, " + hashedPassword + ")");
+
+                //must use prepared statement and not statement bc special characters in hash will disrupt command
+                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(userid, username, password) VALUES(0, ?, ?)");
+                pstmt.setString(1, "user");
+                pstmt.setString(2, hashedPassword);
+                pstmt.executeUpdate();
             }
 
         } catch (SQLException e)
