@@ -45,4 +45,41 @@ public class TicTacToeGame {
         return true;
     }
 
+    //RULES AND VALIDAITON WORK :D
+
+    //this is my function for checking if there is a win
+    public boolean validateWin(char userGameIdentity) {
+        //loop through all the rows
+        for (int row = 0; row < 3; row++) {
+            //if all three cells within a row are the same user identity ('X' or 'O') then the user has won!
+            if (board.getCellInfo(row, 0) == userGameIdentity && board.getCellInfo(row, 1) == userGameIdentity && board.getCellInfo(row, 2) == userGameIdentity) {
+                //return true aka a win
+                return true;
+            }
+        }
+
+        //loop through all columns
+        for (int col = 0; col < 3; col++) {
+            //if all three cells within a column are the same user identity ('X' or 'O') then the user has won!
+            if (board.getCellInfo(0, col) == userGameIdentity && board.getCellInfo(1, col) == userGameIdentity && board.getCellInfo(2, col) == userGameIdentity) {
+                //return true aka a win
+                return true;
+            }
+        }
+
+        //this is a diagonal check to see if the user has won in a diagonal
+        if (board.getCellInfo(0, 2) == userGameIdentity && board.getCellInfo(1, 1) == userGameIdentity && board.getCellInfo(2, 0) == userGameIdentity) {
+            return true;
+        }
+
+        //this is our second diagonal check (there are two diagonals, top left to bottom right and top right to bottom left) to see if the user has won
+        if (board.getCellInfo(0, 0) == userGameIdentity && board.getCellInfo(1, 1) == userGameIdentity && board.getCellInfo(2, 2) == userGameIdentity) {
+            return true;
+        }
+
+        //if none of these have occured, the user has NOT won!
+        return false;
+    }
+
+
 }
