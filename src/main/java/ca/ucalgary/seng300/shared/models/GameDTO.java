@@ -10,6 +10,8 @@ package ca.ucalgary.seng300.shared.models;
  */
 public class GameDTO {
 
+    // make private add get / set
+
     public String id;
     public String title;
     public String gameUrl;
