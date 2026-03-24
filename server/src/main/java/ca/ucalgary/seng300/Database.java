@@ -13,7 +13,7 @@ public class Database
     private static Connection conn;
     private static Statement stmt;
     private static final String salt = "salt";
-    private static Hashtable<Integer, Boolean> loggedInUsers = new Hashtable<>();
+    private static Hashtable<Integer, Thread> loggedInUsers = new Hashtable<>();
     private static int nextAvailID;     //the next available userID to be assigned
 
     /**
@@ -128,10 +128,11 @@ public class Database
      * required, the user is logged in as the account is created.
      * @param username The username for the new account in String format
      * @param password The password for the new account in String format. Should be not be hashed.
+     * @param session The Session thread object responsible for this user
      * @return If the account is created successfully, the newly assigned userid is returned. Otherwise, if the account
      * creation fails, -1 is returned.
      */
-    public static int createAccount(String username, String password)
+    public static int createAccount(String username, String password, Thread session)
     {
         try
         {
@@ -146,7 +147,7 @@ public class Database
             pstmt.executeUpdate();
 
             //update list of logged-in users
-            loggedInUsers.put(nextAvailID, true);
+            loggedInUsers.put(nextAvailID, session);
             nextAvailID++;
 
             return nextAvailID - 1;
@@ -161,10 +162,11 @@ public class Database
      * found, the user is added to the HashTable loggedInUsers and the userid is returned.
      * @param username The username to be tested in String format
      * @param password The password to be tested in String format. Should be not be hashed.
+     * @param session The Session thread object responsible for this user
      * @return If a match was found, the corresponding userid is returned. Otherwise, if no match is found or the query
      * fails, -1 is returned instead.
      */
-    public static int checkLoginCredentials(String username, String password)
+    public static int checkLoginCredentials(String username, String password, Thread session)
     {
         try
         {
@@ -181,7 +183,7 @@ public class Database
             if (rs.next())
             {
                 //add it to the list of logged-in users
-                loggedInUsers.put(rs.getInt("userid"), true);
+                loggedInUsers.put(rs.getInt("userid"), session);
 
                 return rs.getInt("userid");
             }else

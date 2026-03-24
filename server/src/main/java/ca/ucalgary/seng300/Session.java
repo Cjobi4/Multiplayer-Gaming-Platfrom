@@ -2,8 +2,13 @@ package ca.ucalgary.seng300;
 
 import javax.crypto.SecretKey;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class Session extends Thread
 {
@@ -12,6 +17,7 @@ public class Session extends Thread
     private String username = null;
     private Socket client;
     private boolean loggedIn;
+    private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -24,6 +30,54 @@ public class Session extends Thread
         loggedIn = false;
     }
 
+    /**
+     * inner class for sending and receiving requests to the client FROM THE SERVER (server initiated transmissions)
+     */
+    class Request
+    {
+        CompletableFuture<String> future;
+        private int type;
+        private String[] parameters;
+
+        //constructer
+        Request(int t, String[] p)
+        {
+            type = t;
+            parameters = p;
+        }
+
+        //type getter
+        public int getType()
+        {
+            return type;
+        }
+
+        //parameter getter
+        public String[] getParameters()
+        {
+            return parameters;
+        }
+
+        //returns the result of the future (must handle exception)
+        public String getResult() throws Exception
+        {
+            return future.get();
+        }
+    }
+
+    /**
+     * Adds a request to the queue for the session to execute.
+     * @param type The request type, in int form
+     * @param parameters The parameters for the request, in a String array with each parameter under a different index
+     * @throws Exception NullPointerException if the request is null, or InterruptedException if is interrupted while
+     * waiting
+     */
+    public void addRequest(int type, String[] parameters) throws Exception
+    {
+        Request req = new Request(type, parameters);
+        requestQueue.put(req);
+    }
+
     public void run()
     {
         //establish an encryption key with the client
@@ -32,18 +86,33 @@ public class Session extends Thread
         try
         {
             int requestType;
+            client.setSoTimeout(5000);  //server pauses checking every 5 seconds
 
             //then start listening for incoming requests
             while (true)
             {
-                //see what type of request it is
-                requestType = client.getInputStream().read();
+                try //listen for incoming transmissions
+                {
+                    //see what type of request it is
+                    requestType = client.getInputStream().read();
 
-                //int messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
-                //byte[] message = client.getInputStream().readNBytes(messageLength);
+                    //int messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    //byte[] message = client.getInputStream().readNBytes(messageLength);
 
-                //process the request
-                processRequest(requestType, AESKey);
+                    //process the request
+                    processRequest(requestType, AESKey, null);
+
+                } catch (SocketTimeoutException e)  //if nothing is currently found, go through the queue
+                {
+                    Request req = requestQueue.poll(1, TimeUnit.MILLISECONDS);
+
+                    //if the queue isn't empty
+                    if (req != null)
+                    {
+                        //handle the request
+                        processRequest(req.getType(), AESKey, req);
+                    }
+                }
 
             }
 
@@ -66,8 +135,10 @@ public class Session extends Thread
      * from editing the Database at the same time.
      * @param requestType The integer corresponding to the request type.
      * @param AESKey The encryption key currently in use for this session.
+     * @param req The request from requestQueue that is being processed. If this did not originate from a request, req
+     *            should be passed as null.
      */
-    private void processRequest(int requestType, SecretKey AESKey) throws Exception
+    private void processRequest(int requestType, SecretKey AESKey, Request req) throws Exception
     {
         int messageLength;
         byte messageBytes[];
@@ -90,11 +161,11 @@ public class Session extends Thread
                 String passwordInput = new String(messageBytes, StandardCharsets.UTF_8);
 
                 //check if it was successful
-                userID = Database.checkLoginCredentials(usernameInput, passwordInput);
+                userID = Database.checkLoginCredentials(usernameInput, passwordInput, Thread.currentThread());
 
+                //if it was, save the username for the session
                 if (userID != -1)
                 {
-                    //if it was, save the username for the session
                     username = usernameInput;
                     loggedIn = true;
                 }   //otherwise do nothing
@@ -125,11 +196,11 @@ public class Session extends Thread
                     String newPassword = new String(messageBytes, StandardCharsets.UTF_8);
 
                     //check if it was successful
-                    userID = Database.createAccount(newUsername, newPassword);
+                    userID = Database.createAccount(newUsername, newPassword, Thread.currentThread());
 
+                    //if it was, save the username for the session
                     if (userID != -1)
                     {
-                        //if it was, save the username for the session
                         username = newUsername;
                         loggedIn = true;
                     }   //otherwise do nothing
