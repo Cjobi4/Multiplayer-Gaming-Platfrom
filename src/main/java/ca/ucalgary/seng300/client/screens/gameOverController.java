@@ -11,12 +11,14 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class opponentSelectController {
-    public Button opponentSelectedButton;
-    public Button backButton;
+public class gameOverController {
+
+    public Button returnToMainButton;
+    public Button playAgainButton;
+    public Button newOpponentButton;
 
     @FXML
-    protected void onOpponentSelectedButtonClick(ActionEvent event) {
+    protected void onPlayAgainButtonClick(ActionEvent event) {
         try {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gamePage.fxml"));
@@ -37,7 +39,28 @@ public class opponentSelectController {
     }
 
     @FXML
-    protected void onBackButtonClick(ActionEvent event) {
+    protected void onNewOpponentButtonClick(ActionEvent event) {
+        try {
+            //Load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/opponentSelectPage.fxml"));
+            Parent opponentRoot = loader.load();
+
+            //Get current stage from the button click
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            //Create new scene and set it on the stage
+            Scene opponentScene = new Scene(opponentRoot, 800, 600);
+            stage.setScene(opponentScene);
+            stage.setTitle("Opponent Select"); //Change stage title to reflect current scene
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load opponentSelectPage.fxml. Check file path!");
+        }
+    }
+
+    @FXML
+    protected void onReturnToMainButtonClick(ActionEvent event) {
         try {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mainPage.fxml"));
@@ -55,6 +78,7 @@ public class opponentSelectController {
         } catch (IOException e) {
             System.err.println("Error: Could not load mainPage.fxml. Check file path!");
         }
-
     }
+
+
 }

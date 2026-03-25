@@ -11,14 +11,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class loginController {
-
-    public Button loginButton;
-    public Button createAccountButton;
+public class createAccountController {
     public Button backButton;
+    public Button continueButton;
 
     @FXML
-    protected void onLoginButtonClick(ActionEvent event) {
+    protected void onContinueButtonClick(ActionEvent event) {
         try {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mainPage.fxml"));
@@ -36,31 +34,9 @@ public class loginController {
         } catch (IOException e) {
             System.err.println("Error: Could not load mainPage.fxml. Check file path!");
         }
-
     }
 
-    @FXML
-    protected void onCreateAccountButtonClick(ActionEvent event) {
-        try {
-            //Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/createAccountPage.fxml"));
-            Parent createAccountRoot = loader.load();
 
-            //Get current stage from the button click
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            //Create new scene and set it on the stage
-            Scene createAccountScene = new Scene(createAccountRoot, 600, 400);
-            stage.setScene(createAccountScene);
-            stage.setTitle("Create Account"); //Change stage title to reflect current scene
-            stage.show();
-
-        } catch (IOException e) {
-            System.err.println("Error: Could not load createAccountPage.fxml. Check file path!");
-
-        }
-
-    }
 
     @FXML
     protected void onBackButtonClick(ActionEvent event) {
@@ -84,5 +60,4 @@ public class loginController {
         }
 
     }
-
 }

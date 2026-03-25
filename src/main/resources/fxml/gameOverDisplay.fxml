@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<HBox stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.gameOverController">
+   <children>
+      <AnchorPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #F9EDE1;" styleClass="pane">
+         <children>
+            <Label layoutX="337.0" layoutY="40.0" prefHeight="35.0" prefWidth="125.0" text="Game Over" textAlignment="CENTER" textFill="#866b59">
+               <font>
+                  <Font name="Dubai Bold" size="24.0" />
+               </font>
+            </Label>
+            <Button fx:id="returnToMainButton" layoutX="477.0" layoutY="478.0" mnemonicParsing="false" onAction="#onReturnToMainButtonClick" prefHeight="25.0" prefWidth="135.0" styleClass="basic-button" text="Return to Main Menu" />
+            <Label layoutX="270.0" layoutY="100.0" text="Username:" textFill="#866b59">
+               <font>
+                  <Font name="Dubai Bold" size="14.0" />
+               </font>
+            </Label>
+            <ListView layoutX="342.0" layoutY="150.0" prefHeight="260.0" prefWidth="240.0" style="-fx-background-color: #FCE0D2;" />
+            <Label layoutX="345.0" layoutY="100.0" prefHeight="17.0" prefWidth="109.0" text="User123452006" textFill="#866b59">
+               <font>
+                  <Font name="Dubai Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="270.0" layoutY="125.0" text="Score: " textFill="#866b59">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="314.0" layoutY="125.0" prefHeight="17.0" prefWidth="109.0" text="100pts" textFill="#866b59">
+               <font>
+                  <Font name="Dubai Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="270.0" layoutY="150.0" text="Rankings: " textFill="#866b59">
+               <font>
+                  <Font name="Dubai Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="337.0" layoutY="425.0" prefHeight="35.0" prefWidth="125.0" text="Play Again?" textAlignment="CENTER" textFill="#866b59">
+               <font>
+                  <Font name="Dubai Bold" size="24.0" />
+               </font>
+            </Label>
+            <Button fx:id="newOpponentButton" layoutX="186.0" layoutY="478.0" mnemonicParsing="false" onAction="#onNewOpponentButtonClick" prefHeight="25.0" prefWidth="135.0" styleClass="basic-button" text="Select New Opponent" />
+            <Button fx:id="playAgainButton" layoutX="332.0" layoutY="478.0" mnemonicParsing="false" onAction="#onPlayAgainButtonClick" prefHeight="15.0" prefWidth="135.0" styleClass="basic-button" text="Play Again" />
+         </children>
+      </AnchorPane>
+   </children>
+</HBox>

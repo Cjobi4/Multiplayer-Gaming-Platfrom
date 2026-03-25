@@ -9,28 +9,28 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.opponentSelectController">
+<HBox stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.opponentSelectController">
    <children>
-      <AnchorPane prefHeight="600" prefWidth="800" style="-fx-background-color: #f2f2ff;">
+      <AnchorPane prefHeight="600" prefWidth="800" style="-fx-background-color: #F9EDE1;" styleClass="pane">
          <children>
             <VBox layoutX="53.0" layoutY="508.0" />
-            <Label layoutX="311.0" layoutY="41.0" text="Select Opponent">
+            <Label layoutX="311.0" layoutY="40.0" text="Select Opponent" textFill="#866b59">
                <font>
-                  <Font size="24.0" />
+                  <Font name="Dubai Bold" size="24.0" />
                </font>
             </Label>
-            <TableView layoutX="75.0" layoutY="95.0" prefHeight="360.0" prefWidth="650.0">
+            <TableView layoutX="75.0" layoutY="95.0" prefHeight="360.0" prefWidth="650.0" style="-fx-background-color: #FCE0D2;" styleClass="pane">
                <columns>
-                  <TableColumn prefWidth="216.6666666" text="Player Name" />
-                  <TableColumn minWidth="0.0" prefWidth="216.6666666" text="Lowest Score" />
-                  <TableColumn prefWidth="216.6666666" text="Highest Score" />
+                  <TableColumn prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Player Name" />
+                  <TableColumn minWidth="0.0" prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Lowest Score" />
+                  <TableColumn prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Highest Score" />
                </columns>
             </TableView>
             <HBox layoutX="550.0" layoutY="486.0" prefHeight="100.0" prefWidth="200.0">
                <children>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <Button fx:id="opponentSelectedButton" layoutX="48.0" layoutY="-15.0" mnemonicParsing="false" onAction="#onOpponentSelectedButtonClick" prefHeight="57.0" prefWidth="138.0" text="Play!">
+                        <Button fx:id="opponentSelectedButton" layoutX="48.0" layoutY="-15.0" mnemonicParsing="false" onAction="#onOpponentSelectedButtonClick" prefHeight="57.0" prefWidth="138.0" styleClass="basic-button" text="Play!">
                            <font>
                               <Font size="24.0" />
                            </font></Button>
@@ -38,6 +38,7 @@
                   </AnchorPane>
                </children>
             </HBox>
+            <Button fx:id="backButton" layoutX="14.0" layoutY="560.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" styleClass="basic-button" text="Back" />
          </children>
       </AnchorPane>
    </children>

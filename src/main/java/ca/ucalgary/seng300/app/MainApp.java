@@ -18,7 +18,7 @@ public class MainApp extends Application {
 
         Scene scene = new Scene(root, 600, 400);
 
-        stage.setTitle("Welcome Page");
+        stage.setTitle("Welcome!");
         stage.setScene(scene);
         stage.show();
 
