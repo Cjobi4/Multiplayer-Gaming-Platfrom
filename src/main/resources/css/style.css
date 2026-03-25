@@ -10,3 +10,8 @@
 .basic-button:hover {
     -fx-background-color: #FFC0D0;
 }
+
+.pane {
+    -fx-border-color: #DEB499;
+    -fx-border-width: 7px;
+}
