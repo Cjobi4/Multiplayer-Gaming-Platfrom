@@ -55,14 +55,4 @@ public class Message {
     public String getSender() {
         return sender;
     }
-
-    /**
-     * Converts message into string format, for simple sending to database. in format id|content|sender
-     * @return message object in string format
-     */
-    @Override
-    public String toString()
-    {
-        return id + "|" + content + "|" + sender;
-    }
 }

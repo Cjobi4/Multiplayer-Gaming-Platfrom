@@ -12,45 +12,62 @@ import java.util.List;
  * require cross-team review per the Integration Release Plan.</p>
  */
 public class Game {
-    private String id;
-    private String title;
-    private String description;
-    private String gameUrl;
+    private final String id;
+    private final String title;
+    private final String description;
 
     private List<Tag> tags = new ArrayList<>();
-    private LaunchConfigs launchConfigs;
-    private LeaderBoard leaderBoard;
+    private final LaunchConfigs launchConfigs;
+    private final LeaderBoard leaderBoard;
 
-    public Game (String id, String title, String description, String gameUrl, String tags, String launchConfigs, String leaderboard)
+    /**
+     * Constructor for creating a new game object. Tags, LaunchConfigs, and leaderboard object must be created first
+     * @param id the game id
+     * @param title the title of the game
+     * @param description the game description
+     * @param tags the tags for the game
+     * @param launchConfigs the configs for launching the game
+     * @param leaderboard the leaderboard attached to the game
+     */
+    public Game (String id, String title, String description, List<Tag> tags, LaunchConfigs launchConfigs, LeaderBoard leaderboard)
     {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.gameUrl = gameUrl;
 
-        // TODO: Finish constructor for game
+        // These are not string objects, but must be pulled from database.
+        // Must be made using respective classes constructor before passing into here
+        this.tags = tags;
+        this.launchConfigs = launchConfigs;
+        this.leaderBoard = leaderboard;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
+    }
+
+    public LaunchConfigs getLaunchConfigs() {
+        return launchConfigs;
+    }
+
+    public LeaderBoard getLeaderBoard() {
+        return leaderBoard;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public void launch()
     {
         // TODO: Implementation for launching game here
-    }
-
-    public GameDTO getMetaData()
-    {
-        GameDTO dto = new GameDTO();
-        dto.id = this.id;
-        dto.title = this.title;
-        dto.gameUrl = this.gameUrl;
-        return dto;
-    }
-
-    public String getUrl() {
-        return gameUrl;
     }
 }

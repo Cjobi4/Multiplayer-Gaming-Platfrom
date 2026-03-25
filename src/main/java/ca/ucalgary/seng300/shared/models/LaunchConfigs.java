@@ -10,16 +10,32 @@ package ca.ucalgary.seng300.shared.models;
  */
 public class LaunchConfigs {
 
-    private String gameId;
-    private String gameUrl;
-    private Boolean openInNewTab;
-    private Boolean fullscreen;
+    private final String gameId;
+    private final String gameUrl;
+    private final Boolean openInNewTab;
+    private final Boolean fullscreen;
 
-    public String getUrl() {
+    public LaunchConfigs(String gameId, String gameUrl, String openInNewTab, String fullscreen)
+    {
+        this.gameId = gameId;
+        this.gameUrl = gameUrl;
+        this.openInNewTab = openInNewTab.equalsIgnoreCase("true");
+        this.fullscreen = fullscreen.equalsIgnoreCase("true");
+    }
+
+    public String getGameUrl() {
         return gameUrl;
     }
 
-    public Boolean validate() {
-        return gameUrl != null && !gameUrl.isEmpty();
+    public Boolean getFullscreen() {
+        return fullscreen;
+    }
+
+    public Boolean getOpenInNewTab() {
+        return openInNewTab;
+    }
+
+    public String getGameId() {
+        return gameId;
     }
 }
