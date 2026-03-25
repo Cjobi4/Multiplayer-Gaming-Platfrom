@@ -12,22 +12,36 @@ package ca.ucalgary.seng300.rules.leaderboard;
  */
 public class LeaderboardEntry {
     private int rank;
-    private String playerId;
+    private int playerID;
     private String playerName;
-    private int score;
-
-    public void setRank(int rank)
-    {
-        this.rank = rank;
-    }
+    private int wins;
+    private int matches;
 
     public int compareTo(LeaderboardEntry e)
     {
-        return Integer.compare(e.score, this.score);
+        return Integer.compare(e.wins, this.wins);
     }
 
-    public String toDisplay()
-    {
-        return rank + ". " + playerName + " - " + score;
+    public String toDisplay(){
+        return String.format("%d. %s: %d wins", rank, playerName, wins);
+    }
+
+
+
+    // getters
+    public int getPlayerID(){
+        return playerID;
+    }
+    public int getRank(){
+        return rank;
+    }
+    public String getPlayerName(){
+        return playerName;
+    }
+    public int getWins(){
+        return wins;
+    }
+    public int getMatches(){
+        return matches;
     }
 }

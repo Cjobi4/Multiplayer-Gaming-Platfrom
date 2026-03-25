@@ -1,5 +1,11 @@
 package ca.ucalgary.seng300.rules.leaderboard;
 
+import javafx.css.Match;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Manages leaderboard scoring, submission, and queries.
  *
@@ -13,4 +19,44 @@ package ca.ucalgary.seng300.rules.leaderboard;
  */
 public class LeaderBoard {
     // TODO: Implement leaderboard — placeholder for Rules & Validation
+
+    /**
+     * update the personal record (as in total wins & matches or just total matches)
+     * @param playerID
+     */
+    public static void updatePersonalRecord (int playerID){
+        // update wins and matches for the user
+
+    }
+
+    /**
+     * get the leaderboard based on ranking (like the top 10 players)
+     * @param rank
+     */
+    public static void getLeaderboard (int rank){
+        // get the leaderboard based on rank
+
+    }
+
+    /**
+     * get a player personal record (including total wins + matches)
+     * @param playerID
+     */
+    public static void getPersonalRecord (int playerID){
+        // get the personal record of the player (using their playerID)
+
+    }
+
+    public static ArrayList<MatchRecord> getUserMatchRecords (int playerID, int fromRange, int toRange){
+        LeaderboardDatabase.loadUserMatchRecords(playerID);
+        return LeaderboardDatabase.userMatchRecords;
+
+    }
+
+    /**
+     * use after finish a match (for tracking game history)
+     */
+    public static void createMatchRecord (int playerOneID, int PlayerTwoID, int winnerID, GameType gameType){
+        MatchRecord matchRecord = null;
+    }
 }
