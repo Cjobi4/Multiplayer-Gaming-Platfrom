@@ -1,11 +1,15 @@
 package ca.ucalgary.seng300.core;
 
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.shared.models.Game;
 
+import ca.ucalgary.seng300.shared.models.LaunchConfigs;
+import ca.ucalgary.seng300.shared.models.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +28,11 @@ public class GameRegistryTest {
     @Test
     void testRegisterGameAddsSingleGame() {
         // 1. Arrange
-        Game game1 = new Game();
-        String expectedID = game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+        LaunchConfigs launchConfigs = null;
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
+        String expectedID = "game1";
 
         // 2. Act
         gameRegistry.register(game1);
@@ -44,9 +51,11 @@ public class GameRegistryTest {
     void testFindByIdReturnsCorrectGameID() {
 
         // 1. arrange
-        Game game1 = new Game();
-        String expectedID = game1.setId("game1");
-        gameRegistry.register(game1);
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+        LaunchConfigs launchConfigs = null;
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
+        String expectedID = "game1";
 
         // 2. act
         Game found = gameRegistry.findById("game1");
@@ -69,14 +78,13 @@ public class GameRegistryTest {
     @Test
     void testAddMultipleGameReturnsCorrectRegistrySize() {
         // 1. Arrange
-        Game game1 = new Game();
-        game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+        LaunchConfigs launchConfigs = null;
 
-        Game game2 = new Game();
-        game2.setId("game2");
-
-        Game game3 = new Game();
-        game3.setId("game3");
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, launchConfigs, leaderBoard);
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, launchConfigs, leaderBoard);
 
         // 2. Act
         gameRegistry.register(game1);
@@ -92,8 +100,11 @@ public class GameRegistryTest {
     @Test
     void testUnregisterRemovesSingleGame() {
         // 1. Arrange
-        Game game1 = new Game();
-        game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+        LaunchConfigs launchConfigs = null;
+
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
         gameRegistry.register(game1);
 
         // 2. Act
@@ -106,16 +117,17 @@ public class GameRegistryTest {
     @Test
     void testUnregisterRemovesMultipleGames() {
         // 1. Arrange
-        Game game1 = new Game();
-        game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+        LaunchConfigs launchConfigs = null;
+
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
         gameRegistry.register(game1);
 
-        Game game2 = new Game();
-        game2.setId("game2");
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, launchConfigs, leaderBoard);
         gameRegistry.register(game2);
 
-        Game game3 = new Game();
-        game3.setId("game3");
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, launchConfigs, leaderBoard);
         gameRegistry.register(game3);
 
         // 2. Act
@@ -130,8 +142,11 @@ public class GameRegistryTest {
     @Test
     void testUnregisterFailsToChangeRegistrySizeWhenGameDNE() {
         // 1. arrange
-        Game game1 = new Game();
-        game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+        LaunchConfigs launchConfigs = null;
+
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
         gameRegistry.register(game1);
 
         // 2. act
@@ -154,17 +169,21 @@ public class GameRegistryTest {
     @Test
     void testListAllReturnsAllGamesByIndex() {
         // 1. arrange
-        Game game1 = new Game();
-        String game1Expected = game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+        LaunchConfigs launchConfigs = null;
+
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
         gameRegistry.register(game1);
+        String game1Expected = game1.getId();
 
-        Game game2 = new Game();
-        String game2Expected = game2.setId("game2");
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, launchConfigs, leaderBoard);
         gameRegistry.register(game2);
+        String game2Expected = game2.getId();
 
-        Game game3 = new Game();
-        String game3Expected = game3.setId("game3");
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, launchConfigs, leaderBoard);
         gameRegistry.register(game3);
+        String game3Expected = game3.getId();
 
         // 2. act
         List<Game> games = gameRegistry.ListAll();
