@@ -63,6 +63,19 @@ public class Network {
         socket.getOutputStream().write(message);
     }
 
+    private byte[] readResponse() throws Exception {
+        // getting first 4 bytes representing message length
+        int length = ByteBuffer.wrap(socket.getInputStream().readNBytes(4)).getInt();
+
+        // reading the rest of the message of length ^
+        return socket.getInputStream().readNBytes(length);
+    }
+
+    private String readResponseString() throws Exception {
+
+        return "";
+    }
+
     // GAMES
 
     /** Sends game_list description byte to server
@@ -77,18 +90,6 @@ public class Network {
 
     }
 
-    private byte[] readResponse() throws Exception {
-        // getting first 4 bytes representing message length
-        int length = ByteBuffer.wrap(socket.getInputStream().readNBytes(4)).getInt();
-
-        // reading the rest of the message of length ^
-        return socket.getInputStream().readNBytes(length);
-    }
-
-    private String readResponseString() throws Exception {
-
-        return "";
-    }
 
 
     /** Method for creating the shared secret/key
