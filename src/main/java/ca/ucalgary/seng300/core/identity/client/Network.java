@@ -30,6 +30,7 @@ public class Network {
     public static final byte create_account = 1;
     public static final byte login = 2;
     public static final byte logout = 3;
+    public static final byte game_list = 3;
 
 
     /** Constructor
@@ -62,7 +63,25 @@ public class Network {
         socket.getOutputStream().write(message);
     }
 
+    // GAMES
 
+    public void requestGamesList() throws Exception {
+
+    }
+
+    public void getGames() throws Exception {
+
+    }
+
+    private byte[] readResponse() throws Exception {
+
+        return new byte[0];
+    }
+
+    private String readResponseString() throws Exception {
+
+        return "";
+    }
 
 
     /** Method for creating the shared secret/key
