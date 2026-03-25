@@ -20,7 +20,7 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public class Network {
+public class Network extends Thread {
     private static byte[] sharedKey = null;
     private static SecretKey AESKey;
     private static SecureRandom sRan;
@@ -35,6 +35,7 @@ public class Network {
     public static final byte logout = 3;
     public static final byte game_list = 4;
     public static final byte send_chat = 5;
+    public static final byte receive_chat = 6;
 
     /** Constructor
      *
@@ -96,27 +97,55 @@ public class Network {
         socket.getOutputStream().write(game_list);
     }
 
+    /*
     public void getGames() throws Exception {
 
         // send game list request
         requestGamesList();
 
     }
+    */
 
     // CHAT
 
+    /** Method for sending chats
+     *
+     * @param id
+     * @param content
+     * @param sender
+     * @throws Exception
+     */
     public void sendMessage(String id, String content, String sender) throws Exception {
 
         // send description byte
         socket.getOutputStream().write(send_chat);
 
+        // send request parameters as byte[]
         sendRequestParameter(id);
         sendRequestParameter(content);
         sendRequestParameter(sender);
 
+        // update local directory
         ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
     }
 
+    /** If we receive 6 as a description byte, this method is ran
+     *
+     * @throws Exception
+     */
+    public void receiveMessage() throws Exception {
+
+        // interpret each response sent in sequence by server
+        String id = readResponseString();
+        String content = readResponseString();
+        String sender = readResponseString();
+
+        // update the local chat
+        ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
+    }
+
+
+    // CRYPTO
 
     /** Method for creating the shared secret/key
      *
