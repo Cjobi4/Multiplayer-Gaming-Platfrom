@@ -1,4 +1,4 @@
-package main.java.ca.ucalgary.seng300.games;
+package ca.ucalgary.seng300.games;
 
 /**
  * Game State Enumeration
