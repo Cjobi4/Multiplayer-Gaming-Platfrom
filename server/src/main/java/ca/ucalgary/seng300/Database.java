@@ -50,11 +50,39 @@ public class Database
             //connect to the database
             connect(); //need to add a check to shut down if this fails
 
-            //create a table to hold user login info (if it doesn't already exist)
+            //create a tables for data (if they doesn't already exist)
             stmt.execute("CREATE TABLE IF NOT EXISTS userLoginInfo ("
                     + "userid INTEGER PRIMARY KEY,"
                     + "username TEXT NOT NULL,"
                     + "password TEXT NOT NULL);");
+
+            /*stmt.execute("CREATE TABLE IF NOT EXISTS gameInfo ("
+                    + "gameid INTEGER PRIMARY KEY,"
+                    + "title TEXT NOT NULL,"
+                    + "description MEMO NOT NULL"
+                    + "label TEXT NOT NULL,"
+                    + "color TEXT NOT NULL"
+                    + "gameURL TEXT NOT NULL,"
+                    + "fullscreen YES/NO NOT NULL);");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS games ("
+                    + "gameid INTEGER PRIMARY KEY,"
+                    + "title TEXT NOT NULL,"
+                    + "description MEMO NOT NULL);");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS tags ("
+                    + "gameid INTEGER PRIMARY KEY,"
+                    + "label TEXT NOT NULL,"
+                    + "color TEXT NOT NULL);");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS launchConfigs ("
+                    + "gameid INTEGER PRIMARY KEY,"
+                    + "gameURL TEXT NOT NULL,"
+                    + "fullscreen YES/NO NOT NULL);");*/
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS gameInfo ("
+                            + "gameid INTEGER PRIMARY KEY,"
+                            + "gameData MEMO NOT NULL);");
 
 
             //check if the table(s) are empty (i.e. freshly created)
@@ -76,6 +104,10 @@ public class Database
 
                 //update the next available userid
                 nextAvailID = 1;
+
+                //add in a sample gameInfo
+                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`Turn Based^PINK^gameURL^YES)");
+                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description2^Multiplayer`Turn Based^PINK^gameURL^YES)");
             }else   //if the table is not empty...
             {
                 //set the next available userid
@@ -196,9 +228,31 @@ public class Database
         }
     }
 
+    /**
+     * Logs out a user.
+     * @param userID The userID of the user to be logged out
+     */
     public static void logOut(int userID)
     {
         //remove the user from the list of logged-in users
         loggedInUsers.remove(userID);
+    }
+
+    /**
+     * Gets the game info for the client from the Database.db tables.
+     * @return The ResultSet containing all the game infos
+     */
+    public static ResultSet getAllGames()
+    {
+        try
+        {
+            //collect all the info on the games
+            ResultSet rs = stmt.executeQuery("SELECT * FROM games;");
+
+            return rs;
+        } catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

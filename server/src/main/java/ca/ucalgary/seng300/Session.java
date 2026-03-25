@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.BlockingQueue;
+import java.sql.ResultSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -205,8 +205,25 @@ public class Session extends Thread
                         loggedIn = true;
                     }   //otherwise do nothing
                     break;
-                case 4:
+                case 4:     //if it was a request for the game info
+                    //collect the game info from the database
+                    ResultSet rs = Database.getAllGames();
 
+                    //go through the results
+                    if (rs.next())
+                    {
+                        do
+                        {
+                            //send each game info data to the client
+                            byte[] gameInfo = rs.getString(2).getBytes(StandardCharsets.UTF_8);
+                            client.getOutputStream().write(ByteBuffer.allocate(4).putInt(gameInfo.length).array());
+                            client.getOutputStream().write(gameInfo);
+                            System.out.println("game info sent");  //for debug
+                        } while (rs.next());
+                    } else //if something went wrong and no game info was found, notify client
+                    {
+                        client.getOutputStream().write(-1);
+                    }
                     break;
             }
 
