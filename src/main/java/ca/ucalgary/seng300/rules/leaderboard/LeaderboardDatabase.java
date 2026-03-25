@@ -9,11 +9,12 @@ public class LeaderboardDatabase {
     private static ArrayList<LeaderboardEntry> leaderboardTICTACTOE = new ArrayList<>();
     private static ArrayList<LeaderboardEntry> leaderboardCONNECT4 = new ArrayList<>();
     private static ArrayList<LeaderboardEntry> leaderboardCOMBINED = new ArrayList<>();
+    protected static ArrayList<MatchRecord> userMatchRecords = new ArrayList<>();
 
     public static void saveMatchRecordToUser(MatchRecord matchRecord){
-        // connect the match record to a player
+        // connect the match record under a player
         // playerID and matchRecord
-        int playerID = matchRecord.getPlayerID();
+        int matchID = matchRecord.getMatchID();
 
         if (matchRecord.getGameType() == GameType.TICTACTOE){
             // match under tictactoe
@@ -25,8 +26,9 @@ public class LeaderboardDatabase {
 
     }
 
-    public static void loadScoreEntryFromUser(int playerID){
+    public static void loadUserMatchRecords(int playerID){
         // load lists of matches of a specific player in database
+        // convert them into Match Record arraylist
     }
 
 
@@ -40,18 +42,9 @@ public class LeaderboardDatabase {
     public static LeaderboardEntry getLeaderboardEntry(GameType gameType, int rank){
         loadLeaderboard(gameType);
 
-        if (gameType == GameType.TICTACTOE){
-            return leaderboardTICTACTOE.get(rank);
-
-        }
-
-        else if (gameType == GameType.CONNECT4){
-            return leaderboardCONNECT4.get(rank);
-        }
-        else if (gameType == GameType.COMBINED){
-            return leaderboardCOMBINED.get(rank);
-        }
-        return null;
+        if (gameType == GameType.TICTACTOE) return leaderboardTICTACTOE.get(rank);
+        else if (gameType == GameType.CONNECT4) return leaderboardCONNECT4.get(rank);
+        else return leaderboardCOMBINED.get(rank);
     }
 
 
