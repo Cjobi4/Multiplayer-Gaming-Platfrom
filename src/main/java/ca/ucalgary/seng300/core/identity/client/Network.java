@@ -1,5 +1,8 @@
 package ca.ucalgary.seng300.core.identity.client;
 
+import ca.ucalgary.seng300.core.registry.ChatRegistry;
+import ca.ucalgary.seng300.shared.models.Message;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
@@ -110,6 +113,8 @@ public class Network {
         sendRequestParameter(id);
         sendRequestParameter(content);
         sendRequestParameter(sender);
+
+        ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
     }
 
 
