@@ -65,8 +65,12 @@ public class Network {
 
     // GAMES
 
+    /** Sends game_list description byte to server
+     *
+     * @throws Exception
+     */
     public void requestGamesList() throws Exception {
-
+        socket.getOutputStream().write(game_list);
     }
 
     public void getGames() throws Exception {
@@ -74,8 +78,11 @@ public class Network {
     }
 
     private byte[] readResponse() throws Exception {
+        // getting first 4 bytes representing message length
+        int length = ByteBuffer.wrap(socket.getInputStream().readNBytes(4)).getInt();
 
-        return new byte[0];
+        // reading the rest of the message of length ^
+        return socket.getInputStream().readNBytes(length);
     }
 
     private String readResponseString() throws Exception {
