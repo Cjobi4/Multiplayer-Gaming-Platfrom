@@ -38,6 +38,7 @@ public class Network extends Thread {
     public static final byte game_list = 4;
     public static final byte send_chat = 5;
     public static final byte receive_chat = 6;
+    public static final byte register_account = 7;
 
     /** Constructor
      *
@@ -67,6 +68,24 @@ public class Network extends Thread {
         sendRequestParameter(pwd);
 
         // interpret whether the login attempt was successful or not
+        return readResponseString().equals("true");
+    }
+
+    public boolean registerAccount(String username, String password) throws Exception {
+
+        // checking if password meets minimum length requirements
+        if (password.length() < 6 || password.length() > 18) {
+            return false;
+        }
+
+        // send description byte
+        socket.getOutputStream().write(register_account);
+
+        // send parameters
+        sendRequestParameter(username);
+        sendRequestParameter(password);
+
+        // interpret whether registration was successful or not
         return readResponseString().equals("true");
     }
 
@@ -232,6 +251,7 @@ public class Network extends Thread {
         return clientKeyPair.getPublic().getEncoded();
     }
 
+    // TODO: ditch ks
     /** Ensuring program has everything it needs to encrypt/decrypt, preparation
      *
      */
