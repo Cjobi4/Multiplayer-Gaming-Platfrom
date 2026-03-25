@@ -30,7 +30,7 @@ public class Network {
     public static final byte create_account = 1;
     public static final byte login = 2;
     public static final byte logout = 3;
-    public static final byte game_list = 3;
+    public static final byte game_list = 4;
 
 
     /** Constructor
@@ -72,8 +72,8 @@ public class Network {
     }
 
     private String readResponseString() throws Exception {
-
-        return "";
+        // return string response received
+        return decrypt(readResponse());
     }
 
     // GAMES
@@ -88,6 +88,10 @@ public class Network {
 
     public void getGames() throws Exception {
 
+        // send game list request
+        requestGamesList();
+
+        byte[]
     }
 
 
