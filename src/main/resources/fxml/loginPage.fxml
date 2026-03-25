@@ -9,19 +9,28 @@
 
 <HBox stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.loginController">
    <children>
-      <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #f2f2ff;">
+      <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #F9EDE1;" styleClass="pane">
          <children>
-            <Button fx:id="loginButton" layoutX="251.0" layoutY="232.0" mnemonicParsing="false" onAction="#onLoginButtonClick" styleClass="basic-button" text="Login" />
-            <Label layoutX="270.0" layoutY="50.0" prefHeight="39.0" prefWidth="54.0" text="Login" textAlignment="CENTER">
+            <Button fx:id="loginButton" layoutX="251.0" layoutY="232.0" mnemonicParsing="false" onAction="#onLoginButtonClick" styleClass="basic-button" text="Login" textFill="#866b59" />
+            <Label layoutX="270.0" layoutY="50.0" prefHeight="39.0" prefWidth="54.0" text="Login" textAlignment="CENTER" textFill="#866b59">
                <font>
-                  <Font size="21.0" />
+                  <Font name="Dubai Bold" size="21.0" />
                </font>
             </Label>
-            <Label layoutX="185.0" layoutY="151.0" text="Username" />
-            <Label layoutX="186.0" layoutY="192.0" text="Password" />
-            <TextField layoutX="251.0" layoutY="147.0" />
-            <TextField layoutX="251.0" layoutY="188.0" prefHeight="25.0" prefWidth="149.0" />
-            <Button fx:id="createAccountButton" layoutX="300.0" layoutY="232.0" mnemonicParsing="false" onAction="#onCreateAccountButtonClick" prefHeight="25.0" prefWidth="101.0" styleClass="basic-button" text="Create Account" />
+            <Label layoutX="185.0" layoutY="151.0" text="Username" textFill="#866b59">
+               <font>
+                  <Font name="Dubai Bold" size="12.0" />
+               </font></Label>
+            <Label layoutX="186.0" layoutY="192.0" text="Password" textFill="#866b59">
+               <font>
+                  <Font name="Dubai Bold" size="12.0" />
+               </font></Label>
+            <TextField layoutX="251.0" layoutY="147.0" style="-fx-background-color: #F7C5AD;" />
+            <TextField layoutX="251.0" layoutY="188.0" prefHeight="25.0" prefWidth="149.0" style="-fx-background-color: #F7C5AD;" />
+            <Button fx:id="createAccountButton" layoutX="300.0" layoutY="232.0" mnemonicParsing="false" onAction="#onCreateAccountButtonClick" prefHeight="25.0" prefWidth="101.0" styleClass="basic-button" text="Create Account" textFill="#866b59">
+               <font>
+                  <Font name="Dubai Medium" size="12.0" />
+               </font></Button>
             <Button fx:id="backButton" layoutX="14.0" layoutY="360.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" styleClass="basic-button" text="Back" />
          </children>
       </AnchorPane>
