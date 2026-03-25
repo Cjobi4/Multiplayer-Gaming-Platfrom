@@ -31,7 +31,7 @@ public class Network {
     public static final byte login = 2;
     public static final byte logout = 3;
     public static final byte game_list = 4;
-
+    public static final byte send_chat = 5;
 
     /** Constructor
      *
@@ -76,6 +76,13 @@ public class Network {
         return decrypt(readResponse());
     }
 
+    private String readString (ByteBuffer buffer) {
+        int length = buffer.getInt();
+        byte[] bytes = new byte[length];
+        buffer.get(bytes);
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
     // GAMES
 
     /** Sends game_list description byte to server
@@ -91,9 +98,19 @@ public class Network {
         // send game list request
         requestGamesList();
 
-        byte[]
     }
 
+    // CHAT
+
+    public void sendMessage(String id, String content, String sender) throws Exception {
+
+        // send description byte
+        socket.getOutputStream().write(send_chat);
+
+        sendRequestParameter(id);
+        sendRequestParameter(content);
+        sendRequestParameter(sender);
+    }
 
 
     /** Method for creating the shared secret/key
