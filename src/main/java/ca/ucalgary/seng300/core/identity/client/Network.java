@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.core.identity.client;
 
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
+import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Message;
 
 import javax.crypto.Cipher;
@@ -97,14 +99,43 @@ public class Network extends Thread {
         socket.getOutputStream().write(game_list);
     }
 
-    /*
+    /** Parsing of game data to be used to construct game objects
+     *
+     * Strings received in the format:
+     * id^title^description^tag1`tag2`...^color^gameURL^fullscreen
+     *
+     * @throws Exception
+     */
     public void getGames() throws Exception {
 
         // send game list request
         requestGamesList();
 
+        // reading two responses (one for each game) and storing in an array of strings
+        String[] responses = {
+                readResponseString(), readResponseString()
+        };
+
+        // iterating through each array entry (corresponding to a different game) and splitting by ^
+        for (String gameInfo : responses) {
+
+            String[] gameFields = gameInfo.split("\\^");
+
+            // parsing the string. tags are stored in a string[] to be used later
+            String id = gameFields[0];
+            String title = gameFields[1];
+            String description = gameFields[2];
+            String[] tags = gameFields[3].split("`");
+            String color = gameFields[4];
+            String URL = gameFields[5];
+            String fullscreen = gameFields[6];
+
+            // can change tags being passed as string[], also need to get local leaderboard to pass in?
+            GameRegistry.getInstance().register(new Game(id, title, description, URL, gameFields[3], fullscreen,null));
+        }
+        // TODO: handle -1 (network fails to send data) & establish how tags/config will entirely be set up
     }
-    */
+
 
     // CHAT
 
