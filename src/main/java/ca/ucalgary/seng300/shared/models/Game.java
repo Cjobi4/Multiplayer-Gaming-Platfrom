@@ -21,6 +21,16 @@ public class Game {
     private LaunchConfigs launchConfigs;
     private LeaderBoard leaderBoard;
 
+    public Game (String id, String title, String description, String gameUrl, String tags, String launchConfigs, String leaderboard)
+    {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.gameUrl = gameUrl;
+
+        // TODO: Finish constructor for game
+    }
+
     public String getId()
     {
         return id;
