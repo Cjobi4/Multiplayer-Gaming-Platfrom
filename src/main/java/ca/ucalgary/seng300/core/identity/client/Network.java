@@ -1,5 +1,10 @@
 package ca.ucalgary.seng300.core.identity.client;
 
+import ca.ucalgary.seng300.core.registry.ChatRegistry;
+import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.shared.models.Game;
+import ca.ucalgary.seng300.shared.models.Message;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
@@ -13,12 +18,206 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
+import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
-
-public class Network {
+public class Network extends Thread {
     private static byte[] sharedKey = null;
     private static SecretKey AESKey;
     private static SecureRandom sRan;
+
+    private static final String serverIP ="10.2.1.179";
+    private static final int serverPort = 501;
+    private Socket socket;
+
+    public static final byte pings = 0;
+    public static final byte create_account = 1;
+    public static final byte login = 2;
+    public static final byte logout = 3;
+    public static final byte game_list = 4;
+    public static final byte send_chat = 5;
+    public static final byte receive_chat = 6;
+    public static final byte register_account = 7;
+
+    /** Constructor
+     *
+     * @throws Exception
+     */
+    public Network() throws Exception {
+        socket = new Socket(serverIP, serverPort);
+    }
+
+    // LOGIN
+
+    /** sends login request to the server
+     *  returns True if successful login
+     *
+     * @param username
+     * @param pwd
+     * @return
+     * @throws Exception
+     */
+    public boolean login(String username, String pwd) throws Exception {
+
+        // send description byte
+        socket.getOutputStream().write(login);
+
+        // send parameters
+        sendRequestParameter(username);
+        sendRequestParameter(pwd);
+
+        // interpret whether the login attempt was successful or not
+        return readResponseString().equals("true");
+    }
+
+    public boolean registerAccount(String username, String password) throws Exception {
+
+        // checking if password meets minimum length requirements
+        if (password.length() < 6 || password.length() > 18) {
+            return false;
+        }
+
+        // send description byte
+        socket.getOutputStream().write(register_account);
+
+        // send parameters
+        sendRequestParameter(username);
+        sendRequestParameter(password);
+
+        // interpret whether registration was successful or not
+        return readResponseString().equals("true");
+    }
+
+
+
+    // GAMES
+
+    /** Sends game_list description byte to server
+     *
+     * @throws Exception
+     */
+    public void requestGamesList() throws Exception {
+        socket.getOutputStream().write(game_list);
+    }
+
+    /** Parsing of game data to be used to construct game objects
+     *
+     * Strings received in the format:
+     * id^title^description^tag1`tag2`...^color^gameURL^fullscreen
+     *
+     * @throws Exception
+     */
+    public void getGames() throws Exception {
+
+        // send game list request
+        requestGamesList();
+
+        // reading two responses (one for each game) and storing in an array of strings
+        String[] responses = {
+                readResponseString(), readResponseString()
+        };
+
+        // iterating through each array entry (corresponding to a different game) and splitting by ^
+        for (String gameInfo : responses) {
+
+            String[] gameFields = gameInfo.split("\\^");
+
+            // parsing the string. tags are stored in a string[] to be used later
+            String id = gameFields[0];
+            String title = gameFields[1];
+            String description = gameFields[2];
+            String[] tags = gameFields[3].split("`");
+            String color = gameFields[4];
+            String URL = gameFields[5];
+            String fullscreen = gameFields[6];
+
+            // can change tags being passed as string[], also need to get local leaderboard to pass in?
+            GameRegistry.getInstance().register(new Game(id, title, description, URL, gameFields[3], fullscreen,null));
+        }
+        // TODO: handle -1 (network fails to send data) & establish how tags/config will entirely be set up
+    }
+
+
+    // CHAT
+
+    /** Method for sending chats
+     *
+     * @param id
+     * @param content
+     * @param sender
+     * @throws Exception
+     */
+    public void sendMessage(String id, String content, String sender) throws Exception {
+
+        // send description byte
+        socket.getOutputStream().write(send_chat);
+
+        // send request parameters as byte[]
+        sendRequestParameter(id);
+        sendRequestParameter(content);
+        sendRequestParameter(sender);
+
+        // update local directory
+        ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
+    }
+
+    /** If we receive 6 as a description byte, this method is ran
+     *
+     * @throws Exception
+     */
+    public void receiveMessage() throws Exception {
+
+        // interpret each response sent in sequence by server
+        String id = readResponseString();
+        String content = readResponseString();
+        String sender = readResponseString();
+
+        // update the local chat
+        ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
+    }
+
+
+
+    // HELPERS
+
+    /** Method for sending encrypted parameters for request
+     *
+     * @param value
+     * @throws Exception
+     */
+    private void sendRequestParameter(String value) throws Exception {
+
+        // encrypting parameter
+        byte[] encryptedParam = encrypt(value);
+
+        // allocating space for total length of message
+        byte[] message = ByteBuffer.allocate(4 + encryptedParam.length)
+                // write the encrypted parameter (nonce + ciphertext) length as first 4 bytes
+                .putInt(encryptedParam.length)
+                // append the encrypted parameter
+                .put(encryptedParam)
+                .array();
+
+        // send complete message to server
+        socket.getOutputStream().write(message);
+    }
+
+    private byte[] readResponse() throws Exception {
+        // getting first 4 bytes representing message length
+        int length = ByteBuffer.wrap(socket.getInputStream().readNBytes(4)).getInt();
+
+        // reading the rest of the message of length ^
+        return socket.getInputStream().readNBytes(length);
+    }
+
+    private String readResponseString() throws Exception {
+        // return string response received
+        return decrypt(readResponse());
+    }
+
+
+    // CRYPTO
 
     /** Method for creating the shared secret/key
      *
@@ -52,6 +251,7 @@ public class Network {
         return clientKeyPair.getPublic().getEncoded();
     }
 
+    // TODO: ditch ks
     /** Ensuring program has everything it needs to encrypt/decrypt, preparation
      *
      */
