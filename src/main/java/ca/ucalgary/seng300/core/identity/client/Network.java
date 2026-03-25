@@ -47,47 +47,30 @@ public class Network extends Thread {
         socket = new Socket(serverIP, serverPort);
     }
 
-    /** Method for sending encrypted parameters for request
+    // LOGIN
+
+    /** sends login request to the server
+     *  returns True if successful login
      *
-     * @param value
+     * @param username
+     * @param pwd
+     * @return
      * @throws Exception
      */
-    private void sendRequestParameter(String value) throws Exception {
+    public boolean login(String username, String pwd) throws Exception {
 
-        // encrypting parameter
-        byte[] encryptedParam = encrypt(value);
+        // send description byte
+        socket.getOutputStream().write(login);
 
-        // allocating space for total length of message
-        byte[] message = ByteBuffer.allocate(4 + encryptedParam.length)
-                        // write the encrypted parameter (nonce + ciphertext) length as first 4 bytes
-                        .putInt(encryptedParam.length)
-                                // append the encrypted parameter
-                                .put(encryptedParam)
-                                        .array();
+        // send parameters
+        sendRequestParameter(username);
+        sendRequestParameter(pwd);
 
-        // send complete message to server
-        socket.getOutputStream().write(message);
+        // interpret whether the login attempt was successful or not
+        return readResponseString().equals("true");
     }
 
-    private byte[] readResponse() throws Exception {
-        // getting first 4 bytes representing message length
-        int length = ByteBuffer.wrap(socket.getInputStream().readNBytes(4)).getInt();
 
-        // reading the rest of the message of length ^
-        return socket.getInputStream().readNBytes(length);
-    }
-
-    private String readResponseString() throws Exception {
-        // return string response received
-        return decrypt(readResponse());
-    }
-
-    private String readString (ByteBuffer buffer) {
-        int length = buffer.getInt();
-        byte[] bytes = new byte[length];
-        buffer.get(bytes);
-        return new String(bytes, StandardCharsets.UTF_8);
-    }
 
     // GAMES
 
@@ -173,6 +156,45 @@ public class Network extends Thread {
 
         // update the local chat
         ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
+    }
+
+
+
+    // HELPERS
+
+    /** Method for sending encrypted parameters for request
+     *
+     * @param value
+     * @throws Exception
+     */
+    private void sendRequestParameter(String value) throws Exception {
+
+        // encrypting parameter
+        byte[] encryptedParam = encrypt(value);
+
+        // allocating space for total length of message
+        byte[] message = ByteBuffer.allocate(4 + encryptedParam.length)
+                // write the encrypted parameter (nonce + ciphertext) length as first 4 bytes
+                .putInt(encryptedParam.length)
+                // append the encrypted parameter
+                .put(encryptedParam)
+                .array();
+
+        // send complete message to server
+        socket.getOutputStream().write(message);
+    }
+
+    private byte[] readResponse() throws Exception {
+        // getting first 4 bytes representing message length
+        int length = ByteBuffer.wrap(socket.getInputStream().readNBytes(4)).getInt();
+
+        // reading the rest of the message of length ^
+        return socket.getInputStream().readNBytes(length);
+    }
+
+    private String readResponseString() throws Exception {
+        // return string response received
+        return decrypt(readResponse());
     }
 
 
