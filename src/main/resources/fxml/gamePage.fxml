@@ -8,17 +8,17 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="600.0" maxWidth="800.0" minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.gameController">
+<AnchorPane maxHeight="600.0" maxWidth="800.0" minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" styleClass="pane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.gameController">
    <children>
-      <VBox prefHeight="600.0" prefWidth="800.0">
+      <VBox prefHeight="600.0" prefWidth="800.0" styleClass="pane">
          <children>
             <VBox prefHeight="47.0" prefWidth="600.0" style="-fx-background-color: #e4e4f7;">
                <children>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #F7C5AD;">
                      <children>
-                        <Text layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Title" textAlignment="CENTER" wrappingWidth="799.4575653076172">
+                        <Text fill="#866b59" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Game Title" textAlignment="CENTER" wrappingWidth="799.4575653076172">
                            <font>
-                              <Font size="29.0" />
+                              <Font name="Dubai Bold" size="29.0" />
                            </font>
                         </Text>
                         <Button fx:id="backButton" layoutX="14.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefWidth="65.0" styleClass="basic-button" text="Back" />
@@ -28,7 +28,7 @@
             </VBox>
             <HBox prefHeight="395.0" prefWidth="800.0" style="-fx-background-color: #ffffff;">
                <children>
-                  <AnchorPane prefHeight="395.0" prefWidth="800.0">
+                  <AnchorPane prefHeight="395.0" prefWidth="800.0" style="-fx-background-color: #F9EDE1;">
                      <children>
                         <Label layoutX="309.0" layoutY="187.0" text="Game will be displayed here...">
                            <font>
@@ -41,7 +41,7 @@
                </children></HBox>
             <VBox prefHeight="100.0" prefWidth="800.0" style="-fx-background-color: #f2f2ff;">
                <children>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FCE0D2;">
                      <children>
                         <Text layoutX="14.0" layoutY="21.0" lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Person A: Hello!" textAlignment="JUSTIFY">
                            <font>
@@ -64,11 +64,11 @@
             </VBox>
             <VBox prefHeight="64.0" prefWidth="800.0" style="-fx-background-color: #e4e4f7;">
                <children>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #F7C5AD;">
                      <children>
-                        <Text layoutX="14.0" layoutY="19.0" lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Type here to chat...." textAlignment="JUSTIFY">
+                        <Text fill="#866b59" layoutX="14.0" layoutY="19.0" lineSpacing="10.0" opacity="0.61" strokeType="OUTSIDE" strokeWidth="0.0" text="Type here to chat...." textAlignment="JUSTIFY">
                            <font>
-                              <Font size="14.0" />
+                              <Font name="Dubai Light" size="18.0" />
                            </font>
                         </Text>
                      </children>
