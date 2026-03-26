@@ -1,12 +1,12 @@
 # Changelog
 
-<!-- PLACEHOLDER -- to be updated with each release -->
-
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [v0.1.0] - 2026-03-25
 
 ### Added
 - **Platform Core (MR !25):** Server session handling (`Session.java`) with login, registration, chat, and game list request processing. Client-side `Network` rewritten as threaded socket client with login, chat, and game list methods. `ChatRegistry` and `Message` model for in-game chat. `GameType` enum, `LeaderboardDatabase`, and `MatchRecord` for leaderboard persistence. `uuid-creator` dependency added to root `pom.xml`; `sqlite-jdbc` added to `server/pom.xml`.
