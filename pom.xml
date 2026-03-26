@@ -61,6 +61,9 @@
         <version>0.0.8</version>
         <configuration>
           <mainClass>ca.ucalgary.seng300.app.MainApp</mainClass>
+          <options>
+            <option>--enable-native-access=javafx.graphics</option>
+          </options>
         </configuration>
       </plugin>
 

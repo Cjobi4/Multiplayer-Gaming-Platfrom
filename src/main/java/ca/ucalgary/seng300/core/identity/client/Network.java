@@ -3,7 +3,12 @@ package ca.ucalgary.seng300.core.identity.client;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.shared.models.Game;
+import ca.ucalgary.seng300.shared.models.LaunchConfigs;
 import ca.ucalgary.seng300.shared.models.Message;
+import ca.ucalgary.seng300.shared.models.Tag;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
@@ -132,8 +137,14 @@ public class Network extends Thread {
             String URL = gameFields[5];
             String fullscreen = gameFields[6];
 
-            // can change tags being passed as string[], also need to get local leaderboard to pass in?
-            // GameRegistry.getInstance().register(new Game(id, title, description, URL, gameFields[3], fullscreen,null));
+            // Convert parsed strings into typed objects required by Game constructor
+            List<Tag> tagList = new ArrayList<>();
+            for (String label : tags) {
+                tagList.add(new Tag(label, color));
+            }
+            LaunchConfigs launchConfigs = new LaunchConfigs(id, URL, "false", fullscreen);
+
+            GameRegistry.getInstance().register(new Game(id, title, description, tagList, launchConfigs, null));
         }
         // TODO: handle -1 (network fails to send data) & establish how tags/config will entirely be set up
     }
