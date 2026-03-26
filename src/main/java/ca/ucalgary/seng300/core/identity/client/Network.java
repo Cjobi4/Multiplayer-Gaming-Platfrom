@@ -133,7 +133,7 @@ public class Network extends Thread {
             String fullscreen = gameFields[6];
 
             // can change tags being passed as string[], also need to get local leaderboard to pass in?
-            GameRegistry.getInstance().register(new Game(id, title, description, URL, gameFields[3], fullscreen,null));
+            // GameRegistry.getInstance().register(new Game(id, title, description, URL, gameFields[3], fullscreen,null));
         }
         // TODO: handle -1 (network fails to send data) & establish how tags/config will entirely be set up
     }
