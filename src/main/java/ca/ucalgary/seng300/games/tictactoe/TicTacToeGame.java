@@ -12,7 +12,7 @@ public class TicTacToeGame {
     //this variable helps keep track of what player's turn it is
     private char currentPlayer;
 
-    //this variable stores the winner of the game (X, 0, ' ')
+    //this variable stores the winner of the game (X, O, ' ')
     private char winner;
 
     //this stores the current state of the game using the GameState enum
@@ -47,6 +47,14 @@ public class TicTacToeGame {
 
     //this is my function for making a move and VALIDATING the move!
     public boolean makeMove(int row, int col, char userGameIdentity) {
+
+        //bounds check moved to first in the makeMove function
+        //this checks/make sure the users position selected stays within the bounds of the game board
+        if (row < 0 || row > 2 || col < 0 || col > 2) {
+            //if not return false
+            return false;
+        }
+
         //make sure that the user has a valid identity ('X' or 'O')
         if (userGameIdentity != 'X' && userGameIdentity != 'O') {
             //if not, return false
@@ -59,11 +67,6 @@ public class TicTacToeGame {
             return false;
         }
 
-        //this checks/make sure the users position selected stays within the bounds of the game board
-        if (row < 0 || row > 2 || col < 0 || col > 2) {
-            //if not return false
-            return false;
-        }
 
         //after all validation checks
         //we can set the players data ('X' or 'O') onto the board at the specific row and column they want to be at
@@ -71,6 +74,33 @@ public class TicTacToeGame {
         //return true!
         return true;
     }
+
+    //GETTERS for new functions
+
+    //this getter gets the current player (X, O, ' ')
+    public char getCurrentPlayer() {
+        //return the current player (char)
+        return currentPlayer;
+    }
+
+    //this getter gets the winner (whoever is the winner gets pulled here [X, O, ' '])
+    public char getWinner() {
+        //return the winner (char)
+        return winner;
+    }
+
+    //this getter gets the current gameState
+    public GameState getGameState() {
+        //return the gamestate (uses ENUM file)
+        return gameState;
+    }
+
+    //this getter gets the integer move count
+    public int getMoveCount() {
+        //this returns the move count (int)
+        return moveCount;
+    }
+
 
     //RULES AND VALIDAITON WORK :D
 
