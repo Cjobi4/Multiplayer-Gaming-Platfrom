@@ -50,6 +50,27 @@ public class TicTacToeBoard {
         //ttt = tic tac toe just using an abbreviation for code, will put note at top of doc!
     }
 
+    //ADDING TIE DECETION
+    //simple function for checking if the board is full or not
+    public boolean isTheBoardFull() {
+        //iterate through all rows
+        for (int row = 0; row < 3; row++) {
+
+            //iterate through all columns
+            for (int col = 0; col < 3; col++) {
+
+                //if there is a column with an empty space
+                if (board[row][col] == ' ') {
+
+                    //return false (not a tie)
+                    return false;
+                }
+            }
+        }
+        //return true (there are no more playable moves)
+        return true;
+    }
+
 
     //methods for db integration
     @Override
