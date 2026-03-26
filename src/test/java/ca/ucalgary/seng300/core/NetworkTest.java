@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.core;
 
 import ca.ucalgary.seng300.core.identity.client.Network;
+import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.shared.models.Game;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -99,5 +101,48 @@ public class NetworkTest {
         Assertions.assertEquals(message, decryptedMessage);
     }
 
+    /*
+    Tests the methods used to get games from the database
+     */
+    @Test
+    void testPullingGames() throws Exception{
+        String gameOne = "game_01^Test Game 1^test game numero uno^test 1 tag 1`test 1 tag 2^i dunno black^randomurl.com^true";
+        String gameTwo = "game_02^Test Game 2^test game numero dos^test 2 tag 1`test 2 tag 2^i dunno white^mayberandomurl.com^false";
+        // the fake games we will be using
 
+        byte[] encryptedOne = Network.encrypt(gameOne);
+        byte[] encryptedTwo = Network.encrypt(gameTwo);
+
+        int totalSpace = (4 + encryptedOne.length) + (4 + encryptedTwo.length);
+        // figure out how much space to allocate
+
+        byte[] toSend = ByteBuffer.allocate(totalSpace)
+                .putInt(encryptedOne.length) //
+                .put(encryptedOne)
+                .putInt(encryptedTwo.length)
+                .put(encryptedTwo)
+                .array();
+        // create a packet to send
+
+        // create the fake server with this information
+        StubSocket stubSocket = new StubSocket(toSend);
+        Network myNetwork = new Network(stubSocket);
+
+        myNetwork.getGames();
+
+        Game one = GameRegistry.getInstance().findById("game_01");
+        Game two = GameRegistry.getInstance().findById("game_02");
+
+        assertEquals("Test Game 1",one.getTitle());
+        assertEquals("Test Game 2",two.getTitle());
+    }
+
+
+    /*
+    Testing that password length is properly enforced
+     */
+    @Test
+    void testPasswordLengthValidation() throws Exception{
+
+    }
 }
