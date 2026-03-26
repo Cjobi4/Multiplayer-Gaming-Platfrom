@@ -11,5 +11,26 @@ package ca.ucalgary.seng300.core.turnengine;
  * endGame) and integrate with MoveValidator from shared interfaces.</p>
  */
 public class GameSession {
-    // TODO: Implement game session — placeholder for Platform Core
+    private String sessionId;
+    private String playerId;
+    private String gameId;
+    private String startedAt;
+    private int score;
+
+    public void end()
+    {
+        // TODO: Close session
+    }
+
+    public void submitScore(int s)
+    {
+        this.score = s;
+        // TODO: Call leaderboard to submit scores
+    }
+
+    public int getDuration()
+    {
+        // TODO: Track total time on session
+        return 0;
+    }
 }

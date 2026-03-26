@@ -10,5 +10,18 @@ package ca.ucalgary.seng300.shared.models;
  * <p>TODO: Define fields (name, description) and implement tag operations.</p>
  */
 public class Tag {
-    // TODO: Implement tag model — placeholder for game registry categorization
+
+    private String id;
+    private String label;
+    private String colour;
+
+    public String getLabel()
+    {
+        return label;
+    }
+
+    public Boolean matches(String g)
+    {
+        return label != null && label.equalsIgnoreCase(g);
+    }
 }
