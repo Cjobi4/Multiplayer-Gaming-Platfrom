@@ -31,6 +31,10 @@ public class gameController {
             stage.setTitle("Game Over"); //Change stage title to reflect current scene
             stage.show();
 
+            // Update leaderboard
+
+            // make match record
+
         } catch (IOException e) {
             System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
         }
