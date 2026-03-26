@@ -138,5 +138,19 @@ public class TicTacToeGame {
         return false;
     }
 
+    //another validation check (GAME TIE STATUS)
+    //function to check if the game is a tie
+    public boolean checkGameTie() {
+
+        //if the game board is full and the winner is ' ' (no winner)
+        if (board.isTheBoardFull() && winner == ' ') {
+
+            //return true (the game is a tie)
+            return true;
+        }
+
+        //otherwise return false (the game is NOT a tie)
+        return false;
+    }
 
 }
