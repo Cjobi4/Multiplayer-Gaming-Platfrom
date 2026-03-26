@@ -1,15 +1,42 @@
 package ca.ucalgary.seng300.games.tictactoe;
 
+//import the enums file
+import ca.ucalgary.seng300.games.GameState;
+
 //this is for game/move logic for tic tac toe
 public class TicTacToeGame {
 
     //this is the board we are going to use for the game
     private TicTacToeBoard board;
 
+    //this variable helps keep track of what player's turn it is
+    private char currentPlayer;
+
+    //this variable stores the winner of the game (X, 0, ' ')
+    private char winner;
+
+    //this stores the current state of the game using the GameState enum
+    private GameState gameState;
+
+    //This counts the total number of moves made within the game
+    private int moveCount;
+
     //this creates the game with a new board
     public TicTacToeGame(){
         //create a new gameboard
         board = new TicTacToeBoard();
+
+        //set the current player to X
+        currentPlayer = 'X';
+
+        //set the value of the winner (string) to nothing because there is no winner at the start of the game
+        winner = ' ';
+
+        //set the start of the game to waiting for a player to make a move
+        gameState = GameState.TURN_AWAITING_MOVE;
+
+        //this sets the movecount to 0 as no moves by the start of the game
+        moveCount = 0;
     }
 
     //this returns the board that is being used during the game
