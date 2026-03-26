@@ -54,11 +54,12 @@ public class GameRegistryTest {
         LeaderBoard leaderBoard = null;
         LaunchConfigs launchConfigs = null;
         Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
+        gameRegistry.register(game1);
         String expectedID = "game1";
 
         // 2. act
-        Game found = gameRegistry.findById("game1");
-        String actualId = found.getId();
+        Game foundGame = gameRegistry.findById("game1");
+        String actualId = foundGame.getId();
 
         // 3. assertions
         assertEquals(expectedID, actualId, "Expected ID for the game is:" + expectedID + " and found: " + actualId);
