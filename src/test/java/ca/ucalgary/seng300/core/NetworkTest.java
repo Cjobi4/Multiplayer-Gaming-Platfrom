@@ -87,7 +87,7 @@ public class NetworkTest {
         //short password
         assertFalse(myNetwork.registerAccount("testUser", "short"));
         //long password
-        assertFalse(myNetwork.registerAccount("testUser", "verylongpassword"));
+        assertFalse(myNetwork.registerAccount("testUser", "verylongpasswordsolongitshouldntbevalid"));
     }
 
     @Test
