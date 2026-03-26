@@ -36,6 +36,13 @@ project-root/
 │   ├── rules-validation/  # Rules & Validation designs
 │   ├── quality-testing/   # Test plans
 │   └── integration-release/  # I&R process docs
+├── server/
+│    ├── src/
+│    │    ├──main/
+│    │    │     java/ca/ucalgary/seng300/
+│    │    │         └── ServerMain          
+│    │    └── test/            
+│    └── pom.xml
 ├── src/
 │   ├── main/
 │   │   ├── java/ca/ucalgary/seng300/
@@ -52,6 +59,16 @@ project-root/
 ├── CURRENT_STATE.md       # Feature status matrix
 └── team.md                # Sub-team roster
 ```
+
+## Server Module setup
+The server module runs independently from the JavaFX client.
+
+After pulling, add the server module in IntelliJ:
+
+1. **File → Project Structure → Modules  → Add (Symbol "+" on top-left corner) → Import module**
+2. Select `pom.xml` under **server folder**
+3. Click **Open**
+
 
 ## Key Documents
 

@@ -15,12 +15,10 @@ public class Session {
     }
 
     public String getUsername() {
-
-        return "";
+        return null;
     }
 
     public int getUserID() {
-
         return 0;
     }
 
