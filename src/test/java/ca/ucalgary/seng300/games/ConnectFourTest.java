@@ -1,6 +1,6 @@
 package ca.ucalgary.seng300.games;
 
-import ca.ucalgary.seng300.games.connectfour.*;
+// import ca.ucalgary.seng300.games.connectfour.*;
 import org.junit.jupiter.api.Test;
 
 public class ConnectFourTest {

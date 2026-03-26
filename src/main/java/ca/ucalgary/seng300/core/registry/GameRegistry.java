@@ -51,15 +51,6 @@ public class GameRegistry {
     }
 
     /**
-     * Removes games from the game registry
-     * @param id the id of the game you want to remove
-     */
-    public void unregister(String id)
-    {
-        games.removeIf(game -> game.getId().equals(id));
-    }
-
-    /**
      * Searches the list of games by id, if it exists returns that game
      * @param id the string id of the game
      * @return the game object if found, otherwise null

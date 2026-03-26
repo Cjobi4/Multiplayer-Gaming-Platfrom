@@ -49,7 +49,6 @@ public class GameRegistryTest {
 
     @Test
     void testFindByIdReturnsCorrectGameID() {
-
         // 1. arrange
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
         LeaderBoard leaderBoard = null;
@@ -95,66 +94,6 @@ public class GameRegistryTest {
 
         // 3. AssertEquals
         assertEquals(expectedSize, gameRegistry.ListAll().size(), "Game Registry size should be equal to expected size of: " + expectedSize);
-    }
-
-    @Test
-    void testUnregisterRemovesSingleGame() {
-        // 1. Arrange
-        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        LeaderBoard leaderBoard = null;
-        LaunchConfigs launchConfigs = null;
-
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
-        gameRegistry.register(game1);
-
-        // 2. Act
-        gameRegistry.unregister("game1");
-
-        // 3. assertion
-        assertTrue(gameRegistry.ListAll().isEmpty(), "Game registry should be empty.");
-    }
-
-    @Test
-    void testUnregisterRemovesMultipleGames() {
-        // 1. Arrange
-        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        LeaderBoard leaderBoard = null;
-        LaunchConfigs launchConfigs = null;
-
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
-        gameRegistry.register(game1);
-
-        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, launchConfigs, leaderBoard);
-        gameRegistry.register(game2);
-
-        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, launchConfigs, leaderBoard);
-        gameRegistry.register(game3);
-
-        // 2. Act
-        gameRegistry.unregister("game2");
-        gameRegistry.unregister("game3");
-        int expectedSize = 1;
-
-        // 3. AssertEquals
-        assertEquals(expectedSize, gameRegistry.ListAll().size(), "Game registry size should be equal to " + expectedSize + " after removal of 2/3 games.");
-    }
-
-    @Test
-    void testUnregisterFailsToChangeRegistrySizeWhenGameDNE() {
-        // 1. arrange
-        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        LeaderBoard leaderBoard = null;
-        LaunchConfigs launchConfigs = null;
-
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
-        gameRegistry.register(game1);
-
-        // 2. act
-        gameRegistry.unregister("game2");
-        int expectedSize = 1;
-
-        // 3. assertion
-        assertEquals(expectedSize, gameRegistry.ListAll().size(), "Game registry size should be equal to expected size of: " + expectedSize);
     }
 
     @Test
