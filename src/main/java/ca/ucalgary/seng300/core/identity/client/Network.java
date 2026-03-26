@@ -129,11 +129,11 @@ public class Network extends Thread {
             String description = gameFields[2];
             String[] tags = gameFields[3].split("`");
             String color = gameFields[4];
-            String URL = gameFields[5];
-            String fullscreen = gameFields[6];
+
+            // TODO: Build tags object before passing into game constructor
 
             // can change tags being passed as string[], also need to get local leaderboard to pass in?
-            GameRegistry.getInstance().register(new Game(id, title, description, URL, gameFields[3], fullscreen, null));
+            GameRegistry.getInstance().register(new Game(id, title, description, null, null));
         }
         // TODO: handle -1 (network fails to send data) & establish how tags/config will entirely be set up
     }
