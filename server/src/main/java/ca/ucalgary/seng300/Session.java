@@ -143,11 +143,41 @@ public class Session extends Thread
         int messageLength;
         byte messageBytes[];
 
-        //handles requests that CAN happen simultaneously (i.e. database reading)
+        //depending on the request type...
         switch (requestType)
         {
             case 0:
 
+                break;
+            case 1:     //if it was a register account request...
+                //collect the username
+                messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                messageBytes = client.getInputStream().readNBytes(messageLength);
+                String newUsername = new String(messageBytes, StandardCharsets.UTF_8);
+
+                //collect the password
+                messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                messageBytes = client.getInputStream().readNBytes(messageLength);
+                String newPassword = new String(messageBytes, StandardCharsets.UTF_8);
+
+                //only one Session can run this block at a time
+                synchronized (Session.class)
+                {
+                    //check if it was successful
+                    userID = Database.createAccount(newUsername, newPassword, Thread.currentThread());
+                }
+
+                //if it was, save the username for the session
+                if (userID != -1)
+                {
+                    username = newUsername;
+                    loggedIn = true;
+                    //notify the client of success
+                    client.getOutputStream().write(1);
+                }else //otherwise notify of failure
+                {
+                    client.getOutputStream().write(0);
+                }
                 break;
             case 2:     //if it was a login request...
                 //collect the username
@@ -168,7 +198,13 @@ public class Session extends Thread
                 {
                     username = usernameInput;
                     loggedIn = true;
-                }   //otherwise do nothing
+
+                    //notify the client of success
+                    client.getOutputStream().write(1);
+                }else //otherwise notify of failure
+                {
+                    client.getOutputStream().write(0);
+                }
                 break;
             case 3:     //if it was a logout request
                 Database.logOut(userID);
@@ -176,57 +212,26 @@ public class Session extends Thread
                 //close the connection with the client
                 Thread.currentThread().interrupt();
                 break;
-        }
+            case 4:     //if it was a request for the game info
+                //collect the game info from the database
+                ResultSet rs = Database.getAllGames();
 
-        //only one Session can run this block at a time
-        synchronized (Session.class)
-        {
-            //handles requests that CANNOT happen simultaneously (i.e. database writing)
-            switch (requestType)
-            {
-                case 1:     //if it was a register account request...
-                    //collect the username
-                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
-                    messageBytes = client.getInputStream().readNBytes(messageLength);
-                    String newUsername = new String(messageBytes, StandardCharsets.UTF_8);
-
-                    //collect the password
-                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
-                    messageBytes = client.getInputStream().readNBytes(messageLength);
-                    String newPassword = new String(messageBytes, StandardCharsets.UTF_8);
-
-                    //check if it was successful
-                    userID = Database.createAccount(newUsername, newPassword, Thread.currentThread());
-
-                    //if it was, save the username for the session
-                    if (userID != -1)
+                //go through the results
+                if (rs.next())
+                {
+                    do
                     {
-                        username = newUsername;
-                        loggedIn = true;
-                    }   //otherwise do nothing
-                    break;
-                case 4:     //if it was a request for the game info
-                    //collect the game info from the database
-                    ResultSet rs = Database.getAllGames();
-
-                    //go through the results
-                    if (rs.next())
-                    {
-                        do
-                        {
-                            //send each game info data to the client
-                            byte[] gameInfo = rs.getString(2).getBytes(StandardCharsets.UTF_8);
-                            client.getOutputStream().write(ByteBuffer.allocate(4).putInt(gameInfo.length).array());
-                            client.getOutputStream().write(gameInfo);
-                            System.out.println("game info sent");  //for debug
-                        } while (rs.next());
-                    } else //if something went wrong and no game info was found, notify client
-                    {
-                        client.getOutputStream().write(-1);
-                    }
-                    break;
-            }
-
+                        //send each game info data to the client
+                        byte[] gameInfo = rs.getString(2).getBytes(StandardCharsets.UTF_8);
+                        client.getOutputStream().write(ByteBuffer.allocate(4).putInt(gameInfo.length).array());
+                        client.getOutputStream().write(gameInfo);
+                        System.out.println("game info sent");  //for debug
+                    } while (rs.next());
+                } else //if something went wrong and no game info was found, notify client
+                {
+                    client.getOutputStream().write(-1);
+                }
+                break;
         }
     }
 }

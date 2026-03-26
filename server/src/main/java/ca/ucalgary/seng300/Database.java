@@ -84,6 +84,22 @@ public class Database
                             + "gameid INTEGER PRIMARY KEY,"
                             + "gameData MEMO NOT NULL);");
 
+            stmt.execute("CREATE TABLE IF NOT EXISTS leaderboard ("
+                    + "userid INTEGER PRIMARY KEY,"
+                    + "username TEXT NOT NULL,"
+                    + "tttWins INTEGER NOT NULL,"
+                    + "c4Wins INTEGER NOT NULL,"
+                    + "tttMatchesPlayed INTEGER NOT NULL,"
+                    + "c4MatchesPlayed INTEGER NOT NULL);");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS matchRecord ("
+                    + "gameid INTEGER PRIMARY KEY,"
+                    + "p1Userid INTEGER NOT NULL,"
+                    + "p2Userid INTEGER NOT NULL,"
+                    + "gametype TEXT NOT NULL,"
+                    + "winnerID INTEGER NOT NULL,"
+                    + "date TEXT NOT NULL);");
+
 
             //check if the table(s) are empty (i.e. freshly created)
             ResultSet rs = stmt.executeQuery(  "SELECT COUNT(*) FROM userLoginInfo;");
@@ -98,7 +114,7 @@ public class Database
 
                 //must use prepared statement and not statement bc special characters in hash will disrupt command
                 PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(userid, username, password) VALUES(0, ?, ?)");
-                pstmt.setString(1, "user");
+                pstmt.setString(1, "admin");
                 pstmt.setString(2, hashedPassword);
                 pstmt.executeUpdate();
 
@@ -108,6 +124,8 @@ public class Database
                 //add in a sample gameInfo
                 stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`Turn Based^PINK^gameURL^YES)");
                 stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description2^Multiplayer`Turn Based^PINK^gameURL^YES)");
+                stmt.execute("INSERT INTO leaderboard(userid, username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed) VALUES(0, admin, 999, 999, 999, 999)");
+                stmt.execute("INSERT INTO matchRecord(gameid, p1Userid, p2Userid, gametype, winnerID, date) VALUES(gameid, 0, p2Userid, Tic-Tac-Toe, 0, date)");
             }else   //if the table is not empty...
             {
                 //set the next available userid
@@ -159,13 +177,21 @@ public class Database
      * Given a username and password, creates a new account with those credentials. No login attempt is additionally
      * required, the user is logged in as the account is created.
      * @param username The username for the new account in String format
-     * @param password The password for the new account in String format. Should be not be hashed.
+     * @param password The password for the new account in String format. Should be not be hashed. MUST be between 6-18
+     *                 characters long
      * @param session The Session thread object responsible for this user
      * @return If the account is created successfully, the newly assigned userid is returned. Otherwise, if the account
      * creation fails, -1 is returned.
      */
     public static int createAccount(String username, String password, Thread session)
     {
+        //check to see if the password meets the password requirements
+        if (password.length() < 8 || password.length() > 18)
+        {
+            //if it doesn't don't make an account
+            return -1;
+        }
+
         try
         {
             //hash the password first
@@ -255,4 +281,6 @@ public class Database
             throw new RuntimeException(e);
         }
     }
+
+    //public static ResultSet get
 }
