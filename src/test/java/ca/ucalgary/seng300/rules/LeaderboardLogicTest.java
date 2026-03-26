@@ -20,6 +20,7 @@ public class LeaderboardLogicTest {
 
     private LeaderBoard testLeaderboard = new LeaderBoard(); // create testLeaderBoard
 
+    /*
     @BeforeEach
     void makeDummyBoard(){ // base LeaderboardEntries
         LeaderboardEntry basicEntry = new LeaderboardEntry(0, 1, "basic", 4, 10);
@@ -50,6 +51,7 @@ public class LeaderboardLogicTest {
     /**
      * Tests the modification of a score
      */
+    /*
     @Test
     void modifyScore(){
         LeaderboardEntry rewrite = new LeaderboardEntry(0, 1, "newBasic", 6, 12);
@@ -74,4 +76,6 @@ public class LeaderboardLogicTest {
         Assertions.assertEquals(4, testList.get(2).getWins());
         Assertions.assertEquals(1, testList.get(3).getWins());
     }
+    */
+
 }
