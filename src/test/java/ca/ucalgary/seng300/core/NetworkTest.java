@@ -76,6 +76,20 @@ public class NetworkTest {
         assertTrue(loginResult);
     }
 
+    /*
+    Testing that password length is properly enforced
+     */
+    @Test
+    void testPasswordLengthValidation() throws Exception{
+        StubSocket stubSocket = new StubSocket(new byte[0]); // intialize with empty byte
+        Network myNetwork = new Network(stubSocket);
+
+        //short password
+        assertFalse(myNetwork.registerAccount("testUser", "short"));
+        //long password
+        assertFalse(myNetwork.registerAccount("testUser", "verylongpassword"));
+    }
+
     @Test
     void testEncryption() throws Exception{
         String message = "testing message";
@@ -135,14 +149,5 @@ public class NetworkTest {
 
         assertEquals("Test Game 1",one.getTitle());
         assertEquals("Test Game 2",two.getTitle());
-    }
-
-
-    /*
-    Testing that password length is properly enforced
-     */
-    @Test
-    void testPasswordLengthValidation() throws Exception{
-
     }
 }
