@@ -185,13 +185,6 @@ public class Database
      */
     public static int createAccount(String username, String password, Thread session)
     {
-        //check to see if the password meets the password requirements
-        if (password.length() < 8 || password.length() > 18)
-        {
-            //if it doesn't don't make an account
-            return -1;
-        }
-
         try
         {
             //hash the password first
@@ -266,7 +259,7 @@ public class Database
 
     /**
      * Gets the game info for the client from the Database.db tables.
-     * @return The ResultSet containing all the game infos
+     * @return A ResultSet containing all the game infos. If something goes wrong with the query, return null instead.
      */
     public static ResultSet getAllGames()
     {
@@ -278,9 +271,46 @@ public class Database
             return rs;
         } catch (SQLException e)
         {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
-    //public static ResultSet get
+    /**
+     * Gets all the information in the leaderboard from the Database.db tables.
+     * @return A ResultSet containing all the leaderboard data. If something goes wrong with the query, return null
+     * instead.
+     */
+    public static ResultSet getAllLeaderboardEntries()
+    {
+        try
+        {
+            //collect all the leaderboard entries
+            ResultSet rs = stmt.executeQuery("SELECT * FROM leaderboard;");
+
+            return rs;
+        } catch (SQLException e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Gets all match records from the specified userid in Database.db tables.
+     * @return A ResultSet containing the match records. If something goes wrong with the query, return null instead.
+     */
+    public static ResultSet getMatchRecord(int userid)
+    {
+        try
+        {
+            //collect all the leaderboard entries with matching userids
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE userid = ?;");
+            pstmt.setString(1, String.valueOf(userid));
+            ResultSet rs = pstmt.executeQuery();
+
+            return rs;
+        } catch (SQLException e)
+        {
+            return null;
+        }
+    }
 }

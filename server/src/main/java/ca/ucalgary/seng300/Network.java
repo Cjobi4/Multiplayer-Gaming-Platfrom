@@ -223,7 +223,7 @@ public class Network
      * @return The string encrypted with AES and in byte[] format, preceded by 12 bytes of nonce.
      * @throws Exception If the AES GCM mode algorithm can't be found, will throw an Exception
      */
-    private static byte[] encrypt(String plainText, SecretKey AESKey) throws Exception
+    public static byte[] encrypt(String plainText, SecretKey AESKey) throws Exception
     {
         //makes 12 byte long nonce according to NIST standards
         byte[] nonce = new byte[12];
@@ -254,7 +254,7 @@ public class Network
      * been altered AFTER the encryption was performed (i.e. some bits are lost/changed), the message will not be
      * decrypted properly and will throw an exception.
      */
-    private static String decrypt(byte[] cipherText, SecretKey AESKey) throws Exception
+    public static String decrypt(byte[] cipherText, SecretKey AESKey) throws Exception
     {
         //collect the nonce (first 12 bytes of the message)
         byte[] nonce = new byte[12];
