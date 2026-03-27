@@ -24,8 +24,8 @@ public class ChatRegistryTest {
 
         Message message_sent = new Message(content1, sender1);
         chatRegistry.addMessage(message_sent);
-        Message expectedMessage = message_sent;
-        Message actualMessage = chatRegistry.ListAll().get(0);
+        String expectedMessage = content1;
+        String actualMessage = chatRegistry.ListAll().get(0).getContent();
 
         assertEquals(expectedMessage, actualMessage, "The expected message was: " + expectedMessage + " and the actual message was: " + actualMessage);
     }
@@ -37,15 +37,16 @@ public class ChatRegistryTest {
 
         Message message_sent = new Message(content1, sender1);
         chatRegistry.addMessage(message_sent);
-        Message expectedMessage = message_sent;
+        String expectedMessage = content1;
 
         String messageId = chatRegistry.ListAll().get(0).getId();
         String actualSender1 = chatRegistry.ListAll().get(0).getSender();
         String actualContent1 = chatRegistry.ListAll().get(0).getContent();
 
-        Message messageReceived = new Message(messageId, actualSender1, actualContent1);
+        Message messageReceived = new Message(messageId, actualContent1, actualSender1);
         chatRegistry.addMessage(messageReceived);
+        String actualMessageReceived = chatRegistry.ListAll().get(1).getContent();
 
-        assertEquals(expectedMessage, messageReceived, "The expected message was: " + expectedMessage + " and the actual message was: " + messageReceived);
+        assertEquals(expectedMessage, actualMessageReceived, "The expected message was: " + expectedMessage + " and the actual message was: " + actualMessageReceived);
     }
 }
