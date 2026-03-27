@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ChatRegistryTest {
     private ChatRegistry chatRegistry;
@@ -15,6 +16,14 @@ public class ChatRegistryTest {
     public void setup(){
         chatRegistry = ChatRegistry.getInstance();
         chatRegistry.clearChat();
+    }
+
+    @Test
+    void testChatRegistryInstanceSuccessfullyCreated() {
+        ChatRegistry instance = ChatRegistry.getInstance();
+
+        assertNotNull(instance, "Chat Registry instance should not be null");
+
     }
 
     @Test
