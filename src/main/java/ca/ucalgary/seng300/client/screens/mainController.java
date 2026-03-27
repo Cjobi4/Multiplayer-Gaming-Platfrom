@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.shared.models.Game;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +11,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.io.IOException;
+import java.util.List;
 
 public class mainController {
 
@@ -85,5 +89,21 @@ public class mainController {
     }
 
 
-    // TODO: Function to update list view with list of gamesg
+    @FXML
+    protected void DisplayGameList(ActionEvent event)
+    {
+       List<Game> GameList = GameRegistry.getInstance().ListAll();
+
+       for (Game game : GameList)
+       {
+            // TODO: Create some sort of JavaFX list view (or if you have on already use it here)
+
+           // Examples for how to pull data (see game constructor for all available info)
+
+           String title = game.getTitle();
+           String description = game.getDescription();
+
+       }
+
+    }
 }
