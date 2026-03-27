@@ -100,12 +100,12 @@ We will use a **feature-branch workflow**, which is popular. This means that sho
 
 1. Short-lived (aim for a week max).
 2. One feature or fix per branch.
-3. Created from `main` and merged back via MR.
+3. Created from `staging-branch` and merged back via MR.
 4. Keep branches after merging for grading purposes.
 
 ## Naming Branches
 
-**Format:** `<team-prefix>/<type>/<issue#>-<short-description>`
+**Format:** `<team-prefix>/<type>/<issue#>/<short-description>`
 
 **Common Type Prefixes:**
 
@@ -127,7 +127,7 @@ We will use a **feature-branch workflow**, which is popular. This means that sho
 ## General Reminders About Branches
 
 - 5-day maximum lifespan: If a branch lives longer than 5 days, it needs to either be merged or closed with an explanation.
-- Stay synced with main: Merge `main` into your feature branch when you start work and at least once every 3 days to minimize conflicts.
+- Stay synced with staging-branch: Merge `staging-branch` into your feature branch when you start work and at least once every 3 days to minimize conflicts.
 - Don't rebase pushed branches: Once a branch is on the remote, use `git merge`, not `git rebase`.
 - One logical change per branch: Don't bundle unrelated changes together.
 
@@ -163,7 +163,7 @@ compile-time safety and makes the state machine easier to reason about.
 
 ## Create a Merge Request
 
-**Every change to `main` goes through a Merge Request.**
+**Every change to `staging-branch` goes through a Merge Request.**
 
 **Rules for Merge Requests:**
 
@@ -219,7 +219,7 @@ Closes #
 
 ## Pre-Merge Checklist
 
-- [ ] Branch is up to date with `main`
+- [ ] Branch is up to date with `staging-branch`
 - [ ] No commented-out code or debug print statements
 - [ ] Public methods have Javadoc comments
 - [ ] README updated (if build/run instructions changed)
@@ -286,7 +286,7 @@ The Maven Wrapper downloads the correct Maven version automatically. JDK 25 is t
 
 Before opening a merge request, do the following:
 
-1. Pull latest `main` and merge it into your branch: `git fetch origin main && git merge origin/main`
+1. Pull latest `staging-branch` and merge it into your branch: `git fetch origin staging-branch && git merge origin/staging-branch`
 2. Run a clean build: `./mvnw clean compile`: expect `BUILD SUCCESS`
 3. Run all tests: `./mvnw test`: expect all tests to pass
 4. Launch the app: `./mvnw javafx:run`: expect the JavaFX window to open without crashing
@@ -296,7 +296,7 @@ Before opening a merge request, do the following:
 
 ## Post-Merge Verification (I&R Team)
 
-After every merge to `main`, someone on the I&R team pulls `main`, runs the compile-test-launch sequence, and walks through the smoke test checklist below. If anything fails, we initiate the broken-main protocol.
+After every merge to `staging-branch`, someone on the I&R team pulls `staging-branch`, runs the compile-test-launch sequence, and walks through the smoke test checklist below. If anything fails, we initiate the broken-main protocol.
 
 ## Smoke Test Checklist
 

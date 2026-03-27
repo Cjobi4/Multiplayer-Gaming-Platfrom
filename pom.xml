@@ -17,6 +17,11 @@
   </properties>
 
   <dependencies>
+      <dependency>
+          <groupId>com.github.f4b6a3</groupId>
+          <artifactId>uuid-creator</artifactId>
+          <version>5.3.7</version>
+      </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
@@ -27,12 +32,6 @@
       <artifactId>javafx-fxml</artifactId>
       <version>${javafx.version}</version>
     </dependency>
-      <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>4.13.1</version>
-          <scope>test</scope>
-      </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -62,6 +61,9 @@
         <version>0.0.8</version>
         <configuration>
           <mainClass>ca.ucalgary.seng300.app.MainApp</mainClass>
+          <options>
+            <option>--enable-native-access=javafx.graphics</option>
+          </options>
         </configuration>
       </plugin>
 

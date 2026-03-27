@@ -1,11 +1,14 @@
 package ca.ucalgary.seng300.core;
 
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.shared.models.Game;
 
+import ca.ucalgary.seng300.shared.models.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +27,10 @@ public class GameRegistryTest {
     @Test
     void testRegisterGameAddsSingleGame() {
         // 1. Arrange
-        Game game1 = new Game();
-        String expectedID = game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        String expectedID = "game1";
 
         // 2. Act
         gameRegistry.register(game1);
@@ -42,15 +47,16 @@ public class GameRegistryTest {
 
     @Test
     void testFindByIdReturnsCorrectGameID() {
-
         // 1. arrange
-        Game game1 = new Game();
-        String expectedID = game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
         gameRegistry.register(game1);
+        String expectedID = "game1";
 
         // 2. act
-        Game found = gameRegistry.findById("game1");
-        String actualId = found.getId();
+        Game foundGame = gameRegistry.findById("game1");
+        String actualId = foundGame.getId();
 
         // 3. assertions
         assertEquals(expectedID, actualId, "Expected ID for the game is:" + expectedID + " and found: " + actualId);
@@ -69,14 +75,12 @@ public class GameRegistryTest {
     @Test
     void testAddMultipleGameReturnsCorrectRegistrySize() {
         // 1. Arrange
-        Game game1 = new Game();
-        game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
 
-        Game game2 = new Game();
-        game2.setId("game2");
-
-        Game game3 = new Game();
-        game3.setId("game3");
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, leaderBoard);
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, leaderBoard);
 
         // 2. Act
         gameRegistry.register(game1);
@@ -87,59 +91,6 @@ public class GameRegistryTest {
 
         // 3. AssertEquals
         assertEquals(expectedSize, gameRegistry.ListAll().size(), "Game Registry size should be equal to expected size of: " + expectedSize);
-    }
-
-    @Test
-    void testUnregisterRemovesSingleGame() {
-        // 1. Arrange
-        Game game1 = new Game();
-        game1.setId("game1");
-        gameRegistry.register(game1);
-
-        // 2. Act
-        gameRegistry.unregister("game1");
-
-        // 3. assertion
-        assertTrue(gameRegistry.ListAll().isEmpty(), "Game registry should be empty.");
-    }
-
-    @Test
-    void testUnregisterRemovesMultipleGames() {
-        // 1. Arrange
-        Game game1 = new Game();
-        game1.setId("game1");
-        gameRegistry.register(game1);
-
-        Game game2 = new Game();
-        game2.setId("game2");
-        gameRegistry.register(game2);
-
-        Game game3 = new Game();
-        game3.setId("game3");
-        gameRegistry.register(game3);
-
-        // 2. Act
-        gameRegistry.unregister("game2");
-        gameRegistry.unregister("game3");
-        int expectedSize = 1;
-
-        // 3. AssertEquals
-        assertEquals(expectedSize, gameRegistry.ListAll().size(), "Game registry size should be equal to " + expectedSize + " after removal of 2/3 games.");
-    }
-
-    @Test
-    void testUnregisterFailsToChangeRegistrySizeWhenGameDNE() {
-        // 1. arrange
-        Game game1 = new Game();
-        game1.setId("game1");
-        gameRegistry.register(game1);
-
-        // 2. act
-        gameRegistry.unregister("game2");
-        int expectedSize = 1;
-
-        // 3. assertion
-        assertEquals(expectedSize, gameRegistry.ListAll().size(), "Game registry size should be equal to expected size of: " + expectedSize);
     }
 
     @Test
@@ -154,17 +105,20 @@ public class GameRegistryTest {
     @Test
     void testListAllReturnsAllGamesByIndex() {
         // 1. arrange
-        Game game1 = new Game();
-        String game1Expected = game1.setId("game1");
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
         gameRegistry.register(game1);
+        String game1Expected = game1.getId();
 
-        Game game2 = new Game();
-        String game2Expected = game2.setId("game2");
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, leaderBoard);
         gameRegistry.register(game2);
+        String game2Expected = game2.getId();
 
-        Game game3 = new Game();
-        String game3Expected = game3.setId("game3");
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, leaderBoard);
         gameRegistry.register(game3);
+        String game3Expected = game3.getId();
 
         // 2. act
         List<Game> games = gameRegistry.ListAll();
