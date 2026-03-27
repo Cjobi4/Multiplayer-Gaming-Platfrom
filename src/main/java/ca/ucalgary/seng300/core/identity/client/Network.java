@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class Network extends Thread {
     private static byte[] sharedKey = null;
@@ -30,6 +31,7 @@ public class Network extends Thread {
     private static final String serverIP ="10.2.1.179";
     private static final int serverPort = 501;
     private Socket socket;
+    private String clientID = null;
 
     public static final byte pings = 0;
     public static final byte create_account = 1;
@@ -46,7 +48,9 @@ public class Network extends Thread {
      */
     public Network() throws Exception {
         socket = new Socket(serverIP, serverPort);
+        establishHandshake();
     }
+
 
     // LOGIN
 
@@ -139,6 +143,12 @@ public class Network extends Thread {
     }
 
 
+    // LEADERBOARD
+
+    public void getLeaderboard() throws Exception {
+
+    }
+
     // CHAT
 
     /** Method for sending chats
@@ -218,6 +228,49 @@ public class Network extends Thread {
 
 
     // CRYPTO
+
+    private void establishHandshake() throws Exception {
+
+        // check for existing clientID, sending clientID or send "new" if no clientID exists
+        String send;
+        send = Objects.requireNonNullElse(clientID, "new");
+
+        // send the clientID or "new" to the server
+        byte[] idBytes = send.getBytes(StandardCharsets.UTF_8);
+        socket.getOutputStream().write(ByteBuffer.allocate(4).putInt(idBytes.length).array());
+        socket.getOutputStream().write(idBytes);
+
+        // read response from server
+        int response = socket.getInputStream().read();
+
+        // 0 = no clientID, perform DH key exchange
+        // 1 = has clientID, set key
+
+        if (response == 0) {
+
+            // read server's public key
+            int keyLength = ByteBuffer.wrap(socket.getInputStream().readNBytes(4)).getInt();
+            byte[] serverPubKey = socket.getInputStream().readNBytes(keyLength);
+
+            // generate shared key
+            byte[] clientPubKey = generateSharedKey(serverPubKey);
+
+            // send public key to the server, server uses to generate same shared key
+            socket.getOutputStream().write(ByteBuffer.allocate(4).putInt(clientPubKey.length).array());
+            socket.getOutputStream().write(clientPubKey);
+
+            // derive AES key
+            AESKeyInitial();
+
+            // save clientID from server
+            clientID = decrypt(readResponse());
+        }
+
+        else if (response == 1) {
+            // server has clientID and AES key, just initialize client side with existing key
+            AESKeyInitial();
+        }
+    }
 
     /** Method for creating the shared secret/key
      *
