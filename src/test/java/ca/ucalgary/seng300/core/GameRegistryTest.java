@@ -4,7 +4,6 @@ import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.shared.models.Game;
 
-import ca.ucalgary.seng300.shared.models.LaunchConfigs;
 import ca.ucalgary.seng300.shared.models.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,8 +29,7 @@ public class GameRegistryTest {
         // 1. Arrange
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
         LeaderBoard leaderBoard = null;
-        LaunchConfigs launchConfigs = null;
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
         String expectedID = "game1";
 
         // 2. Act
@@ -52,8 +50,7 @@ public class GameRegistryTest {
         // 1. arrange
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
         LeaderBoard leaderBoard = null;
-        LaunchConfigs launchConfigs = null;
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
         gameRegistry.register(game1);
         String expectedID = "game1";
 
@@ -80,11 +77,10 @@ public class GameRegistryTest {
         // 1. Arrange
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
         LeaderBoard leaderBoard = null;
-        LaunchConfigs launchConfigs = null;
 
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
-        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, launchConfigs, leaderBoard);
-        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, launchConfigs, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, leaderBoard);
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, leaderBoard);
 
         // 2. Act
         gameRegistry.register(game1);
@@ -111,17 +107,16 @@ public class GameRegistryTest {
         // 1. arrange
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
         LeaderBoard leaderBoard = null;
-        LaunchConfigs launchConfigs = null;
 
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, launchConfigs, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
         gameRegistry.register(game1);
         String game1Expected = game1.getId();
 
-        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, launchConfigs, leaderBoard);
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, leaderBoard);
         gameRegistry.register(game2);
         String game2Expected = game2.getId();
 
-        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, launchConfigs, leaderBoard);
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, leaderBoard);
         gameRegistry.register(game3);
         String game3Expected = game3.getId();
 
