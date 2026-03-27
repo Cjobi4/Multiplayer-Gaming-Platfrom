@@ -59,9 +59,4 @@ public class Game {
     public String getTitle() {
         return title;
     }
-
-    public void launch()
-    {
-        // TODO: Implementation for launching game here
-    }
 }
