@@ -3,7 +3,7 @@ package ca.ucalgary.seng300.games;
 // import ca.ucalgary.seng300.games.connectfour.*;
 import org.junit.jupiter.api.Test;
 
-public class ConnectFourTest {
+public class ConnectFourLogicTest {
     // test one: is the 6x7 board being created
     @Test
     void testConnectFourBoardSetsUp6x7() {
