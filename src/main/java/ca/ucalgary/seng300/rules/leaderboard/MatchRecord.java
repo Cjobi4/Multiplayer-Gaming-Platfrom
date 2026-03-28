@@ -29,7 +29,6 @@ public class MatchRecord {
         this.playerOneID = playerOneID;
         this.playerTwoID = playerTwoID;
         this.gameType = gameType;
-        this.matchID = matchID;
         this.winnerID = winnerID;
 
         ZoneId zoneId = ZoneId.of("Canada/Edmonton");
@@ -40,19 +39,18 @@ public class MatchRecord {
 
     /**
      * Create Match Record when retrieving database (for easier getting data)
-     * @param matchString
      */
     public MatchRecord (String matchString){
         String[] parts = matchString.split("\\s+");
         try {
             this.matchID = Integer.parseInt(parts[0]);
-            this.playerOneID = Integer.parseInt(parts[1]);
-            this.playerTwoID = Integer.parseInt(parts[2]);
+            this.playerOneID = Integer.parseInt(parts[0]);
+            this.playerTwoID = Integer.parseInt(parts[1]);
 
-            if (parts[3].equals("Tic-Tac-Toe")) this.gameType = GameType.TICTACTOE;
+            if (parts[2].equals("Tic-Tac-Toe")) this.gameType = GameType.TICTACTOE;
             else this.gameType = GameType.CONNECT4;
 
-            this.winnerID = Integer.parseInt(parts[4]);
+            this.winnerID = Integer.parseInt(parts[3]);
         }
         catch (NumberFormatException e){
             e.printStackTrace();
@@ -78,6 +76,6 @@ public class MatchRecord {
      */
     public String toString(){
         // matchID + playerOneID + playerTwoID + gameType + winnerID + date
-        return matchID + " " + playerOneID + " " + playerTwoID + " " + gameType + " " + winnerID + " " + date;
+        return playerOneID + " " + playerTwoID + " " + gameType + " " + winnerID + " " + date;
     }
 }

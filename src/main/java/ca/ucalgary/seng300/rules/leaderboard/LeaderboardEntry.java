@@ -17,6 +17,12 @@ public class LeaderboardEntry {
     private int wins;
     private int matches;
 
+    public LeaderboardEntry(int playerID, String playerName, int wins, int matches){
+        this.wins = wins;
+        this.playerID = playerID;
+        this.matches = matches;
+        this.playerName = playerName;
+    }
     public int compareTo(LeaderboardEntry e)
     {
         return Integer.compare(e.wins, this.wins);
