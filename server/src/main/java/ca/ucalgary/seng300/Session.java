@@ -4,7 +4,6 @@ import javax.crypto.SecretKey;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,6 +14,7 @@ public class Session extends Thread
     private SecretKey AESKey = null;
     private int userID;
     private String username = null;
+    private int winrate;
     private Socket client;
     private boolean loggedIn;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
@@ -87,6 +87,7 @@ public class Session extends Thread
         requestQueue.put(req);
     }
 
+    @Override
     public void run()
     {
         //establish an encryption key with the client
@@ -138,6 +139,15 @@ public class Session extends Thread
         Thread.currentThread().interrupt();
     }*/
 
+    /**
+     * Getter for the Session's userID.
+     * @return The Session's userID.
+     */
+    public int getUserID()
+    {
+        return userID;
+    }
+
 
     /**
      * Reads the request type and executes the required actions. Also uses synchronization to prevent multiple Sessions
@@ -184,7 +194,7 @@ public class Session extends Thread
                 synchronized (Session.class)
                 {
                     //check if it was successful
-                    userID = Database.createAccount(newUsername, newPassword, Thread.currentThread());
+                    userID = Database.createAccount(newUsername, newPassword, this);
                 }
 
                 //if it was, save the username for the session
@@ -219,7 +229,7 @@ public class Session extends Thread
                 }
 
                 //check if it was successful
-                userID = Database.checkLoginCredentials(usernameInput, passwordInput, Thread.currentThread());
+                userID = Database.checkLoginCredentials(usernameInput, passwordInput, this);
 
                 //if it was, save the username for the session
                 if (userID != -1)

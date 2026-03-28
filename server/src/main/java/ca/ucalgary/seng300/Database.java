@@ -5,16 +5,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Hashtable;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Database
 {
+    //database variables
     private static final String url = "jdbc:sqlite:database.db";
-
     private static Connection conn;
     private static Statement stmt;
     private static final String salt = "salt";
-    private static Hashtable<Integer, Thread> loggedInUsers = new Hashtable<>();
     private static int nextAvailID;     //the next available userID to be assigned
+
+    private static Hashtable<Integer, Session> loggedInUsers = new Hashtable<>();
 
     /**
      * establishes a connection with the database.db file that contains all the information. If database.db doesn't
@@ -159,7 +161,7 @@ public class Database
      * @return If the account is created successfully, the newly assigned userid is returned. Otherwise, if the account
      * creation fails, -1 is returned.
      */
-    public static int createAccount(String username, String password, Thread session)
+    public static int createAccount(String username, String password, Session session)
     {
         try
         {
@@ -193,7 +195,7 @@ public class Database
      * @return If a match was found, the corresponding userid is returned. Otherwise, if no match is found or the query
      * fails, -1 is returned instead.
      */
-    public static int checkLoginCredentials(String username, String password, Thread session)
+    public static int checkLoginCredentials(String username, String password, Session session)
     {
         try
         {
@@ -218,6 +220,30 @@ public class Database
                 return -1;
             }
         } catch (Exception e) //if something goes wrong, assume invalid input and reject login
+        {
+            return -1;
+        }
+    }
+
+    /**
+     * Given a userid and a game, returns the user's win rate.
+     * @param userid The user whose win rate is to be checked.
+     * @param game The name of the game for the user's win rate. "ttt" for Tic-tac-toe, and "c4" for Connect-4.
+     * @return The win rate of the user, or -1 if it couldn't be retrieved.
+     */
+    public static int getWinRate(int userid, String game)
+    {
+        try
+        {
+            //collect the user's leaderboard entry
+            ResultSet rs = stmt.executeQuery("SELECT * FROM leaderboard WHERE userid = " + userID + ";");
+
+            //move the pointer up
+            rs.next();
+
+            //return the winrate
+            return rs.getInt(game + "Wins") / rs.getInt(game + "MatchesPlayed");
+        } catch (SQLException e)
         {
             return -1;
         }
