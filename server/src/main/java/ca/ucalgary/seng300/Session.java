@@ -258,9 +258,12 @@ public class Session extends Thread
                         client.getOutputStream().write(messageBytes);
                         System.out.println("game info sent");  //for debug
                     } while (rs.next());
+
+                    //notify the client of success
+                    client.getOutputStream().write(1);
                 } else //if something went wrong and no game info was found, notify client
                 {
-                    client.getOutputStream().write(-1);
+                    client.getOutputStream().write(0);
                 }
                 break;
             case GET_LEADERBOARD:     //if it was a request for leaderboard data
@@ -287,10 +290,13 @@ public class Session extends Thread
                         client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                         client.getOutputStream().write(messageBytes);
                         System.out.println("leaderboard entry sent");  //for debug
+
+                        //notify the client of success
+                        client.getOutputStream().write(1);
                     } while (rs.next());
                 } else //if something went wrong and no leaderboard data was found, notify client
                 {
-                    client.getOutputStream().write(-1);
+                    client.getOutputStream().write(0);
                 }
                 break;
             case GET_MATCH_RECORD:    //if it was a request for match record's from a specific user
@@ -305,7 +311,7 @@ public class Session extends Thread
                     rs = Database.getMatchRecord(Integer.parseInt(message));
                 } catch (NumberFormatException e)       //if an invalid userid was entered, notify client
                 {
-                    client.getOutputStream().write(-1);
+                    client.getOutputStream().write(0);
                     break;
                 }
 
@@ -329,10 +335,13 @@ public class Session extends Thread
                         client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                         client.getOutputStream().write(messageBytes);
                         System.out.println("match record sent");  //for debug
+
+                        //notify the client of success
+                        client.getOutputStream().write(1);
                     } while (rs.next());
                 } else //if something went wrong and no match records were found, notify client
                 {
-                    client.getOutputStream().write(-1);
+                    client.getOutputStream().write(0);
                 }
                 break;
         }

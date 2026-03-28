@@ -56,30 +56,6 @@ public class Database
                     + "username TEXT NOT NULL,"
                     + "password TEXT NOT NULL);");
 
-            /*stmt.execute("CREATE TABLE IF NOT EXISTS gameInfo ("
-                    + "gameid INTEGER PRIMARY KEY,"
-                    + "title TEXT NOT NULL,"
-                    + "description MEMO NOT NULL"
-                    + "label TEXT NOT NULL,"
-                    + "color TEXT NOT NULL"
-                    + "gameURL TEXT NOT NULL,"
-                    + "fullscreen YES/NO NOT NULL);");
-
-            stmt.execute("CREATE TABLE IF NOT EXISTS games ("
-                    + "gameid INTEGER PRIMARY KEY,"
-                    + "title TEXT NOT NULL,"
-                    + "description MEMO NOT NULL);");
-
-            stmt.execute("CREATE TABLE IF NOT EXISTS tags ("
-                    + "gameid INTEGER PRIMARY KEY,"
-                    + "label TEXT NOT NULL,"
-                    + "color TEXT NOT NULL);");
-
-            stmt.execute("CREATE TABLE IF NOT EXISTS launchConfigs ("
-                    + "gameid INTEGER PRIMARY KEY,"
-                    + "gameURL TEXT NOT NULL,"
-                    + "fullscreen YES/NO NOT NULL);");*/
-
             stmt.execute("CREATE TABLE IF NOT EXISTS gameInfo ("
                             + "gameid INTEGER PRIMARY KEY,"
                             + "gameData MEMO NOT NULL);");
@@ -88,8 +64,8 @@ public class Database
                     + "userid INTEGER PRIMARY KEY,"
                     + "username TEXT NOT NULL,"
                     + "tttWins INTEGER NOT NULL,"
-                    + "c4Wins INTEGER NOT NULL,"
                     + "tttMatchesPlayed INTEGER NOT NULL,"
+                    + "c4Wins INTEGER NOT NULL,"
                     + "c4MatchesPlayed INTEGER NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS matchRecord ("
@@ -122,8 +98,8 @@ public class Database
                 nextAvailID = 1;
 
                 //add in a sample gameInfo
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`Turn Based^PINK^gameURL^YES)");
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description2^Multiplayer`Turn Based^PINK^gameURL^YES)");
+                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
+                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
                 stmt.execute("INSERT INTO leaderboard(userid, username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed) VALUES(0, admin, 999, 999, 999, 999)");
                 stmt.execute("INSERT INTO matchRecord(gameid, p1Userid, p2Userid, gametype, winnerID, date) VALUES(gameid, 0, p2Userid, Tic-Tac-Toe, 0, date)");
             }else   //if the table is not empty...
