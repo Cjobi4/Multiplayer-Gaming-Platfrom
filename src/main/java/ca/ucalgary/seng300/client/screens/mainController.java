@@ -26,6 +26,13 @@ public class mainController {
     public RadioButton TicTacToeSelect;
     public Label errorField;
 
+
+    @FXML
+    protected void onSelectButtonSelected(ActionEvent event) {
+        errorField.setText("");
+    }
+
+
     @FXML
     protected void onGameSelectButtonClick(ActionEvent event) {
         if (connect4Select.isSelected()) {
