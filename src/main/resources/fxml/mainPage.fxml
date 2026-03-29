@@ -9,6 +9,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -49,8 +50,11 @@
                                  <font>
                                     <Font name="Dubai Medium" size="14.0" />
                                  </font>
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="gameToggleGroup" />
+                                 </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="TicTacToeSelect" mnemonicParsing="false" text="Tic-Tac-Toe" textFill="#866b59">
+                              <RadioButton fx:id="TicTacToeSelect" mnemonicParsing="false" text="Tic-Tac-Toe" textFill="#866b59" toggleGroup="$gameToggleGroup">
                                  <font>
                                     <Font name="Dubai Medium" size="14.0" />
                                  </font>
@@ -75,7 +79,7 @@
                         <Font size="24.0" />
                      </font>
                   </Button>
-                  <Label fx:id="errorField" text="ERROR FIELD" textFill="#ff006e" />
+                  <Label fx:id="errorField" textFill="#ff006e" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
