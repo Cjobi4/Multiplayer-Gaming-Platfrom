@@ -46,7 +46,7 @@
                         </Label>
                         <VBox spacing="5.0">
                            <children>
-                              <RadioButton fx:id="connect4Select" mnemonicParsing="false" text="Connect 4" textFill="#866b59">
+                              <RadioButton fx:id="connect4Select" mnemonicParsing="false" onAction="#onSelectButtonSelected" text="Connect 4" textFill="#866b59">
                                  <font>
                                     <Font name="Dubai Medium" size="14.0" />
                                  </font>
@@ -54,7 +54,7 @@
                                     <ToggleGroup fx:id="gameToggleGroup" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="TicTacToeSelect" mnemonicParsing="false" text="Tic-Tac-Toe" textFill="#866b59" toggleGroup="$gameToggleGroup">
+                              <RadioButton fx:id="TicTacToeSelect" mnemonicParsing="false" onAction="#onSelectButtonSelected" text="Tic-Tac-Toe" textFill="#866b59" toggleGroup="$gameToggleGroup">
                                  <font>
                                     <Font name="Dubai Medium" size="14.0" />
                                  </font>
