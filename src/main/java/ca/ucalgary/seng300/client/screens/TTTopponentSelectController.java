@@ -19,7 +19,7 @@ public class TTTopponentSelectController {
     protected void onOpponentSelectedButtonClick(ActionEvent event) {
         try {
             //Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gamePage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TTTgamePage.fxml"));
             Parent gameRoot = loader.load();
 
             //Get current stage from the button click
@@ -28,11 +28,11 @@ public class TTTopponentSelectController {
             //Create new scene and set it on the stage
             Scene gameScene = new Scene(gameRoot, 800, 600);
             stage.setScene(gameScene);
-            stage.setTitle("Game"); //Change stage title to reflect current scene
+            stage.setTitle("Tic-Tac-Toe - Game"); //Change stage title to reflect current scene
             stage.show();
 
         } catch (IOException e) {
-            System.err.println("Error: Could not load gamePage.fxml. Check file path!");
+            System.err.println("Error: Could not load TTTgamePage.fxml. Check file path!");
         }
     }
 
