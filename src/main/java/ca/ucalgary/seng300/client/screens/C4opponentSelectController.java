@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class opponentSelectController {
+public class C4opponentSelectController {
     public Button opponentSelectedButton;
     public Button backButton;
 

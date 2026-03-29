@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.opponentSelectController">
+<HBox stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.C4opponentSelectController">
    <children>
       <AnchorPane prefHeight="600" prefWidth="800" style="-fx-background-color: #F9EDE1;" styleClass="pane">
          <children>
