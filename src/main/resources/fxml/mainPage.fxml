@@ -44,7 +44,12 @@
                         </Label>
                      </children>
                   </VBox>
-                  <Button fx:id="gameSelectButton" mnemonicParsing="false" onAction="#onGameSelectButtonClick" prefHeight="55.0" prefWidth="215.0" styleClass="basic-button" text="Select Opponent">
+                  <Button fx:id="gameSelectButton" mnemonicParsing="false" onAction="#onGameSelectButtonClick" prefHeight="55.0" prefWidth="215.0" styleClass="basic-button" text="Select An Opponent">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="MatchMakeButton" layoutX="30.0" layoutY="340.0" mnemonicParsing="false" onAction="#onMatchMakeButtonClick" prefHeight="55.0" prefWidth="215.0" styleClass="basic-button" text="Find A Match">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -98,7 +103,7 @@
               <buttons>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="🔍" />
                   <TextField prefHeight="26.0" style="-fx-background-color: #FCE0D2;" />
-                <Button mnemonicParsing="false" onAction="#handleLogout" prefHeight="26.0" prefWidth="167.0" styleClass="basic-button" text="Log Out" />
+                <Button fx:id="logOutButton" mnemonicParsing="false" onAction="#handleLogout" prefHeight="26.0" prefWidth="167.0" styleClass="basic-button" text="Log Out" />
               </buttons>
             </ButtonBar>
          </children></HBox>
