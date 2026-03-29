@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.client.screens;
 
-import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +11,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class gameController {
+public class C4gameController {
     public Button gameOverButton;
     public Button backButton;
 
@@ -49,7 +48,7 @@ public class gameController {
     protected void onBackButtonClick(ActionEvent event) {
         try {
             //Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/opponentSelectPage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/C4opponentSelectPage.fxml"));
             Parent opponentRoot = loader.load();
 
             //Get current stage from the button click
@@ -58,11 +57,11 @@ public class gameController {
             //Create new scene and set it on the stage
             Scene opponentScene = new Scene(opponentRoot, 800, 600);
             stage.setScene(opponentScene);
-            stage.setTitle("Opponent Select"); //Change stage title to reflect current scene
+            stage.setTitle("Connect 4 - Opponent Select"); //Change stage title to reflect current scene
             stage.show();
 
         } catch (IOException e) {
-            System.err.println("Error: Could not load opponentSelectPage.fxml. Check file path!");
+            System.err.println("Error: Could not load C4opponentSelectPage.fxml. Check file path!");
         }
     }
 }
