@@ -31,7 +31,7 @@ public class mainController {
         if (connect4Select.isSelected()) {
             switchScene(event, "/fxml/C4OpponentSelectPage.fxml", "Connect 4 - Select Opponent");
         } else if (TicTacToeSelect.isSelected()) {
-            switchScene(event, "/fxml/TTTOpponentSelect.fxml", "Tic-Tac-Toe - Select Opponent");
+            switchScene(event, "/fxml/TTTOpponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
         } else {
             errorField.setText("Please select a game first!");
         }
@@ -42,7 +42,7 @@ public class mainController {
         if (connect4Select.isSelected()) {
             switchScene(event, "/fxml/C4OpponentSelectPage.fxml", "Connect 4 - Select Opponent");
         } else if (TicTacToeSelect.isSelected()) {
-            switchScene(event, "/fxml/TTTOpponentSelect.fxml", "Tic-Tac-Toe - Select Opponent");
+            switchScene(event, "/fxml/TTTOpponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
         } else {
             errorField.setText("Please select a game first!");
         }
