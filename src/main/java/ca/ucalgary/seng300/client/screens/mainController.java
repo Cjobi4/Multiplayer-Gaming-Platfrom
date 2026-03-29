@@ -9,6 +9,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.stage.Stage;
 
 import javax.swing.*;
@@ -20,6 +22,9 @@ public class mainController {
     public Button gameSelectButton;
     public Button logOutButton;
     public Button MatchMakeButton;
+    public RadioButton connect4Select;
+    public RadioButton TicTacToeSelect;
+    public Label errorField;
 
     @FXML
     protected void onGameSelectButtonClick(ActionEvent event) {
