@@ -1,13 +1,12 @@
 package ca.ucalgary.seng300;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Matchmaker extends Thread
 {
-    //matchmaking queue
-    private LinkedBlockingQueue<Session> mQueue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<Session> mQueue = new LinkedBlockingQueue<>();      //matchmaking queue
+    private LinkedBlockingQueue<Session> quittersQueue = new LinkedBlockingQueue<>();       //list of players trying to leave
     private String gameName;
 
     //constructor
@@ -33,6 +32,8 @@ public class Matchmaker extends Thread
         Session potentialPartner;
         LinkedList<Session> checkedPlayers = new LinkedList<>();    //players who have been checked at least once already
 
+        Session quitter;
+
         boolean matchFound;
         long queueStartTime;
         long queueTime;
@@ -53,7 +54,7 @@ public class Matchmaker extends Thread
                     prioPlayer = mQueue.take();
                 }
 
-                //get the player's winrate
+                //get the player's win rate
                 prioPWinRate = Database.getWinRate(prioPlayer.getUserID(), gameName);
 
                 //start the timer
@@ -62,8 +63,30 @@ public class Matchmaker extends Thread
                 queueTime = 0;
 
                 //keep looping until a match is found for the player
-                while (true)
+                while (!matchFound)
                 {
+                    //before each round of checks, first make sure that any quitters are removed
+                    if (!quittersQueue.isEmpty())
+                    {
+                        quitter = quittersQueue.take();
+
+                        //if the prio player was the quitter...
+                        if (quitter.equals(prioPlayer))
+                        {
+                            //restart the process with a new prio player
+                            System.out.println("Prio player removed.");     //for debug
+                            break;
+                        }else
+                        {
+                            //try to remove them from the list of checkPlayers first
+                            if (!checkedPlayers.remove(quitter))
+                            {
+                                //if they weren't in there, remove them from the queue
+                                mQueue.remove(quitter);
+                            }
+                        }
+                    }
+
                     //check how long the player has been waiting in the queue (use to adjust acceptable skill difference)
                     queueTime = System.currentTimeMillis() - queueStartTime;
 
@@ -139,9 +162,6 @@ public class Matchmaker extends Thread
                     //if the difference in skill level was too high, repeat and check the next player*/
                 }
 
-
-
-
             } catch (Exception e)
             {
                 throw new RuntimeException(e);
@@ -157,12 +177,30 @@ public class Matchmaker extends Thread
      */
     public boolean joinMQueue(Session sesh)
     {
-        //try to add the Session to the queue
+        //try to add the Session to the matchmaking queue
         try
         {
             mQueue.put(sesh);
             return true;
         }catch (Exception e) //if it fails let the Session know the queue wasn't joined
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Removes a Session from the matchmaking queue.
+     * @param sesh The Session to be removed.
+     * @return True if the Session was removed successfully, false if it failed.
+     */
+    public boolean leaveMQueue(Session sesh)
+    {
+        //try to add the Session to the quitter's queue
+        try
+        {
+            quittersQueue.put(sesh);
+            return true;
+        }catch (Exception e) //if it fails let the Session know the quitter's queue wasn't joined
         {
             return false;
         }

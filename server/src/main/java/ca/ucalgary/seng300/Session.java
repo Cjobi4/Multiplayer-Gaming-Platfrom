@@ -20,13 +20,13 @@ public class Session extends Thread
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
 
     //////////////// REQUEST TYPES ////////////////
-    private final int PING = 0;
-    private final int CREATE_ACCOUNT = 1;
-    private final int LOGIN = 2;
-    private final int LOGOUT = 3;
-    private final int GET_GAME_LIST = 4;
-    private final int GET_LEADERBOARD = 5;
-    private final int GET_MATCH_RECORD = 6;
+    //private final int PING = 0;
+    //private final int CREATE_ACCOUNT = 1;
+    //private final int LOGIN = 2;
+    //private final int LOGOUT = 3;
+    //private final int GET_GAME_LIST = 4;
+    //private final int GET_LEADERBOARD = 5;
+    //private final int GET_MATCH_RECORD = 6;
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -97,6 +97,7 @@ public class Session extends Thread
         {
             int requestType;
             client.setSoTimeout(5000);  //server pauses checking every 5 seconds
+            Request req;
 
             //then start listening for incoming requests
             while (true)
@@ -114,12 +115,11 @@ public class Session extends Thread
 
                 } catch (SocketTimeoutException e)  //if nothing is currently found, go through the queue
                 {
-                    Request req = requestQueue.poll(1, TimeUnit.MILLISECONDS);
-
                     //if the queue isn't empty
-                    if (req != null)
+                    if (!requestQueue.isEmpty())
                     {
                         //handle the request
+                        req = requestQueue.take();
                         processRequest(req.getType(), AESKey, req);
                     }
                 }
@@ -176,10 +176,10 @@ public class Session extends Thread
         //depending on the request type...
         switch (requestType)
         {
-            case PING:
+            case 0:
 
                 break;
-            case CREATE_ACCOUNT:     //if it was a register account request...
+            case 1:     //if it was a register account request...
                 //collect the username
                 messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                 messageBytes = client.getInputStream().readNBytes(messageLength);
@@ -217,7 +217,7 @@ public class Session extends Thread
                     client.getOutputStream().write(0);
                 }
                 break;
-            case LOGIN:     //if it was a login request...
+            case 2:     //if it was a login request...
                 //collect the username
                 messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                 messageBytes = client.getInputStream().readNBytes(messageLength);
@@ -252,7 +252,7 @@ public class Session extends Thread
                     client.getOutputStream().write(0);
                 }
                 break;
-            case LOGOUT:     //if it was a logout request
+            case 3:     //if it was a logout request
                 Database.logOut(userID);
 
                 //close the connection with the client
@@ -260,7 +260,7 @@ public class Session extends Thread
                 Thread.currentThread().interrupt();
                 ///////check this might not need
                 break;
-            case GET_GAME_LIST:     //if it was a request for the game info
+            case 4:     //if it was a request for the game info
                 //collect the game info from the database
                 rs = Database.getAllGames();
 
@@ -284,7 +284,7 @@ public class Session extends Thread
                     client.getOutputStream().write(0);
                 }
                 break;
-            case GET_LEADERBOARD:     //if it was a request for leaderboard data
+            case 5:     //if it was a request for leaderboard data
                 //collect the leaderboard entries from the database
                 rs = Database.getAllLeaderboardEntries();
 
@@ -326,7 +326,7 @@ public class Session extends Thread
                     client.getOutputStream().write(0);
                 }
                 break;
-            case GET_MATCH_RECORD:    //if it was a request for match record's from a specific user
+            case 6:    //if it was a request for match record's from a specific user
                 //collect the desired userid
                 messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                 messageBytes = client.getInputStream().readNBytes(messageLength);
