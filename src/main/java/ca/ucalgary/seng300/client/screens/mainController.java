@@ -38,8 +38,13 @@ public class mainController {
     private final List<Game> games = new ArrayList<>();
 
     private void sampleData(){
-        List<Tag> Connect4 = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
-        List<Tag> TicTacToe = Arrays.asList(new Tag("Two Player", "purple"), new Tag("Classic", "Green"));
+        List<Tag> Connect4Tag = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
+        List<Tag> TicTacToeTag = Arrays.asList(new Tag("Two Player", "purple"), new Tag("Classic", "Green"));
+        games.add(new Game("101", "Connect 4", " Connect 4 is a two-player strategy game where players drop colored discs into a seven-column, six-row vertical grid.", Connect4Tag, null )); // have leaderboard as null for now
+        games.add(new Game("102", "TicTacToe", " Tic-Tac-Toe (or Noughts and Crosses) is a classic, two-player paper-and-pencil game played on a \n" +
+                "\n" +
+                " grid. Players alternate placing their mark—\"X\" or \"O\"—in empty spaces, with the primary objective of being the first to align three of their marks in a horizontal, vertical, or diagonal row.", TicTacToeTag, null )); // have leaderboard as null for now
+
     }
 
 
