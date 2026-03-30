@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.shared.models.Game;
+import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +18,7 @@ import javafx.stage.Stage;
 import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class mainController {
@@ -36,7 +38,8 @@ public class mainController {
     private final List<Game> games = new ArrayList<>();
 
     private void sampleData(){
-
+        List<Tag> Connect4 = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
+        List<Tag> TicTacToe = Arrays.asList(new Tag("Two Player", "purple"), new Tag("Classic", "Green"));
     }
 
 
