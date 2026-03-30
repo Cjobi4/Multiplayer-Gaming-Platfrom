@@ -19,8 +19,8 @@ public class ChatRegistry {
     }
 
     /**
-     * Gets the current instance of the game registry
-     * @return the game registry, if none exists one is made and returned.
+     * Gets the current instance of the chat registry
+     * @return the chat registry, if none exists one is made and returned.
      */
     public static ChatRegistry getInstance()
     {
