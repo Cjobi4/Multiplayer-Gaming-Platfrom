@@ -94,6 +94,3 @@ public class connectFourGame {
         board.printBoard();
     }
 }
-
-
-

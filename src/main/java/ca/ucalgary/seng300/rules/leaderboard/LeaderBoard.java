@@ -1,10 +1,9 @@
 package ca.ucalgary.seng300.rules.leaderboard;
 
-import javafx.css.Match;
-
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Manages leaderboard scoring, submission, and queries.
@@ -14,49 +13,82 @@ import java.util.Collections;
  * the PersistenceService from the shared contracts layer. Display
  * is handled by the Client/UI leaderboard dashboard.</p>
  *
- * <p>TODO: Implement score submission, ranking, and query operations
  * using the shared LeaderboardEntry model.</p>
  */
-public class LeaderBoard {
-    // TODO: Implement leaderboard — placeholder for Rules & Validation
+public class LeaderBoard{
+
+    private Map<Integer, LeaderboardEntry> tempDatabase = new HashMap(); // hashmap to store leaderboard entries
+    // VERY temporary. Only here for the purposes of testing
+    // redundant store of UID for querying purposes
+    /**
+     * Note from Quality-Testing Team:
+     * Very basic placeholder so we can complete testing
+     * Feel free to change attributes to better suit the final product
+     */
 
     /**
-     * update the personal record (as in total wins & matches or just total matches)
-     * @param playerID
+     * Adds a score to the leaderboard
+     * @param uid is the id of the user
+     * @param newEntry is simply the new entry
      */
-    public static void updatePersonalRecord (int playerID){
-        // update wins and matches for the user
+    public void submitScore(int uid, LeaderboardEntry newEntry){
+        tempDatabase.remove(uid); // removes if already exists
+        tempDatabase.put(uid, newEntry); // basic addition function
+        // definitely add on more later
+    }
 
+    public int getScore(int uid){ // retrieves score of given uid
+        LeaderboardEntry toReturn = tempDatabase.getOrDefault(uid, new LeaderboardEntry());
+
+        return toReturn.getWins();
+        // default value of -1 if the uid doesn't exist
+    }
+
+    public String getName(int uid){
+        LeaderboardEntry toReturn = tempDatabase.getOrDefault(uid, new LeaderboardEntry());
+
+        return toReturn.getPlayerName();
+    }
+
+    public int getTopScore(){
+        List<LeaderboardEntry> copy = new ArrayList<>(); // arraylist of lb entries
+
+        for(LeaderboardEntry entry : tempDatabase.values()){
+            copy.add(new LeaderboardEntry(entry.getRank(), entry.getPlayerID(), entry.getPlayerName(), entry.getWins(), entry.getMatches()));
+            // for our copy we only care about score
+        }
+
+        copy.sort((a,b) -> Integer.compare(b.getWins(), a.getWins()));
+        // sort highest to lowest
+        return copy.getFirst().getWins();
+    }
+
+    public List<LeaderboardEntry> getTopPlayers(int count){ // retrieves top x players based on score
+        List<LeaderboardEntry> copy = new ArrayList<>(); // arraylist of lb entries
+
+        for(LeaderboardEntry entry : tempDatabase.values()){
+            copy.add(new LeaderboardEntry(entry.getRank(),entry.getPlayerID(), entry.getPlayerName(), entry.getWins(), entry.getMatches()));
+            // for our copy we only care about ID and score
+        }
+
+        copy.sort((a,b) -> Integer.compare(b.getWins(), a.getWins()));
+        // sort highest to lowest
+
+        if(count > copy.size()){
+            return copy; // in the case they request more players than are in the list
+        }
+
+        return copy.subList(0, count); // return x amount of players
     }
 
     /**
-     * get the leaderboard based on ranking (like the top 10 players)
-     * @param rank
+     * Helper function for printing out lists of lb entries
+     * Should be used in conjunction with getTopPlayers
      */
-    public static void getLeaderboard (int rank){
-        // get the leaderboard based on rank
-
+    public void printTopPlayers(List<LeaderboardEntry> printList){
+        for(LeaderboardEntry entry : printList){
+            System.out.println("Wins: " + entry.getWins() + " Player: " + entry.getPlayerName() + " UID:" + entry.getPlayerID());
+        }
     }
 
-    /**
-     * get a player personal record (including total wins + matches)
-     * @param playerID
-     */
-    public static void getPersonalRecord (int playerID){
-        // get the personal record of the player (using their playerID)
-
-    }
-
-    public static ArrayList<MatchRecord> getUserMatchRecords (int playerID, int fromRange, int toRange){
-        LeaderboardDatabase.loadUserMatchRecords(playerID);
-        return LeaderboardDatabase.userMatchRecords;
-
-    }
-
-    /**
-     * use after finish a match (for tracking game history)
-     */
-    public static void createMatchRecord (int playerOneID, int PlayerTwoID, int winnerID, GameType gameType){
-        MatchRecord matchRecord = null;
-    }
 }
