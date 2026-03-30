@@ -101,10 +101,10 @@
                   </StackPane>
                   <VBox alignment="CENTER" prefHeight="314.0" prefWidth="294.0" spacing="30.0">
                      <children>
-                        <Label text="Label" />
-                        <Label text="Label" />
-                        <Label text="Label" />
-                        <Label text="Label" />
+                        <Label fx:id="gameTitleLabel" />
+                        <Label fx:id="gameDescriptionLabel" />
+                        <Label fx:id="gameIdLabel" />
+                        <Label fx:id="gameTagsLabel" />
                      </children>
                   </VBox>
                </children>
@@ -136,7 +136,7 @@
             <ButtonBar prefHeight="28.0" prefWidth="200.0" style="-fx-background-color: #F7C5AD;">
               <buttons>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="🔍" />
-                  <TextField prefHeight="26.0" style="-fx-background-color: #FCE0D2;" />
+                  <TextField fx:id="searchField" onAction="#handleSearch" prefHeight="26.0" style="-fx-background-color: #FCE0D2;" />
                 <Button fx:id="logOutButton" mnemonicParsing="false" onAction="#handleLogout" prefHeight="26.0" prefWidth="167.0" styleClass="basic-button" text="Log Out" />
               </buttons>
             </ButtonBar>
