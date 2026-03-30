@@ -95,7 +95,7 @@ public class Matchmaker extends Thread
                     {
                         //if the player's win rate was unable to be retrieved or the difference in skill is acceptable...
                         if (prioPWinRate == -1 ||
-                                Math.abs(prioPWinRate - checkedPlayers.get(i).getWinRate()) <= acceptableSkillDiff + (10 * (double)queueTime / 10000))
+                                Math.abs(prioPWinRate - Database.getWinRate(checkedPlayers.get(i).getUserID(), gameName)) <= acceptableSkillDiff + (10 * (double)queueTime / 10000))
                         {
                             //then match them together
                             /// match
@@ -116,7 +116,7 @@ public class Matchmaker extends Thread
 
                         //and compare their win rates
                         if (prioPWinRate == -1 ||
-                                Math.abs(prioPWinRate - potentialPartner.getWinRate()) <= acceptableSkillDiff + (10 * (double)queueTime / 10000))
+                                Math.abs(prioPWinRate - Database.getWinRate(potentialPartner.getUserID(), gameName)) <= acceptableSkillDiff + (10 * (double)queueTime / 10000))
                         {
                             //if the difference is acceptable, match the two
 
@@ -166,7 +166,6 @@ public class Matchmaker extends Thread
             {
                 throw new RuntimeException(e);
             }
-
         }
     }
 

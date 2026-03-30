@@ -14,7 +14,6 @@ public class Session extends Thread
     private SecretKey AESKey = null;
     private int userID;
     private String username = null;
-    private int winrate;
     private Socket client;
     private boolean loggedIn;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
@@ -27,6 +26,10 @@ public class Session extends Thread
     //private final int GET_GAME_LIST = 4;
     //private final int GET_LEADERBOARD = 5;
     //private final int GET_MATCH_RECORD = 6;
+    //private final int JOIN_TTT_QUEUE = 7;
+    //private final int LEAVE_TTT_QUEUE = 8;
+    //private final int JOIN_C4_QUEUE = 9;
+    //private final int LEAVE_C4_QUEUE = 10;
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -48,7 +51,7 @@ public class Session extends Thread
         private int type;
         private String[] parameters;
 
-        //constructer
+        //constructor
         Request(int t, String[] p)
         {
             type = t;
@@ -75,7 +78,7 @@ public class Session extends Thread
     }
 
     /**
-     * Adds a request to the queue for the session to execute.
+     * Adds a request to the queue for the Session to execute.
      * @param type The request type, in int form
      * @param parameters The parameters for the request, in a String array with each parameter under a different index
      * @throws Exception NullPointerException if the request is null, or InterruptedException if is interrupted while
@@ -148,14 +151,6 @@ public class Session extends Thread
         return userID;
     }
 
-    /**
-     * Getter for the Session's win rate.
-     * @return The Session's win rate. If no win rate is found, return -1;
-     */
-    public int getWinRate()
-    {
-        return winrate;
-    }
 
     /**
      * Reads the request type and executes the required actions. Also uses synchronization to prevent multiple Sessions
@@ -173,9 +168,8 @@ public class Session extends Thread
         ResultSet rs;
         StringBuilder sbuild;
 
-        //depending on the request type...
-        switch (requestType)
-        {
+        //these requests don't need the user to be logged in
+        switch (requestType) {
             case 0:
 
                 break;
@@ -191,28 +185,25 @@ public class Session extends Thread
                 String newPassword = Network.decrypt(messageBytes, AESKey);
 
                 //check to see if the password meets the password requirements
-                if (newPassword.length() < 8 || newPassword.length() > 18)
-                {
+                if (newPassword.length() < 8 || newPassword.length() > 18) {
                     //if it doesn't pass don't make an account
                     client.getOutputStream().write(0);
                     break;
                 }
 
                 //only one Session can run this block at a time
-                synchronized (Session.class)
-                {
+                synchronized (Session.class) {
                     //check if it was successful
                     userID = Database.createAccount(newUsername, newPassword, this);
                 }
 
                 //if it was, save the username for the session
-                if (userID != -1)
-                {
+                if (userID != -1) {
                     username = newUsername;
                     loggedIn = true;
                     //notify the client of success
                     client.getOutputStream().write(1);
-                }else //otherwise notify of failure
+                } else //otherwise notify of failure
                 {
                     client.getOutputStream().write(0);
                 }
@@ -229,8 +220,7 @@ public class Session extends Thread
                 String passwordInput = Network.decrypt(messageBytes, AESKey);
 
                 //check to see if the password meets the password requirements
-                if (passwordInput.length() < 8 || passwordInput.length() > 18)
-                {
+                if (passwordInput.length() < 8 || passwordInput.length() > 18) {
                     //if it doesn't pass don't bother asking database
                     client.getOutputStream().write(0);
                     break;
@@ -240,137 +230,184 @@ public class Session extends Thread
                 userID = Database.checkLoginCredentials(usernameInput, passwordInput, this);
 
                 //if it was, save the username for the session
-                if (userID != -1)
-                {
+                if (userID != -1) {
                     username = usernameInput;
                     loggedIn = true;
 
                     //notify the client of success
                     client.getOutputStream().write(1);
-                }else //otherwise notify of failure
+                } else //otherwise notify of failure
                 {
                     client.getOutputStream().write(0);
                 }
                 break;
-            case 3:     //if it was a logout request
-                Database.logOut(userID);
+        }
 
-                //close the connection with the client
-                TimeUnit.SECONDS.sleep(2);      //give some time, make sure client disconnects first before closing session thread
-                Thread.currentThread().interrupt();
-                ///////check this might not need
-                break;
-            case 4:     //if it was a request for the game info
-                //collect the game info from the database
-                rs = Database.getAllGames();
+        //these requests require the user to be logged in
+        if (loggedIn)
+        {
+            switch (requestType)
+            {
+                case 3:     //if it was a logout request
+                    Database.logOut(userID);
 
-                //go through the results
-                if (rs != null && rs.next())
-                {
-                    //go through each game data...
-                    do
+                    //close the connection with the client
+                    TimeUnit.SECONDS.sleep(2);      //give some time, make sure client disconnects first before closing session thread
+                    Thread.currentThread().interrupt();
+                    ///////check this might not need
+                    break;
+                case 4:     //if it was a request for the game info
+                    //collect the game info from the database
+                    rs = Database.getAllGames();
+
+                    //go through the results
+                    if (rs != null && rs.next())
                     {
-                        //send the game data to the client
-                        messageBytes = Network.encrypt(rs.getString(2), AESKey);
-                        client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
-                        client.getOutputStream().write(messageBytes);
-                        System.out.println("game info sent");  //for debug
-                    } while (rs.next());
-
-                    //notify the client of success
-                    client.getOutputStream().write(1);
-                } else //if something went wrong and no game info was found, notify client
-                {
-                    client.getOutputStream().write(0);
-                }
-                break;
-            case 5:     //if it was a request for leaderboard data
-                //collect the leaderboard entries from the database
-                rs = Database.getAllLeaderboardEntries();
-
-                //go through the results
-                if (rs != null && rs.next())
-                {
-                    sbuild = new StringBuilder();
-
-                    //go through each entry...
-                    do
-                    {
-                        //turn each entry into a single string
-                        for (int i = 1; i <= 6; i++)
+                        //go through each game data...
+                        do
                         {
-                            //if it is the username, send that first
-                            if (i != 2)
+                            //send the game data to the client
+                            messageBytes = Network.encrypt(rs.getString(2), AESKey);
+                            client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                            client.getOutputStream().write(messageBytes);
+                            System.out.println("game info sent");  //for debug
+                        } while (rs.next());
+
+                        //notify the client of success
+                        client.getOutputStream().write(1);
+                    } else //if something went wrong and no game info was found, notify client
+                    {
+                        client.getOutputStream().write(0);
+                    }
+                    break;
+                case 5:     //if it was a request for leaderboard data
+                    //collect the leaderboard entries from the database
+                    rs = Database.getAllLeaderboardEntries();
+
+                    //go through the results
+                    if (rs != null && rs.next())
+                    {
+                        sbuild = new StringBuilder();
+
+                        //go through each entry...
+                        do
+                        {
+                            //turn each entry into a single string
+                            for (int i = 1; i <= 6; i++)
                             {
-                                messageBytes = Network.encrypt(rs.getString(i), AESKey);
-                                client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
-                                client.getOutputStream().write(messageBytes);
-                            }else   //otherwise keep formatting the rest of data into a single string
+                                //if it is the username, send that first
+                                if (i != 2)
+                                {
+                                    messageBytes = Network.encrypt(rs.getString(i), AESKey);
+                                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                                    client.getOutputStream().write(messageBytes);
+                                }else   //otherwise keep formatting the rest of data into a single string
+                                {
+                                    sbuild.append(rs.getString(i));
+                                    sbuild.append("^");     //use ^ as separators
+                                }
+                            }
+
+                            //send the formatted leaderboard entry to the client
+                            messageBytes = Network.encrypt(sbuild.toString(), AESKey);
+                            client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                            client.getOutputStream().write(messageBytes);
+                            System.out.println("leaderboard entry sent");  //for debug
+
+                            //notify the client of success
+                            client.getOutputStream().write(1);
+                        } while (rs.next());
+                    } else //if something went wrong and no leaderboard data was found, notify client
+                    {
+                        client.getOutputStream().write(0);
+                    }
+                    break;
+                case 6:    //if it was a request for match record's from a specific user
+                    //collect the desired userid
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    message = Network.decrypt(messageBytes, AESKey);
+
+                    try
+                    {
+                        //collect the match records with matching userids from the database
+                        rs = Database.getMatchRecord(Integer.parseInt(message));
+                    } catch (NumberFormatException e)       //if an invalid userid was entered, notify client
+                    {
+                        client.getOutputStream().write(0);
+                        break;
+                    }
+
+                    //if the inputted userid was valid, go through the results
+                    if (rs != null && rs.next())
+                    {
+                        sbuild = new StringBuilder();
+
+                        //go through each match record...
+                        do
+                        {
+                            //turn each match record into a single string
+                            for (int i = 2; i <= 6; i++)
                             {
                                 sbuild.append(rs.getString(i));
-                                sbuild.append("^");     //use ^ as separators
+                                sbuild.append("^");
                             }
-                        }
 
-                        //send the formatted leaderboard entry to the client
-                        messageBytes = Network.encrypt(sbuild.toString(), AESKey);
-                        client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
-                        client.getOutputStream().write(messageBytes);
-                        System.out.println("leaderboard entry sent");  //for debug
+                            //send the formatted match records to the client
+                            messageBytes = Network.encrypt(sbuild.toString(), AESKey);
+                            client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                            client.getOutputStream().write(messageBytes);
+                            System.out.println("match record sent");  //for debug
 
-                        //notify the client of success
-                        client.getOutputStream().write(1);
-                    } while (rs.next());
-                } else //if something went wrong and no leaderboard data was found, notify client
-                {
-                    client.getOutputStream().write(0);
-                }
-                break;
-            case 6:    //if it was a request for match record's from a specific user
-                //collect the desired userid
-                messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
-                messageBytes = client.getInputStream().readNBytes(messageLength);
-                message = Network.decrypt(messageBytes, AESKey);
-
-                try
-                {
-                    //collect the match records with matching userids from the database
-                    rs = Database.getMatchRecord(Integer.parseInt(message));
-                } catch (NumberFormatException e)       //if an invalid userid was entered, notify client
-                {
-                    client.getOutputStream().write(0);
-                    break;
-                }
-
-                //if the inputed userid was valid, go through the results
-                if (rs != null && rs.next())
-                {
-                    sbuild = new StringBuilder();
-
-                    //go through each match record...
-                    do
+                            //notify the client of success
+                            client.getOutputStream().write(1);
+                        } while (rs.next());
+                    } else //if something went wrong and no match records were found, notify client
                     {
-                        //turn each match record into a single string
-                        for (int i = 2; i <= 6; i++)
-                        {
-                            sbuild.append(rs.getString(i));
-                            sbuild.append("^");
-                        }
-
-                        //send the formatted match records to the client
-                        messageBytes = Network.encrypt(sbuild.toString(), AESKey);
-                        client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
-                        client.getOutputStream().write(messageBytes);
-                        System.out.println("match record sent");  //for debug
-
-                        //notify the client of success
+                        client.getOutputStream().write(0);
+                    }
+                    break;
+                case 7:     //if it was a request to join the Tic-tac-toe matchmaking queue...
+                    //join the queue and notify if successful
+                    if (Database.getTttMatchmaker().joinMQueue(this))
+                    {
                         client.getOutputStream().write(1);
-                    } while (rs.next());
-                } else //if something went wrong and no match records were found, notify client
-                {
-                    client.getOutputStream().write(0);
-                }
-                break;
+                    }else
+                    {
+                        client.getOutputStream().write(0);
+                    }
+                    break;
+                case 8:     //if it was a request to leave the Tic-tac-toe matchmaking queue...
+                    //leave the queue and notify if successful
+                    if (Database.getTttMatchmaker().leaveMQueue(this))
+                    {
+                        client.getOutputStream().write(1);
+                    }else
+                    {
+                        client.getOutputStream().write(0);
+                    }
+                    break;
+                case 9:     //if it was a request to join the Connect-4 matchmaking queue...
+                    //join the queue and notify if successful
+                    if (Database.getC4Matchmaker().joinMQueue(this))
+                    {
+                        client.getOutputStream().write(1);
+                    }else
+                    {
+                        client.getOutputStream().write(0);
+                    }
+                    break;
+                case 10:     //if it was a request to leave the Connect-4 matchmaking queue...
+                    //leave the queue and notify if successful
+                    if (Database.getC4Matchmaker().leaveMQueue(this))
+                    {
+                        client.getOutputStream().write(1);
+                    }else
+                    {
+                        client.getOutputStream().write(0);
+                    }
+                    break;
+            }
         }
     }
 }

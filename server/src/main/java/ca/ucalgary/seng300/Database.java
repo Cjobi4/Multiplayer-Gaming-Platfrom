@@ -18,6 +18,10 @@ public class Database
 
     private static Hashtable<Integer, Session> loggedInUsers = new Hashtable<>();
 
+    //matchmaking threads
+    private static Matchmaker tttMatchmaker;
+    private static Matchmaker c4Matchmaker;
+
     /**
      * establishes a connection with the database.db file that contains all the information. If database.db doesn't
      * already exist, a new database.db file will be created. If a connection cannot be established, shut down the
@@ -115,6 +119,37 @@ public class Database
             //also need to add in a check to shut down server here if something goes wrong
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Initialize and start the Matchmaker threads responsible for matchmaking.
+     */
+    public static void launchMatchmaking()
+    {
+        //create the Matchmaking threads
+        tttMatchmaker = new Matchmaker("ttt");
+        c4Matchmaker = new Matchmaker("c4");
+
+        tttMatchmaker.start();
+        c4Matchmaker.start();
+    }
+
+    /**
+     * Getter for the Tic-tac-toe Matchmaker thread object, tttMatchmaker.
+     * @return tttMatchermaker
+     */
+    public static Matchmaker getTttMatchmaker()
+    {
+        return tttMatchmaker;
+    }
+
+    /**
+     * Getter for the Connect-4 Matchmaker thread object, c4Matchmaker.
+     * @return c4Matchermaker
+     */
+    public static Matchmaker getC4Matchmaker()
+    {
+        return c4Matchmaker;
     }
 
     /**
@@ -268,9 +303,7 @@ public class Database
         try
         {
             //collect all the info on the games
-            ResultSet rs = stmt.executeQuery("SELECT * FROM games;");
-
-            return rs;
+            return stmt.executeQuery("SELECT * FROM games;");
         } catch (SQLException e)
         {
             return null;
@@ -287,9 +320,7 @@ public class Database
         try
         {
             //collect all the leaderboard entries
-            ResultSet rs = stmt.executeQuery("SELECT * FROM leaderboard;");
-
-            return rs;
+            return stmt.executeQuery("SELECT * FROM leaderboard;");
         } catch (SQLException e)
         {
             return null;
