@@ -1,17 +1,32 @@
 package ca.ucalgary.seng300.games;
 
-// import ca.ucalgary.seng300.games.connectfour.*;
+import ca.ucalgary.seng300.games.connectfour.connectFourBoard;
+import ca.ucalgary.seng300.games.connectfour.connectFourGame;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConnectFourLogicTest {
-    // test one: is the 6x7 board being created
+
     @Test
     void testConnectFourBoardSetsUp6x7() {
-        // 1. arrange
+        connectFourBoard board = new connectFourBoard();
+        int expectedRows = 6;
+        int expectedColumns = 7;
 
-        // 2. act
+        int actualRows = board.getRows();
+        int actualColumns = board.getCols();
 
-        // 3. assertions
+        // checking if the actual board is initialized to have '.' in each cell
+        for (int row = 0; row < expectedRows; row++) {
+            for (int col = 0; col < expectedColumns; col++) {
+                assertEquals('.', board.getCell(row, col), "Cell at (" + row + ", " + col + ") should be initialized to ','");
+            }
+        }
+
+        assertEquals(expectedColumns, actualColumns, "Columns should be equal to expected number of rows: " + expectedRows);
+        assertEquals(expectedRows, actualRows, "Rows should be equal to expected number of rows: " + expectedRows);
     }
 
     @Test
