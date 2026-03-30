@@ -236,7 +236,7 @@ public class Database
         try
         {
             //collect the user's leaderboard entry
-            ResultSet rs = stmt.executeQuery("SELECT * FROM leaderboard WHERE userid = " + userID + ";");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM leaderboard WHERE userid = " + userid + ";");
 
             //move the pointer up
             rs.next();

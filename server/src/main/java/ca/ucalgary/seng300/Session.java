@@ -148,6 +148,14 @@ public class Session extends Thread
         return userID;
     }
 
+    /**
+     * Getter for the Session's win rate.
+     * @return The Session's win rate. If no win rate is found, return -1;
+     */
+    public int getWinRate()
+    {
+        return winrate;
+    }
 
     /**
      * Reads the request type and executes the required actions. Also uses synchronization to prevent multiple Sessions
@@ -291,8 +299,17 @@ public class Session extends Thread
                         //turn each entry into a single string
                         for (int i = 1; i <= 6; i++)
                         {
-                            sbuild.append(rs.getString(i));
-                            sbuild.append("^");     //use ^ as separators
+                            //if it is the username, send that first
+                            if (i != 2)
+                            {
+                                messageBytes = Network.encrypt(rs.getString(i), AESKey);
+                                client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                                client.getOutputStream().write(messageBytes);
+                            }else   //otherwise keep formatting the rest of data into a single string
+                            {
+                                sbuild.append(rs.getString(i));
+                                sbuild.append("^");     //use ^ as separators
+                            }
                         }
 
                         //send the formatted leaderboard entry to the client
