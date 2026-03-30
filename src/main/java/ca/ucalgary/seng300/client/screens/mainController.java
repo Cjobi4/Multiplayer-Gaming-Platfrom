@@ -11,10 +11,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class mainController {
@@ -25,6 +27,18 @@ public class mainController {
     public RadioButton connect4Select;
     public RadioButton TicTacToeSelect;
     public Label errorField;
+    public Label gameTitleLabel;
+    public Label gameDescriptionLabel;
+    public Label gameIdLabel;
+    public Label gameTagsLabel;
+    public TextField searchField;
+
+    private final List<Game> games = new ArrayList<>();
+
+    private void sampleData(){
+
+    }
+
 
 
     @FXML
