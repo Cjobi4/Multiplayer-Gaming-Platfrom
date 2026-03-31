@@ -32,7 +32,7 @@
                   </Label>
                   <ScrollPane fitToWidth="true" prefHeight="532.0" prefWidth="213.0">
                      <content>
-                        <VBox prefHeight="502.0" prefWidth="213.0" />
+                        <VBox fx:id="leaderboardBox" prefHeight="502.0" prefWidth="213.0" />
                      </content>
                   </ScrollPane>
                </children>
