@@ -38,20 +38,21 @@ public class Network extends Thread {
     private Socket socket;
     private String clientID = null;
 
-    public static final byte pings = 0;
-    public static final byte create_account = 1;
-    public static final byte login = 2;
-    public static final byte logout = 3;
-    public static final byte game_list = 4;
-    public static final byte send_chat = 5;
-    public static final byte receive_chat = 6;
-    public static final byte register_account = 7;
-    public static final byte leaderboard = 8;
+    public static final byte PING = 0;
+    public static final byte CREATE_ACCOUNT = 1;
+    public static final byte LOGIN = 2;
+    public static final byte LOGOUT = 3;
+    public static final byte GET_GAME_LIST = 4;
+    public static final byte GET_LEADERBOARD = 5;
+
     public static final byte JOIN_TTT_QUEUE = 7;
     public static final byte LEAVE_TTT_QUEUE = 8;
     public static final byte JOIN_C4_QUEUE = 9;
     public static final byte LEAVE_C4_QUEUE = 10;
 
+    // to be added/modified later
+    public static final byte send_chat = 126;
+    public static final byte receive_chat = 127;
 
     /** Constructor
      *
@@ -76,7 +77,7 @@ public class Network extends Thread {
     public boolean login(String username, String pwd) throws Exception {
 
         // send description byte
-        socket.getOutputStream().write(login);
+        socket.getOutputStream().write(LOGIN);
 
         // send parameters
         sendRequestParameter(username);
@@ -94,7 +95,7 @@ public class Network extends Thread {
         }
 
         // send description byte
-        socket.getOutputStream().write(register_account);
+        socket.getOutputStream().write(CREATE_ACCOUNT);
 
         // send parameters
         sendRequestParameter(username);
@@ -113,7 +114,7 @@ public class Network extends Thread {
      * @throws Exception
      */
     public void requestGamesList() throws Exception {
-        socket.getOutputStream().write(game_list);
+        socket.getOutputStream().write(GET_GAME_LIST);
     }
 
     /** Parsing of game data to be used to construct game objects
@@ -186,7 +187,7 @@ public class Network extends Thread {
     public List<List<LeaderboardEntry>> getLeaderboard() throws Exception {
 
         //send description byte
-        socket.getOutputStream().write(leaderboard);
+        socket.getOutputStream().write(GET_LEADERBOARD);
 
         List<LeaderboardEntry> tttEntries = new ArrayList<>();
         List<LeaderboardEntry> c4Entries = new ArrayList<>();
