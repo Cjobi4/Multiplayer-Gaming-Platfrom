@@ -50,9 +50,14 @@ public class mainController {
     {
         for (Game g : games)
         {
-            if (g.getId().equals(id))
-            {
+            if(g.getId().equalsIgnoreCase(id) || g.getTitle().toLowerCase().contains(id.toLowerCase())){
                 return g;
+            }
+
+            for (Tag tag : g.getTags()){
+                if(tag.matches(id)){
+                    return g;
+                }
             }
         }
 
