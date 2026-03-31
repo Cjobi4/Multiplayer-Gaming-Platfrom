@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 public class Session extends Thread
 {
     private SecretKey AESKey = null;
-    private int userID;
     private String username = null;
     private Socket client;
     private boolean loggedIn;
@@ -41,7 +40,6 @@ public class Session extends Thread
     Session(Socket soc)
     {
         client = soc;
-        userID = -1;    //invalid userID, placeholder to show client is not signed in yet
         loggedIn = false;
         inTttQueue = false;
         inC4Queue = false;
@@ -151,7 +149,7 @@ public class Session extends Thread
         //if something goes wrong, log out
         if (loggedIn)
         {
-            Database.logOut(userID);
+            Database.logOut(username);
         }
 
         //if in any matchmaking queues, exit
@@ -168,12 +166,12 @@ public class Session extends Thread
     }
 
     /**
-     * Getter for the Session's userID.
-     * @return The Session's userID.
+     * Getter for the Session's username.
+     * @return The Session's username.
      */
-    public int getUserID()
+    public String getUsername()
     {
-        return userID;
+        return username;
     }
 
 
@@ -190,6 +188,7 @@ public class Session extends Thread
         int messageLength;
         byte[] messageBytes;
         String message;
+        int result;
         ResultSet rs;
         StringBuilder sbuild;
 
@@ -214,25 +213,29 @@ public class Session extends Thread
                         || !newUsername.contains("`") || !newUsername.contains("^"))
                 {
                     //if it doesn't pass don't make an account
-                    client.getOutputStream().write(0);
+                    client.getOutputStream().write(2);
                     break;
                 }
 
                 //only one Session can run this block at a time
                 synchronized (Session.class) {
                     //check if it was successful
-                    userID = Database.createAccount(newUsername, newPassword, this);
+                    result = Database.createAccount(newUsername, newPassword, this);
                 }
 
                 //if it was, save the username for the session
-                if (userID != -1) {
+                if (result == 1) {
                     username = newUsername;
                     loggedIn = true;
+
                     //notify the client of success
                     client.getOutputStream().write(1);
-                } else //otherwise notify of failure
+                } else if (result == 0) //if the username was already taken
                 {
                     client.getOutputStream().write(0);
+                } else //otherwise notify of failure
+                {
+                    client.getOutputStream().write(3);
                 }
                 break;
             case 2:     //if it was a login request...
@@ -256,10 +259,10 @@ public class Session extends Thread
                 }
 
                 //check if it was successful
-                userID = Database.checkLoginCredentials(usernameInput, passwordInput, this);
+                result = Database.checkLoginCredentials(usernameInput, passwordInput, this);
 
                 //if it was, save the username for the session
-                if (userID != -1) {
+                if (result == 1) {
                     username = usernameInput;
                     loggedIn = true;
 
@@ -278,7 +281,7 @@ public class Session extends Thread
             switch (requestType)
             {
                 case 3:     //if it was a logout request
-                    Database.logOut(userID);
+                    Database.logOut(username);
 
                     //close the connection with the client
                     TimeUnit.SECONDS.sleep(2);      //give some time, make sure client disconnects first before closing session thread
@@ -355,22 +358,15 @@ public class Session extends Thread
                     }
                     break;
                 case 6:    //if it was a request for match record's from a specific user
-                    //collect the desired userid
+                    //collect the desired username
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
 
-                    try
-                    {
-                        //collect the match records with matching userids from the database
-                        rs = Database.getMatchRecord(Integer.parseInt(message));
-                    } catch (NumberFormatException e)       //if an invalid userid was entered, notify client
-                    {
-                        client.getOutputStream().write(0);
-                        break;
-                    }
+                    //collect the match records with matching usernames from the database
+                    rs = Database.getMatchRecord(message);
 
-                    //if the inputted userid was valid, go through the results
+                    //if the inputted username was valid, go through the results
                     if (rs != null && rs.next())
                     {
                         sbuild = new StringBuilder();
