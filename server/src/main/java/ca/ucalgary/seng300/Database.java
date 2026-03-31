@@ -5,16 +5,22 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Hashtable;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Database
 {
+    //database variables
     private static final String url = "jdbc:sqlite:database.db";
-
     private static Connection conn;
     private static Statement stmt;
     private static final String salt = "salt";
-    private static Hashtable<Integer, Thread> loggedInUsers = new Hashtable<>();
     private static int nextAvailID;     //the next available userID to be assigned
+
+    private static Hashtable<Integer, Session> loggedInUsers = new Hashtable<>();
+
+    //matchmaking threads
+    private static Matchmaker tttMatchmaker;
+    private static Matchmaker c4Matchmaker;
 
     /**
      * establishes a connection with the database.db file that contains all the information. If database.db doesn't
@@ -56,33 +62,25 @@ public class Database
                     + "username TEXT NOT NULL,"
                     + "password TEXT NOT NULL);");
 
-            /*stmt.execute("CREATE TABLE IF NOT EXISTS gameInfo ("
-                    + "gameid INTEGER PRIMARY KEY,"
-                    + "title TEXT NOT NULL,"
-                    + "description MEMO NOT NULL"
-                    + "label TEXT NOT NULL,"
-                    + "color TEXT NOT NULL"
-                    + "gameURL TEXT NOT NULL,"
-                    + "fullscreen YES/NO NOT NULL);");
-
-            stmt.execute("CREATE TABLE IF NOT EXISTS games ("
-                    + "gameid INTEGER PRIMARY KEY,"
-                    + "title TEXT NOT NULL,"
-                    + "description MEMO NOT NULL);");
-
-            stmt.execute("CREATE TABLE IF NOT EXISTS tags ("
-                    + "gameid INTEGER PRIMARY KEY,"
-                    + "label TEXT NOT NULL,"
-                    + "color TEXT NOT NULL);");
-
-            stmt.execute("CREATE TABLE IF NOT EXISTS launchConfigs ("
-                    + "gameid INTEGER PRIMARY KEY,"
-                    + "gameURL TEXT NOT NULL,"
-                    + "fullscreen YES/NO NOT NULL);");*/
-
             stmt.execute("CREATE TABLE IF NOT EXISTS gameInfo ("
                             + "gameid INTEGER PRIMARY KEY,"
                             + "gameData MEMO NOT NULL);");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS leaderboard ("
+                    + "userid INTEGER PRIMARY KEY,"
+                    + "username TEXT NOT NULL,"
+                    + "tttWins INTEGER NOT NULL,"
+                    + "tttMatchesPlayed INTEGER NOT NULL,"
+                    + "c4Wins INTEGER NOT NULL,"
+                    + "c4MatchesPlayed INTEGER NOT NULL);");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS matchRecord ("
+                    + "gameid INTEGER PRIMARY KEY,"
+                    + "p1Userid INTEGER NOT NULL,"
+                    + "p2Userid INTEGER NOT NULL,"
+                    + "gametype TEXT NOT NULL,"
+                    + "winnerID INTEGER NOT NULL,"
+                    + "date TEXT NOT NULL);");
 
 
             //check if the table(s) are empty (i.e. freshly created)
@@ -98,7 +96,7 @@ public class Database
 
                 //must use prepared statement and not statement bc special characters in hash will disrupt command
                 PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(userid, username, password) VALUES(0, ?, ?)");
-                pstmt.setString(1, "user");
+                pstmt.setString(1, "admin");
                 pstmt.setString(2, hashedPassword);
                 pstmt.executeUpdate();
 
@@ -106,8 +104,10 @@ public class Database
                 nextAvailID = 1;
 
                 //add in a sample gameInfo
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`Turn Based^PINK^gameURL^YES)");
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description2^Multiplayer`Turn Based^PINK^gameURL^YES)");
+                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
+                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
+                stmt.execute("INSERT INTO leaderboard(userid, username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed) VALUES(0, admin, 999, 999, 999, 999)");
+                stmt.execute("INSERT INTO matchRecord(gameid, p1Userid, p2Userid, gametype, winnerID, date) VALUES(gameid, 0, p2Userid, Tic-Tac-Toe, 0, date)");
             }else   //if the table is not empty...
             {
                 //set the next available userid
@@ -119,6 +119,37 @@ public class Database
             //also need to add in a check to shut down server here if something goes wrong
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Initialize and start the Matchmaker threads responsible for matchmaking.
+     */
+    public static void launchMatchmaking()
+    {
+        //create the Matchmaking threads
+        tttMatchmaker = new Matchmaker("ttt");
+        c4Matchmaker = new Matchmaker("c4");
+
+        tttMatchmaker.start();
+        c4Matchmaker.start();
+    }
+
+    /**
+     * Getter for the Tic-tac-toe Matchmaker thread object, tttMatchmaker.
+     * @return tttMatchermaker
+     */
+    public static Matchmaker getTttMatchmaker()
+    {
+        return tttMatchmaker;
+    }
+
+    /**
+     * Getter for the Connect-4 Matchmaker thread object, c4Matchmaker.
+     * @return c4Matchermaker
+     */
+    public static Matchmaker getC4Matchmaker()
+    {
+        return c4Matchmaker;
     }
 
     /**
@@ -159,12 +190,13 @@ public class Database
      * Given a username and password, creates a new account with those credentials. No login attempt is additionally
      * required, the user is logged in as the account is created.
      * @param username The username for the new account in String format
-     * @param password The password for the new account in String format. Should be not be hashed.
+     * @param password The password for the new account in String format. Should be not be hashed. MUST be between 6-18
+     *                 characters long
      * @param session The Session thread object responsible for this user
      * @return If the account is created successfully, the newly assigned userid is returned. Otherwise, if the account
      * creation fails, -1 is returned.
      */
-    public static int createAccount(String username, String password, Thread session)
+    public static int createAccount(String username, String password, Session session)
     {
         try
         {
@@ -198,7 +230,7 @@ public class Database
      * @return If a match was found, the corresponding userid is returned. Otherwise, if no match is found or the query
      * fails, -1 is returned instead.
      */
-    public static int checkLoginCredentials(String username, String password, Thread session)
+    public static int checkLoginCredentials(String username, String password, Session session)
     {
         try
         {
@@ -229,6 +261,30 @@ public class Database
     }
 
     /**
+     * Given a userid and a game, returns the user's win rate.
+     * @param userid The user whose win rate is to be checked.
+     * @param game The name of the game for the user's win rate. "ttt" for Tic-tac-toe, and "c4" for Connect-4.
+     * @return The win rate of the user, or -1 if it couldn't be retrieved.
+     */
+    public static int getWinRate(int userid, String game)
+    {
+        try
+        {
+            //collect the user's leaderboard entry
+            ResultSet rs = stmt.executeQuery("SELECT * FROM leaderboard WHERE userid = " + userid + ";");
+
+            //move the pointer up
+            rs.next();
+
+            //return the winrate
+            return rs.getInt(game + "Wins") / rs.getInt(game + "MatchesPlayed");
+        } catch (SQLException e)
+        {
+            return -1;
+        }
+    }
+
+    /**
      * Logs out a user.
      * @param userID The userID of the user to be logged out
      */
@@ -240,19 +296,54 @@ public class Database
 
     /**
      * Gets the game info for the client from the Database.db tables.
-     * @return The ResultSet containing all the game infos
+     * @return A ResultSet containing all the game infos. If something goes wrong with the query, return null instead.
      */
     public static ResultSet getAllGames()
     {
         try
         {
             //collect all the info on the games
-            ResultSet rs = stmt.executeQuery("SELECT * FROM games;");
+            return stmt.executeQuery("SELECT * FROM games;");
+        } catch (SQLException e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Gets all the information in the leaderboard from the Database.db tables.
+     * @return A ResultSet containing all the leaderboard data. If something goes wrong with the query, return null
+     * instead.
+     */
+    public static ResultSet getAllLeaderboardEntries()
+    {
+        try
+        {
+            //collect all the leaderboard entries
+            return stmt.executeQuery("SELECT * FROM leaderboard;");
+        } catch (SQLException e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Gets all match records from the specified userid in Database.db tables.
+     * @return A ResultSet containing the match records. If something goes wrong with the query, return null instead.
+     */
+    public static ResultSet getMatchRecord(int userid)
+    {
+        try
+        {
+            //collect all the leaderboard entries with matching userids
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE userid = ?;");
+            pstmt.setString(1, String.valueOf(userid));
+            ResultSet rs = pstmt.executeQuery();
 
             return rs;
         } catch (SQLException e)
         {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 }
