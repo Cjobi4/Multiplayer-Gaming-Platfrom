@@ -62,12 +62,12 @@ public class MatchRecord {
         return playerID == winnerID;
     }
 
-    public int getMatchID(){
-        return matchID;
-    }
 
     public GameType getGameType(){
         return gameType;
+    }
+    public String getDate(){
+        return date;
     }
 
     /**
