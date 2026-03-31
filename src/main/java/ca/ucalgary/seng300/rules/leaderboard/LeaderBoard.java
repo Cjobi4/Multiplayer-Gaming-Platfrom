@@ -24,9 +24,9 @@ public class LeaderBoard {
      * update the personal record (as in total wins & matches or just total matches)
      * @param playerID
      */
-    public static void updatePersonalRecord (int playerID){
+    public static void updateUserRecord (int playerID){
         // update wins and matches for the user
-
+        updateUserRecord(playerID);
     }
 
     /**
@@ -42,7 +42,7 @@ public class LeaderBoard {
      * get a player personal record (including total wins + matches)
      * @param playerID
      */
-    public static void getPersonalRecord (int playerID){
+    public static void getUserRecord (int playerID){
         // get the personal record of the player (using their playerID)
 
     }
