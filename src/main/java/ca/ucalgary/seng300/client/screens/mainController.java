@@ -64,6 +64,10 @@ public class mainController {
         return null;
     }
 
+    @FXML
+    protected void handleSearch(){
+
+    }
 
 
     @FXML
