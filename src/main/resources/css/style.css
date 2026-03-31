@@ -23,5 +23,5 @@
 .TTT-Button {
     -fx-border-color: #F9EDE1;
     -fx-border-width: 4px;
-
+    -fx-background-radius: 25;
 }
