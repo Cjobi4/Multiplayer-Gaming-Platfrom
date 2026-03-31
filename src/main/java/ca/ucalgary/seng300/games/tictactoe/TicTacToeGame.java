@@ -1,15 +1,42 @@
 package ca.ucalgary.seng300.games.tictactoe;
 
+//import the enums file
+import ca.ucalgary.seng300.games.GameState;
+
 //this is for game/move logic for tic tac toe
 public class TicTacToeGame {
 
     //this is the board we are going to use for the game
     private TicTacToeBoard board;
 
+    //this variable helps keep track of what player's turn it is
+    private char currentPlayer;
+
+    //this variable stores the winner of the game (X, O, ' ')
+    private char winner;
+
+    //this stores the current state of the game using the GameState enum
+    private GameState gameState;
+
+    //This counts the total number of moves made within the game
+    private int moveCount;
+
     //this creates the game with a new board
     public TicTacToeGame(){
         //create a new gameboard
         board = new TicTacToeBoard();
+
+        //set the current player to X
+        currentPlayer = 'X';
+
+        //set the value of the winner (string) to nothing because there is no winner at the start of the game
+        winner = ' ';
+
+        //set the start of the game to waiting for a player to make a move
+        gameState = GameState.TURN_AWAITING_MOVE;
+
+        //this sets the movecount to 0 as no moves by the start of the game
+        moveCount = 0;
     }
 
     //this returns the board that is being used during the game
@@ -18,32 +45,132 @@ public class TicTacToeGame {
         return board;
     }
 
+    //new function for changing turns
+    public void switchTurn() {
+        //if the player currently is X,
+        if (currentPlayer == 'X') {
+
+            //make the current player O
+            currentPlayer = 'O';
+
+        //if the player currently is O
+        } else {
+
+            //make the current player X
+            currentPlayer = 'X';
+        }
+    }
+
     //this is my function for making a move and VALIDATING the move!
     public boolean makeMove(int row, int col, char userGameIdentity) {
+        //adding gameState integration now (ticket 177)
+
+        //if the game is over (win or tie), do not allow any more moves
+        if (gameState == GameState.PLAYER_WIN || gameState == GameState.PLAYER_DRAW) {
+            return false;
+        }
+
+        //update the gamestate to show that a move is being validated
+        gameState = GameState.TURN_AWAITING_MOVE;
+
+        //bounds check moved to first in the makeMove function
+        //this checks/make sure the users position selected stays within the bounds of the game board
+        if (row < 0 || row > 2 || col < 0 || col > 2) {
+            //GAMESTATE INFO
+            gameState = GameState.TURN_AWAITING_MOVE;
+            //if not return false
+            return false;
+        }
+
         //make sure that the user has a valid identity ('X' or 'O')
         if (userGameIdentity != 'X' && userGameIdentity != 'O') {
+            //GAMESTATE INFO
+            gameState = GameState.TURN_AWAITING_MOVE;
             //if not, return false
             return false;
         }
 
         //make sure that the cell the player is trying to get to is not already occupied
         if (!board.isCellEmpty(row, col)) {
+            //GAMESTATE INFO
+            gameState = GameState.TURN_AWAITING_MOVE;
             //return false if it is occupied
             return false;
         }
 
-        //this checks/make sure the users position selected stays within the bounds of the game board
-        if (row < 0 || row > 2 || col < 0 || col > 2) {
-            //if not return false
-            return false;
-        }
+        //gamestate can now be set to taking a turn (making a move) post all validation checks
+        gameState = GameState.TURN_AWAITING_MOVE;
 
         //after all validation checks
         //we can set the players data ('X' or 'O') onto the board at the specific row and column they want to be at
         board.setCellInfo(row, col, userGameIdentity);
+
+        //incrament the movecount by 1 after each turn
+        moveCount++;
+
+        //now check if the users move has ended the game or not (win tie)
+        gameState = GameState.TURN_CHECK_END_CONDITIONS;
+
+        //if the user has wone
+        if (validateWin(userGameIdentity)) {
+
+            //set the user as the winner
+            winner = userGameIdentity;
+
+            //set the gameState to a win state
+            gameState = GameState.PLAYER_WIN;
+
+            //return true
+            return true;
+        }
+
+        //tie condition check
+        //if the game is a tie
+        if (checkGameTie()) {
+
+            //if the game has tied, set gameState to DRAW
+            gameState = GameState.PLAYER_DRAW;
+
+            //return true
+            return true;
+        }
+
+        //if the game is not over pending the previous checks, switch the players turn!
+        switchTurn();
+
+        //since hte game is still running, set the state back to waiting for the next move
+        gameState = GameState.TURN_AWAITING_MOVE;
+
         //return true!
         return true;
     }
+
+    //GETTERS for new functions
+
+    //this getter gets the current player (X, O, ' ')
+    public char getCurrentPlayer() {
+        //return the current player (char)
+        return currentPlayer;
+    }
+
+    //this getter gets the winner (whoever is the winner gets pulled here [X, O, ' '])
+    public char getWinner() {
+        //return the winner (char)
+        return winner;
+    }
+
+    //this getter gets the current gameState
+    public GameState getGameState() {
+        //return the gamestate (uses ENUM file)
+        return gameState;
+    }
+
+    //this getter gets the integer move count
+    public int getMoveCount() {
+        //this returns the move count (int)
+        return moveCount;
+    }
+
 
     //RULES AND VALIDAITON WORK :D
 
@@ -81,5 +208,19 @@ public class TicTacToeGame {
         return false;
     }
 
+    //another validation check (GAME TIE STATUS)
+    //function to check if the game is a tie
+    public boolean checkGameTie() {
+
+        //if the game board is full and the winner is ' ' (no winner)
+        if (board.isTheBoardFull() && winner == ' ') {
+
+            //return true (the game is a tie)
+            return true;
+        }
+
+        //otherwise return false (the game is NOT a tie)
+        return false;
+    }
 
 }

@@ -23,3 +23,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 - **Integration:** Fixed `Network.getGames()` calling `Game` constructor with wrong argument types. Fixed incorrect `main.java.ca.ucalgary.seng300.games` package declarations in 6 game files. Removed duplicate `LeaderboardEntry` stub from `shared/models/`.
+
+
+## [v0.2.0] - 2026-03-30
+
+### Added
+- **Quality & Testing (MR !40):** Create partially testing fuctions for `GameRegistry`, `Network` in Core and run successfully. 

@@ -17,7 +17,6 @@ public class Game {
     private final String description;
 
     private List<Tag> tags = new ArrayList<>();
-    private final LaunchConfigs launchConfigs;
     private final LeaderBoard leaderBoard;
 
     /**
@@ -26,10 +25,9 @@ public class Game {
      * @param title the title of the game
      * @param description the game description
      * @param tags the tags for the game
-     * @param launchConfigs the configs for launching the game
      * @param leaderboard the leaderboard attached to the game
      */
-    public Game (String id, String title, String description, List<Tag> tags, LaunchConfigs launchConfigs, LeaderBoard leaderboard)
+    public Game (String id, String title, String description, List<Tag> tags, LeaderBoard leaderboard)
     {
         this.id = id;
         this.title = title;
@@ -38,7 +36,6 @@ public class Game {
         // These are not string objects, but must be pulled from database.
         // Must be made using respective classes constructor before passing into here
         this.tags = tags;
-        this.launchConfigs = launchConfigs;
         this.leaderBoard = leaderboard;
     }
 
@@ -46,9 +43,6 @@ public class Game {
         return id;
     }
 
-    public LaunchConfigs getLaunchConfigs() {
-        return launchConfigs;
-    }
 
     public LeaderBoard getLeaderBoard() {
         return leaderBoard;
@@ -64,10 +58,5 @@ public class Game {
 
     public String getTitle() {
         return title;
-    }
-
-    public void launch()
-    {
-        // TODO: Implementation for launching game here
     }
 }
