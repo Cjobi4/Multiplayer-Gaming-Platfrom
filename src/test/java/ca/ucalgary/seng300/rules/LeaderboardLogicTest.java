@@ -8,7 +8,6 @@ import org.junit.jupiter.api.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 
 /**
  * Very rough skeleton of tests, will increase in volume and complexity down the line.
@@ -20,7 +19,7 @@ public class LeaderboardLogicTest {
 
     /*
     Currently, these tests are not valid due to how the leaderboard itself is not complete.
-    Will later modify and make sure they work whenever able to
+    Will later modify and make sure they work whenever able to do so
      */
     private LeaderBoard testLeaderboard = new LeaderBoard(); // create testLeaderBoard
 
