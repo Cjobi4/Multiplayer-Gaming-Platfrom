@@ -1,12 +1,12 @@
 package ca.ucalgary.seng300.client.components;
 
-public class leaderBoardRows {
+public class LeaderBoardRows {
     private final int rank;
     private final String playerName;
     private final int wins;
     private final int matches;
 
-    public leaderBoardRows(int rank, String playerName, int wins, int matches) {
+    public LeaderBoardRows(int rank, String playerName, int wins, int matches) {
         this.rank = rank;
         this.playerName = playerName;
         this.wins = wins;
