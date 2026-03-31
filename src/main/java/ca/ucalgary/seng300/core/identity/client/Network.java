@@ -164,6 +164,16 @@ public class Network extends Thread {
         return readResponseString().equals("1");
     }
 
+    public boolean leaveQueue(GameType game) throws Exception {
+        if (game == GameType.TICTACTOE) {
+            socket.getOutputStream().write(LEAVE_TTT_QUEUE);
+        }
+        else if (game == GameType.CONNECT4) {
+            socket.getOutputStream().write(LEAVE_C4_QUEUE);
+        }
+
+        return readResponseString().equals("1");
+    }
 
     // LEADERBOARD
 
