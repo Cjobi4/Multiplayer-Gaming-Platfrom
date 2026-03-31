@@ -18,6 +18,10 @@ import static org.junit.Assert.assertEquals;
 
 public class LeaderboardLogicTest {
 
+    /*
+    Currently, these tests are not valid due to how the leaderboard itself is not complete.
+    Will later modify and make sure they work whenever able to
+     */
     private LeaderBoard testLeaderboard = new LeaderBoard(); // create testLeaderBoard
 
     /*
