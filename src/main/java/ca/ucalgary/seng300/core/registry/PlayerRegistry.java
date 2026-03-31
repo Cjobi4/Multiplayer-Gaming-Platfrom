@@ -52,6 +52,9 @@ public class PlayerRegistry {
         return null;
     }
 
-
+    public static List<Player> listAll()
+    {
+        return players;
+    }
 
 }
