@@ -87,6 +87,12 @@ public class Network extends Thread {
         return readResponseString().equals("true");
     }
 
+    public boolean logout() throws Exception {
+        socket.getOutputStream().write(LOGOUT);
+
+        return readResponseString().equals("1");
+    }
+
     public boolean registerAccount(String username, String password) throws Exception {
 
         // checking if password meets minimum length requirements
