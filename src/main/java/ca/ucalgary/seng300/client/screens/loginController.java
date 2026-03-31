@@ -20,6 +20,11 @@ public class loginController {
     @FXML
     protected void onLoginButtonClick(ActionEvent event) {
         try {
+
+            // TODO: User Login Functions here
+
+            // TODO: Client and ui needs message for if login returns fail
+
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mainPage.fxml"));
             Parent MainRoot = loader.load();
@@ -32,6 +37,7 @@ public class loginController {
             stage.setScene(MainScene);
             stage.setTitle("Main Page"); //Change stage title to reflect current scene
             stage.show();
+
 
         } catch (IOException e) {
             System.err.println("Error: Could not load mainPage.fxml. Check file path!");

@@ -18,6 +18,11 @@ public class createAccountController {
     @FXML
     protected void onContinueButtonClick(ActionEvent event) {
         try {
+
+            // TODO: User Account Creation Functions
+
+            // TODO: If user action creation returns false, display error, end function before loading main page
+
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mainPage.fxml"));
             Parent MainRoot = loader.load();

@@ -1,4 +1,4 @@
-/** package ca.ucalgary.seng300.rules;
+package ca.ucalgary.seng300.rules;
 
 
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
@@ -8,7 +8,6 @@ import org.junit.jupiter.api.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 
 /**
  * Very rough skeleton of tests, will increase in volume and complexity down the line.
@@ -16,10 +15,15 @@ import static org.junit.Assert.assertEquals;
  * Depends on LeaderBoard class, which I made a stub for to support this version of tests.
  */
 
-/* public class LeaderboardLogicTest {
+public class LeaderboardLogicTest {
 
+    /*
+    Currently, these tests are not valid due to how the leaderboard itself is not complete.
+    Will later modify and make sure they work whenever able to do so
+     */
     private LeaderBoard testLeaderboard = new LeaderBoard(); // create testLeaderBoard
 
+    /*
     @BeforeEach
     void makeDummyBoard(){ // base LeaderboardEntries
         LeaderboardEntry basicEntry = new LeaderboardEntry(0, 1, "basic", 4, 10);
@@ -50,7 +54,8 @@ import static org.junit.Assert.assertEquals;
     /**
      * Tests the modification of a score
      */
-   /* @Test
+    /*
+    @Test
     void modifyScore(){
         LeaderboardEntry rewrite = new LeaderboardEntry(0, 1, "newBasic", 6, 12);
         testLeaderboard.submitScore(1, rewrite);
@@ -74,6 +79,6 @@ import static org.junit.Assert.assertEquals;
         Assertions.assertEquals(4, testList.get(2).getWins());
         Assertions.assertEquals(1, testList.get(3).getWins());
     }
-}
-
     */
+
+}

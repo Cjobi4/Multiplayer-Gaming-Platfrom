@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 // Stub connection so we don't need to rely on a real connection
+// Allows me to fake an output to test Network methods
 public class StubSocket extends Socket {
 
     // fake output to the server
@@ -14,19 +15,19 @@ public class StubSocket extends Socket {
     // fake input from the server back to the user
     private final ByteArrayInputStream fakeInputStream;
 
-    // Here we pass in the fake response we want to simulate
+    // pass in the fake response we want to simulate
     public StubSocket(byte[] simulatedServerResponse) {
         this.fakeOutputStream = new ByteArrayOutputStream();
         this.fakeInputStream = new ByteArrayInputStream(simulatedServerResponse);
     }
 
-    // override the talking pipe
+    // override the talking pipe, stops us from trying to call the actual server
     @Override
     public OutputStream getOutputStream() {
         return fakeOutputStream;
     }
 
-    // override the listening pipe
+    // override the listening pipe, stops us from trying to call the actual server
     @Override
     public InputStream getInputStream() {
         return fakeInputStream;

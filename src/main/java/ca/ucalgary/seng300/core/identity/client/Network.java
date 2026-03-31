@@ -48,6 +48,15 @@ public class Network extends Thread {
         socket = new Socket(serverIP, serverPort);
     }
 
+    /** Constructor ONLY for testing purposes
+     *
+     * @param testSocket is a testing socket
+     * @throws Exception
+     */
+    public Network(Socket testSocket) throws Exception {
+        this.socket = testSocket;
+    }
+
     // LOGIN
 
     /** sends login request to the server
@@ -366,4 +375,12 @@ public class Network extends Thread {
         return new String(plainText, StandardCharsets.UTF_8);
     }
 
+    // --- TESTING HOOK ---
+    // allows us to test encryption without a live server handshake
+    public static void setupTestEncryption() {
+        // fake 16-byte key (128-bit AES)
+        byte[] fakeKeyBytes = "1234567890123456".getBytes(StandardCharsets.UTF_8);
+        AESKey = new SecretKeySpec(fakeKeyBytes, "AES");
+        sRan = new SecureRandom();
+    }
 }

@@ -19,13 +19,13 @@ import java.util.UUID;
 
 public class Network
 {
-    private static Hashtable<UUID, SecretKey> keyList = new Hashtable<UUID, SecretKey>();
+    private static Hashtable<UUID, SecretKey> keyList = new Hashtable<>();
     private static SecureRandom sRan;
 
     /**
      * Turns the current computer into a working database server. Initializes the database tables and connection with
      * helper functions from the Database class, and begins listening for client connections. All connections are then
-     * redirected to the handleClient() function for further processing.
+     * redirected to new Session threads for further processing.
      */
     public static void launchNetwork()
     {
@@ -33,6 +33,9 @@ public class Network
         {
             //first initialize the database
             Database.databaseInitial();
+
+            //initailize the matchmakers
+            Database.launchMatchmaking();
 
             //initialize the Secure Random generator for nonces
             sRan = new SecureRandom();
@@ -44,7 +47,7 @@ public class Network
             //keep checking for incoming connections
             while(true)
             {
-                //if a incoming connection is detected, accept it
+                //if an incoming connection is detected, accept it
                 Socket client = port.accept();
 
                 //create a new thread to handle the client
@@ -86,7 +89,7 @@ public class Network
 
 
             //if they didn't have one or there isn't a key associated with this client ID...
-            if (clientIDString.equals("new") || !keyList.containsKey(clientIDString))
+            if (clientIDString.equals("new") || !keyList.containsKey(UUID.fromString(clientIDString)))
             {
                 //let client know they're getting assigned a new clientID
                 client.getOutputStream().write(0);
@@ -121,6 +124,9 @@ public class Network
                 client.getOutputStream().write(ByteBuffer.allocate(4).putInt(clientIDBytes.length).array());
                 client.getOutputStream().write(clientIDBytes);
                 System.out.println("clientID: " + clientID.toString()); //for debug
+
+                //add it to the key list
+                keyList.put(clientID, AESKey);
             }else   //if they did have one...
             {
                 clientID = UUID.fromString(clientIDString);
@@ -223,7 +229,7 @@ public class Network
      * @return The string encrypted with AES and in byte[] format, preceded by 12 bytes of nonce.
      * @throws Exception If the AES GCM mode algorithm can't be found, will throw an Exception
      */
-    private static byte[] encrypt(String plainText, SecretKey AESKey) throws Exception
+    public static byte[] encrypt(String plainText, SecretKey AESKey) throws Exception
     {
         //makes 12 byte long nonce according to NIST standards
         byte[] nonce = new byte[12];
@@ -254,7 +260,7 @@ public class Network
      * been altered AFTER the encryption was performed (i.e. some bits are lost/changed), the message will not be
      * decrypted properly and will throw an exception.
      */
-    private static String decrypt(byte[] cipherText, SecretKey AESKey) throws Exception
+    public static String decrypt(byte[] cipherText, SecretKey AESKey) throws Exception
     {
         //collect the nonce (first 12 bytes of the message)
         byte[] nonce = new byte[12];
