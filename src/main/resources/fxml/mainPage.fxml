@@ -102,7 +102,7 @@
                   <VBox alignment="CENTER" prefHeight="314.0" prefWidth="294.0" spacing="30.0">
                      <children>
                         <Label fx:id="gameTitleLabel" />
-                        <Label fx:id="gameDescriptionLabel" />
+                        <Label fx:id="gameDescriptionLabel" wrapText="true" />
                         <Label fx:id="gameIdLabel" />
                         <Label fx:id="gameTagsLabel" />
                      </children>

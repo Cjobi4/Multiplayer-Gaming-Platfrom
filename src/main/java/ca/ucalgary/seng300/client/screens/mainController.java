@@ -89,6 +89,19 @@ public class mainController {
 
     }
 
+    private String formatTags(List<Tag> tags) {
+        if (tags == null || tags.isEmpty()) return "No tags";
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Tag tag : tags) {
+            sb.append(tag.getLabel()).append(", ");
+        }
+
+        sb.setLength(sb.length() - 2);
+        return sb.toString();
+    }
+
     private void displayGame(Game game){
         gameTitleLabel.setText(game.getTitle());
         gameDescriptionLabel.setText(game.getDescription());
