@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +31,14 @@ public class gameController {
             stage.setScene(gameOverScene);
             stage.setTitle("Game Over"); //Change stage title to reflect current scene
             stage.show();
+
+            // Create Match Record (Not sure where to get player info, will be needed to make a match record)
+
+            // MatchRecord matchRecord = new MatchRecord();
+
+            // Update Leaderboard
+
+            // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
 
         } catch (IOException e) {
             System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
