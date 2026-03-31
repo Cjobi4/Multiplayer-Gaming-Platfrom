@@ -37,6 +37,11 @@ public class mainController {
 
     private final List<Game> games = new ArrayList<>();
 
+    @FXML
+    public void initialize() {
+        sampleData();
+    }
+
     private void sampleData(){
         List<Tag> Connect4Tag = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
         List<Tag> TicTacToeTag = Arrays.asList(new Tag("Two Player", "purple"), new Tag("Classic", "Green"));
