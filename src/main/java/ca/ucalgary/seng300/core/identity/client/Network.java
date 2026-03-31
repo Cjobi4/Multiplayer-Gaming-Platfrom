@@ -47,6 +47,11 @@ public class Network extends Thread {
     public static final byte receive_chat = 6;
     public static final byte register_account = 7;
     public static final byte leaderboard = 8;
+    public static final byte JOIN_TTT_QUEUE = 7;
+    public static final byte LEAVE_TTT_QUEUE = 8;
+    public static final byte JOIN_C4_QUEUE = 9;
+    public static final byte LEAVE_C4_QUEUE = 10;
+
 
     /** Constructor
      *
@@ -146,6 +151,17 @@ public class Network extends Thread {
             GameRegistry.getInstance().register(new Game(id, title, description, null, null));
         }
         // TODO: handle -1 (network fails to send data) & establish how tags/config will entirely be set up
+    }
+
+    public boolean joinQueue(GameType game) throws Exception {
+        if (game == GameType.TICTACTOE) {
+            socket.getOutputStream().write(JOIN_TTT_QUEUE);
+        }
+        else if (game == GameType.CONNECT4) {
+            socket.getOutputStream().write(JOIN_C4_QUEUE);
+        }
+
+        return readResponseString().equals("1");
     }
 
 
