@@ -19,3 +19,9 @@
     -fx-border-width: 7px;
     -fx-background-color: #F9EDE1;
 }
+
+.TTT-Button {
+    -fx-border-color: #DEB499;
+    -fx-border-width: 6px;
+
+}
