@@ -25,3 +25,8 @@
     -fx-border-width: 4px;
     -fx-background-radius: 25;
 }
+
+.TTT-Button:pressed {
+    -fx-background-color: #7d393e;
+    -fx-translate-y: 2;
+}
