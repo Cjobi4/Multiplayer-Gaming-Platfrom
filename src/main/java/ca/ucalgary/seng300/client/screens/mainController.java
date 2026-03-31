@@ -103,10 +103,10 @@ public class mainController {
     }
 
     private void displayGame(Game game){
-        gameTitleLabel.setText(game.getTitle());
-        gameDescriptionLabel.setText(game.getDescription());
-        gameIdLabel.setText(game.getId());
-        gameTagsLabel.setText(game.getTags().toString());
+        gameTitleLabel.setText("Game: " + game.getTitle());
+        gameDescriptionLabel.setText("Description: " + game.getDescription());
+        gameIdLabel.setText("Game ID: " + game.getId());
+        gameTagsLabel.setText("Game Tag: " + formatTags(game.getTags()));
     }
 
     private void clearDisplay(){
