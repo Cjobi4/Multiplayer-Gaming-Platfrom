@@ -16,6 +16,8 @@ public class Session extends Thread
     private String username = null;
     private Socket client;
     private boolean loggedIn;
+    private boolean inTttQueue;
+    private boolean inC4Queue;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
 
     //////////////// REQUEST TYPES ////////////////
@@ -30,6 +32,7 @@ public class Session extends Thread
     //private final int LEAVE_TTT_QUEUE = 8;
     //private final int JOIN_C4_QUEUE = 9;
     //private final int LEAVE_C4_QUEUE = 10;
+    //private final int GET_USER_LIST = 11;
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -40,6 +43,8 @@ public class Session extends Thread
         client = soc;
         userID = -1;    //invalid userID, placeholder to show client is not signed in yet
         loggedIn = false;
+        inTttQueue = false;
+        inC4Queue = false;
     }
 
     /**
@@ -135,12 +140,32 @@ public class Session extends Thread
         }
     }
 
-    /*@Override //maybe not necessary? perhaps notify client of connection closing first?
+    /**
+     * If something goes wrong with the Session thread and an uncaught expection is thrown, shut down the Session. Log
+     * out and leave any matchmaking queues before doing closing.
+     * @param eh Unused UncaughtExceptionHandler
+     */
+    @Override
     public void setUncaughtExceptionHandler(UncaughtExceptionHandler eh)
     {
-        //if something goes wrong, kill the thread
+        //if something goes wrong, log out
+        if (loggedIn)
+        {
+            Database.logOut(userID);
+        }
+
+        //if in any matchmaking queues, exit
+        if (inTttQueue)
+        {
+            Database.getTttMatchmaker().leaveMQueue(this);
+        }else if (inC4Queue)
+        {
+            Database.getC4Matchmaker().leaveMQueue(this);
+        }
+
+        //close the thread
         Thread.currentThread().interrupt();
-    }*/
+    }
 
     /**
      * Getter for the Session's userID.
@@ -184,8 +209,10 @@ public class Session extends Thread
                 messageBytes = client.getInputStream().readNBytes(messageLength);
                 String newPassword = Network.decrypt(messageBytes, AESKey);
 
-                //check to see if the password meets the password requirements
-                if (newPassword.length() < 8 || newPassword.length() > 18) {
+                //check to see if the password meets the password requirements, and see if the username has restricted special characters
+                if (newPassword.length() < 8 || newPassword.length() > 18
+                        || !newUsername.contains("`") || !newUsername.contains("^"))
+                {
                     //if it doesn't pass don't make an account
                     client.getOutputStream().write(0);
                     break;
@@ -219,9 +246,11 @@ public class Session extends Thread
                 messageBytes = client.getInputStream().readNBytes(messageLength);
                 String passwordInput = Network.decrypt(messageBytes, AESKey);
 
-                //check to see if the password meets the password requirements
-                if (passwordInput.length() < 8 || passwordInput.length() > 18) {
-                    //if it doesn't pass don't bother asking database
+                //check to see if the password meets the password requirements, and see if the username has restricted special characters
+                if (passwordInput.length() < 8 || passwordInput.length() > 18
+                        || !usernameInput.contains("`") || !usernameInput.contains("^"))
+                {
+                    //if it doesn't pass don't make an account
                     client.getOutputStream().write(0);
                     break;
                 }
@@ -308,6 +337,9 @@ public class Session extends Thread
                                 }
                             }
 
+                            //remove the trailing ^ symbol
+                            sbuild.deleteCharAt(sbuild.length());
+
                             //send the formatted leaderboard entry to the client
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
@@ -353,6 +385,9 @@ public class Session extends Thread
                                 sbuild.append("^");
                             }
 
+                            //remove the trailing ^ symbol
+                            sbuild.deleteCharAt(sbuild.length());
+
                             //send the formatted match records to the client
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
@@ -369,7 +404,9 @@ public class Session extends Thread
                     break;
                 case 7:     //if it was a request to join the Tic-tac-toe matchmaking queue...
                     //join the queue and notify if successful
-                    if (Database.getTttMatchmaker().joinMQueue(this))
+                    inTttQueue = Database.getTttMatchmaker().joinMQueue(this);
+
+                    if (inTttQueue)
                     {
                         client.getOutputStream().write(1);
                     }else
@@ -379,7 +416,9 @@ public class Session extends Thread
                     break;
                 case 8:     //if it was a request to leave the Tic-tac-toe matchmaking queue...
                     //leave the queue and notify if successful
-                    if (Database.getTttMatchmaker().leaveMQueue(this))
+                    inTttQueue = !Database.getTttMatchmaker().leaveMQueue(this);
+
+                    if (!inTttQueue)
                     {
                         client.getOutputStream().write(1);
                     }else
@@ -389,7 +428,9 @@ public class Session extends Thread
                     break;
                 case 9:     //if it was a request to join the Connect-4 matchmaking queue...
                     //join the queue and notify if successful
-                    if (Database.getC4Matchmaker().joinMQueue(this))
+                    inC4Queue = Database.getC4Matchmaker().joinMQueue(this);
+
+                    if (inC4Queue)
                     {
                         client.getOutputStream().write(1);
                     }else
@@ -399,13 +440,22 @@ public class Session extends Thread
                     break;
                 case 10:     //if it was a request to leave the Connect-4 matchmaking queue...
                     //leave the queue and notify if successful
-                    if (Database.getC4Matchmaker().leaveMQueue(this))
+                    inC4Queue = !Database.getC4Matchmaker().leaveMQueue(this);
+
+                    if (!inC4Queue)
                     {
                         client.getOutputStream().write(1);
                     }else
                     {
                         client.getOutputStream().write(0);
                     }
+                    break;
+                case 11:    //if it was a request of all logged-in users for matchmaking...
+                    //get the list of players from the database and send it to the client
+                    messageBytes = Network.encrypt(Database.getLoggedInUsers(), AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("player list sent");  //for debug
                     break;
             }
         }

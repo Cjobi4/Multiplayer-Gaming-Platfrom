@@ -4,8 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class Database
 {
@@ -63,8 +63,8 @@ public class Database
                     + "password TEXT NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS gameInfo ("
-                            + "gameid INTEGER PRIMARY KEY,"
-                            + "gameData MEMO NOT NULL);");
+                    + "gameid INTEGER PRIMARY KEY,"
+                    + "gameData MEMO NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS leaderboard ("
                     + "userid INTEGER PRIMARY KEY,"
@@ -345,5 +345,36 @@ public class Database
         {
             return null;
         }
+    }
+
+    /**
+     * Returns a list of logged-in users containing the user ids and usernames, formatted for transmission.
+     * @return A list of logged-in users containing the user ids and usernames, with ` separating each userid and
+     * username pair, and ^ separating each user.
+     */
+    public static String getLoggedInUsers()
+    {
+        StringBuilder sbuild = new StringBuilder();
+
+        //get a list of all the keys
+        Enumeration<Integer> keys = loggedInUsers.keys();
+        int key;
+
+        //go through all the logged-in users
+        while (keys.hasMoreElements())
+        {
+            key = keys.nextElement();
+
+            //add the user's username and userid
+            sbuild.append(key);
+            sbuild.append("`");
+            sbuild.append(loggedInUsers.get(key).getUserID());
+            sbuild.append("^");
+        }
+
+        //remove the trailing ^ symbol
+        sbuild.deleteCharAt(sbuild.length());
+
+        return sbuild.toString();
     }
 }
