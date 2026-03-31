@@ -2,6 +2,7 @@ package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.shared.models.Game;
+import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,10 +12,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class mainController {
@@ -25,6 +29,95 @@ public class mainController {
     public RadioButton connect4Select;
     public RadioButton TicTacToeSelect;
     public Label errorField;
+    public Label gameTitleLabel;
+    public Label gameDescriptionLabel;
+    public Label gameIdLabel;
+    public Label gameTagsLabel;
+    public TextField searchField;
+
+    private final List<Game> games = new ArrayList<>();
+
+    @FXML
+    public void initialize() {
+        sampleData();
+    }
+
+    private void sampleData(){
+        List<Tag> Connect4Tag = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
+        List<Tag> TicTacToeTag = Arrays.asList(new Tag("Two Player", "purple"), new Tag("Classic", "Green"));
+        games.add(new Game("101", "Connect 4", "A two-player game where the first to connect four discs in a row wins.", Connect4Tag, null )); // have leaderboard as null for now
+        games.add(new Game("102", "TicTacToe", "A two-player game where the first to get three marks in a row wins.", TicTacToeTag, null )); // have leaderboard as null for now
+    }
+
+    public Game findById(String id)
+    {
+        for (Game g : games)
+        {
+            if(g.getId().equalsIgnoreCase(id) || g.getTitle().toLowerCase().contains(id.toLowerCase())){
+                return g;
+            }
+
+            for (Tag tag : g.getTags()){
+                if(tag.matches(id)){
+                    return g;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @FXML
+    protected void handleSearch(){
+        String input = searchField.getText().trim();
+
+        if(input.isEmpty()){
+            clearDisplay(); // Function to be created at the end to clear display from all labels incase of past search
+            gameTitleLabel.setText("Please enter a game title");
+            return;
+        }
+
+        Game game = findById(input);
+
+        if(game != null){
+            displayGame(game); // This will be the function that connects to the labels allowing to display on labels
+        }
+        else{
+            clearDisplay();
+            gameTitleLabel.setText("Game not found");
+        }
+
+    }
+
+    private String formatTags(List<Tag> tags) {
+        if (tags == null || tags.isEmpty()) return "No tags";
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Tag tag : tags) {
+            sb.append(tag.getLabel()).append(", ");
+        }
+
+        sb.setLength(sb.length() - 2);
+        return sb.toString();
+    }
+
+    private void displayGame(Game game){
+        gameTitleLabel.setText("Game: " + game.getTitle());
+        gameDescriptionLabel.setText("Description: " + game.getDescription());
+        gameIdLabel.setText("Game ID: " + game.getId());
+        gameTagsLabel.setText("Game Tag: " + formatTags(game.getTags()));
+    }
+
+    private void clearDisplay(){
+        gameTitleLabel.setText("");
+        gameDescriptionLabel.setText("");
+        gameIdLabel.setText("");
+        gameTagsLabel.setText("");
+    }
+
+
+
 
 
     @FXML
