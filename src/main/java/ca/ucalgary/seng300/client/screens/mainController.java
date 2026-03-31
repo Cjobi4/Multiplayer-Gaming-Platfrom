@@ -44,7 +44,19 @@ public class mainController {
         games.add(new Game("102", "TicTacToe", " Tic-Tac-Toe (or Noughts and Crosses) is a classic, two-player paper-and-pencil game played on a \n" +
                 "\n" +
                 " grid. Players alternate placing their mark—\"X\" or \"O\"—in empty spaces, with the primary objective of being the first to align three of their marks in a horizontal, vertical, or diagonal row.", TicTacToeTag, null )); // have leaderboard as null for now
+    }
 
+    public Game findById(String id)
+    {
+        for (Game g : games)
+        {
+            if (g.getId().equals(id))
+            {
+                return g;
+            }
+        }
+
+        return null;
     }
 
 
