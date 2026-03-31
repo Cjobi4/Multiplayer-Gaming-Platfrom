@@ -66,8 +66,30 @@ public class mainController {
 
     @FXML
     protected void handleSearch(){
+        String input = searchField.getText().trim();
+
+        if(input.isEmpty()){
+            //clearDisplay(); // Function to be created at the end to clear display from all labels incase of past search
+            gameTitleLabel.setText("Please enter a game title");
+            return;
+        }
+
+        Game game = findById(input);
+
+        if(game != null){
+            //displayGame(game); // This will be the function that connects to the labels allowing to display on labels
+        }
+        else{
+            //clearDisplay();
+            gameTitleLabel.setText("Game not found");
+        }
 
     }
+
+
+
+
+
 
 
     @FXML
