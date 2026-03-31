@@ -69,7 +69,7 @@ public class mainController {
         String input = searchField.getText().trim();
 
         if(input.isEmpty()){
-            //clearDisplay(); // Function to be created at the end to clear display from all labels incase of past search
+            clearDisplay(); // Function to be created at the end to clear display from all labels incase of past search
             gameTitleLabel.setText("Please enter a game title");
             return;
         }
@@ -77,16 +77,28 @@ public class mainController {
         Game game = findById(input);
 
         if(game != null){
-            //displayGame(game); // This will be the function that connects to the labels allowing to display on labels
+            displayGame(game); // This will be the function that connects to the labels allowing to display on labels
         }
         else{
-            //clearDisplay();
+            clearDisplay();
             gameTitleLabel.setText("Game not found");
         }
 
     }
 
+    private void displayGame(Game game){
+        gameTitleLabel.setText(game.getTitle());
+        gameDescriptionLabel.setText(game.getDescription());
+        gameIdLabel.setText(game.getId());
+        gameTagsLabel.setText(game.getTags().toString());
+    }
 
+    private void clearDisplay(){
+        gameTitleLabel.setText("");
+        gameDescriptionLabel.setText("");
+        gameIdLabel.setText("");
+        gameTagsLabel.setText("");
+    }
 
 
 
