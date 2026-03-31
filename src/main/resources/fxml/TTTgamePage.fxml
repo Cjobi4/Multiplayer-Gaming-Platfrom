@@ -33,6 +33,14 @@
                         <FlowPane layoutX="220.0" layoutY="14.0" prefHeight="360.0" prefWidth="360.0">
                            <children>
                               <Button mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button layoutX="130.0" layoutY="10.0" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
                            </children>
                         </FlowPane>
                                 <Button fx:id="gameOverButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onGameOverButtonClick" prefHeight="13.0" prefWidth="126.0" text="Swap to Game Over Screen (Placeholder button)" />
