@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 // Stub connection so we don't need to rely on a real connection
+// Allows me to fake an output to test Network methods
 public class StubSocket extends Socket {
 
     // fake output to the server
