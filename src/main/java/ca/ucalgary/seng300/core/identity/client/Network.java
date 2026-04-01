@@ -119,6 +119,12 @@ public class Network extends Thread {
         }
     }
 
+    public CompletableFuture<Object> queueRequest(int type, String[] parameters) throws Exception {
+        Request req = new Request(type, parameters);
+        requestQueue.put(req);
+
+        return req.future;
+    }
 
     // LOGIN
 
