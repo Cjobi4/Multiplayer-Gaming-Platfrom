@@ -54,13 +54,33 @@ public class Network extends Thread {
     public static final byte send_chat = 126;
     public static final byte receive_chat = 127;
 
-    /** Constructor
+    /** Constructor that connects to the server and performs the cryptographic handshake.
      *
-     * @throws Exception
+     * @throws Exception if the connection or handshake fails.
      */
     public Network() throws Exception {
         socket = new Socket(serverIP, serverPort);
         establishHandshake();
+    }
+
+    /** Constructor that accepts a pre-configured socket, skipping the server
+     *  connection and handshake. Intended for testing with stub sockets.
+     *
+     * @param socket the socket to use for network communication.
+     */
+    public Network(Socket socket) {
+        this.socket = socket;
+    }
+
+    /** Initializes encryption keys directly for testing, bypassing the
+     *  Diffie-Hellman handshake and keystore. Must be called before any
+     *  encrypt/decrypt operations in a test context.
+     */
+    public static void setupTestEncryption() {
+        sRan = new SecureRandom();
+        byte[] testKeyBytes = new byte[16];
+        sRan.nextBytes(testKeyBytes);
+        AESKey = new SecretKeySpec(testKeyBytes, "AES");
     }
 
 
