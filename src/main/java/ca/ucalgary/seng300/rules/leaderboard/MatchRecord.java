@@ -13,7 +13,6 @@ public class MatchRecord {
     private int playerOneID;
     private int playerTwoID;
     private GameType gameType;
-    private int matchID;
     private String date;
     private int winnerID;
 
@@ -22,10 +21,9 @@ public class MatchRecord {
      * @param playerOneID int ID of player 1
      * @param playerTwoID int ID of player 2
      * @param gameType
-     * @param matchID int match ID (generated distinct number)
      * @param winnerID int ID of the winner
      */
-    public MatchRecord(int playerOneID, int playerTwoID, GameType gameType, int matchID, int winnerID){
+    public MatchRecord(int playerOneID, int playerTwoID, GameType gameType, int winnerID){
         this.playerOneID = playerOneID;
         this.playerTwoID = playerTwoID;
         this.gameType = gameType;
@@ -40,21 +38,12 @@ public class MatchRecord {
     /**
      * Create Match Record when retrieving database (for easier getting data)
      */
-    public MatchRecord (String matchString){
-        String[] parts = matchString.split("\\s+");
-        try {
-            this.matchID = Integer.parseInt(parts[0]);
-            this.playerOneID = Integer.parseInt(parts[0]);
-            this.playerTwoID = Integer.parseInt(parts[1]);
-
-            if (parts[2].equals("Tic-Tac-Toe")) this.gameType = GameType.TICTACTOE;
-            else this.gameType = GameType.CONNECT4;
-
-            this.winnerID = Integer.parseInt(parts[3]);
-        }
-        catch (NumberFormatException e){
-            e.printStackTrace();
-        }
+    public MatchRecord (int playerOneID, int playerTwoID, GameType gameType, int winnerID, String date){
+        this.playerOneID = playerOneID;
+        this.playerTwoID = playerTwoID;
+        this.gameType = gameType;
+        this.winnerID = winnerID;
+        this.date = date;
 
     }
 
@@ -67,7 +56,7 @@ public class MatchRecord {
         return gameType;
     }
     public String getDate(){
-        return date;
+        return this.date;
     }
 
     /**
