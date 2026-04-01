@@ -84,7 +84,7 @@ public class Network extends Thread {
         }
     }
 
-    
+
     // LOGIN
 
     /** sends login request to the server
@@ -205,8 +205,8 @@ public class Network extends Thread {
 
     // LEADERBOARD
 
-    /** gets leaderboard from database and stores as a combined nested list (List<List<LeaderboardEntry>>)
-     * .get(0) can be used to access ttt, and .get(1) for c4
+    /** gets leaderboard from database and stores as a nested list (List<List<LeaderboardEntry>>)
+     * .get(0) can be used to access ttt, .get(1) for c4, and .get(2) for combined
      *
      * @return
      * @throws Exception
@@ -218,6 +218,7 @@ public class Network extends Thread {
 
         List<LeaderboardEntry> tttEntries = new ArrayList<>();
         List<LeaderboardEntry> c4Entries = new ArrayList<>();
+        List<LeaderboardEntry> combinedEntries = new ArrayList<>();
 
         String response = "";
         boolean receiving = true;
@@ -246,6 +247,7 @@ public class Network extends Thread {
                 // parse string and add to individual lists
                 tttEntries.add(new LeaderboardEntry(playerID, username, tttWins, tttMatches));
                 c4Entries.add(new LeaderboardEntry(playerID, username, c4Wins, c4Matches));
+                combinedEntries.add(new LeaderboardEntry(playerID, username, tttWins + c4Wins, tttMatches + c4Matches));
             }
 
         }
@@ -256,12 +258,13 @@ public class Network extends Thread {
         }
 
         // combine data and return as one nested list
-        List<List<LeaderboardEntry>> combined = new ArrayList<>();
-        combined.add(tttEntries);
-        combined.add(c4Entries);
+        List<List<LeaderboardEntry>> results = new ArrayList<>();
+        results.add(tttEntries);
+        results.add(c4Entries);
+        results.add(combinedEntries);
 
         // ttt can be accessed through "combined.get(0)", c4 through "combined.get(1)"
-        return combined;
+        return results;
     }
 
     // CHAT
