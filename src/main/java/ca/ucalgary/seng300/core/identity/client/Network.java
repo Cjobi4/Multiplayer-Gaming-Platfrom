@@ -5,6 +5,7 @@ import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardDatabase;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
+import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Message;
 
@@ -358,6 +359,52 @@ public class Network extends Thread {
 
         // ttt can be accessed through "combined.get(0)", c4 through "combined.get(1)"
         return results;
+    }
+
+    // MATCH RECORD
+
+    public List<MatchRecord> getMatchRecords(int userID) throws Exception {
+
+        //send description byte
+        socket.getOutputStream().write(GET_MATCH_RECORD);
+
+        // send userID
+        sendRequestParameter(String.valueOf(userID));
+
+        List<MatchRecord> records = new ArrayList<>();
+        String response = "";
+        boolean receiving = true;
+
+        while (receiving) {
+
+            response = readResponseString();
+
+            if (response.equals("0") || response.equals("1")) {
+                receiving = false;
+            } else {
+                String[] parts = response.split("\\^");
+
+                int playerOneID = Integer.parseInt((parts[0]));
+                int playerTwoID = Integer.parseInt((parts[1]));
+                GameType gameType;
+
+                if (parts[2].equals("TICTACTOE")) {
+                    gameType = GameType.TICTACTOE;
+                } else {
+                    gameType = GameType.CONNECT4;
+                }
+
+                int winnerID = Integer.parseInt(parts[3]);
+                String date = parts[4];
+
+                records.add(new MatchRecord(playerOneID, playerTwoID, gameType, winnerID, date));
+            }
+        }
+        if (response.equals("0")) {
+            return null;
+        }
+
+        return records;
     }
 
     // CHAT
