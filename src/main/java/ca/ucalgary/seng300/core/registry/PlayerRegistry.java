@@ -13,6 +13,7 @@ public class PlayerRegistry {
 
     private PlayerRegistry()
     {
+
         this.players = new ArrayList<>();
     }
 
