@@ -8,38 +8,23 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
+import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
+
 
 import java.io.IOException;
 
 public class TTTgameController {
     public Button gameOverButton;
     public Button backButton;
-
-    @FXML
     public Button ttt00;
-
-    @FXML
     public Button ttt01;
-
-    @FXML
     public Button ttt02;
-
-    @FXML
     public Button ttt10;
-
-    @FXML
     public Button ttt11;
-
-    @FXML
     public Button ttt12;
-
-    @FXML
     public Button ttt20;
-
-    @FXML
     public Button ttt21;
-
-    @FXML
     public Button ttt22;
 
     @FXML
