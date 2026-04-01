@@ -48,11 +48,12 @@ public class Network extends Thread {
     public static final byte LOGOUT = 3;
     public static final byte GET_GAME_LIST = 4;
     public static final byte GET_LEADERBOARD = 5;
-
+    public static final byte GET_MATCH_RECORD = 6;
     public static final byte JOIN_TTT_QUEUE = 7;
     public static final byte LEAVE_TTT_QUEUE = 8;
     public static final byte JOIN_C4_QUEUE = 9;
     public static final byte LEAVE_C4_QUEUE = 10;
+    public static final byte GET_ONLINE_PLAYERS = 11;
 
     // to be added/modified later
     public static final byte send_chat = 126;
@@ -108,6 +109,7 @@ public class Network extends Thread {
 
                     if (!requestQueue.isEmpty()) {
                         Request req = requestQueue.take();
+                        processRequest(req);
                     }
                 }
             }
