@@ -38,10 +38,11 @@ public class Network extends Thread {
     private static SecureRandom sRan;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
 
-    private static final String serverIP ="10.2.1.179";
-    private static final int serverPort = 501;
+    // private static final String serverIP ="10.2.1.179";
+    // private static final int serverPort = 501;
     private Socket socket;
     private String clientID = null;
+    private static Network instance;
 
     public static final byte PING = 0;
     public static final byte CREATE_ACCOUNT = 1;
@@ -65,9 +66,37 @@ public class Network extends Thread {
      *
      * @throws Exception
      */
-    public Network() throws Exception {
-        socket = new Socket(serverIP, serverPort);
+    public Network(String ip, int port) throws Exception {
+        socket = new Socket(ip, port);
         establishHandshake();
+    }
+
+    /** only called once when user enters the ip and port
+     *
+     * @param ip
+     * @param port
+     * @return
+     * @throws Exception
+     */
+    public static Network getInstance(String ip, int port) throws Exception {
+        if (instance == null) {
+            instance = new Network(ip, port);
+            instance.start();
+        }
+        return instance;
+    }
+
+    /** called every other time for method calls
+     *
+     * @return
+     * @throws Exception
+     */
+    public static Network getInstance() throws Exception {
+        if (instance == null) {
+            throw new Exception("Network not initialized. Call getInstance(ip, port)");
+        }
+
+        return instance;
     }
 
 
