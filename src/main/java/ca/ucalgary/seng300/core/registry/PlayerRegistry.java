@@ -9,14 +9,14 @@ public class PlayerRegistry {
 
     private static PlayerRegistry instance;
 
-    private final List<Player> players;
+    private final ArrayList<Player> players;
 
     private PlayerRegistry()
     {
         this.players = new ArrayList<>();
     }
 
-    public PlayerRegistry getInstance()
+    public static PlayerRegistry getInstance()
     {
         if (instance == null)
         {
@@ -52,7 +52,7 @@ public class PlayerRegistry {
         return null;
     }
 
-    public static List<Player> listAll()
+    public List<Player> listAll()
     {
         return players;
     }

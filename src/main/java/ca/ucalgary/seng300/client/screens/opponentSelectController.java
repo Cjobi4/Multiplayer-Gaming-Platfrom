@@ -31,7 +31,7 @@ public class opponentSelectController implements Initializable {
     @FXML
     public TableColumn<Player, String> playerColumn;
 
-    List<Player> playerList = PlayerRegistry.listAll();
+    List<Player> playerList = PlayerRegistry.getInstance().listAll();
 
     ObservableList<Player> observableData = FXCollections.observableList(playerList);
 
