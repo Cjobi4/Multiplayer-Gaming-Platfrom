@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class opponentSelectController implements Initializable {
+public class C4opponentSelectController implements Initializable {
     public Button opponentSelectedButton;
 
     public Button backButton;
