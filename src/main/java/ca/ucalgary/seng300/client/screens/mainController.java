@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.client.components.LeaderBoardMock;
+import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
@@ -13,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import javax.swing.*;
@@ -34,6 +37,7 @@ public class mainController {
     public Label gameIdLabel;
     public Label gameTagsLabel;
     public TextField searchField;
+    public VBox leaderboardBox;
 
     private final List<Game> games = new ArrayList<>();
 
@@ -42,6 +46,15 @@ public class mainController {
         sampleData();
     }
 
+    private void loadCombinedLeaderboard(){
+       List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
+       //renderLeaderboard();// New functionality for later use
+    }
+
+
+
+
+/// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void sampleData(){
         List<Tag> Connect4Tag = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
         List<Tag> TicTacToeTag = Arrays.asList(new Tag("Two Player", "purple"), new Tag("Classic", "Green"));
@@ -119,7 +132,7 @@ public class mainController {
 
 
 
-
+/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @FXML
     protected void onSelectButtonSelected(ActionEvent event) {
         errorField.setText("");
