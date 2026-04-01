@@ -330,6 +330,21 @@ public class Network extends Thread {
         return readResponseString().equals("1");
     }
 
+    public List<String> getOnlinePlayers() throws Exception {
+
+        // send description byte
+        socket.getOutputStream().write(GET_ONLINE_PLAYERS);
+
+        String response = readResponseString();
+
+        if (response.equals("0")) {
+            return null;
+        }
+
+        String[] activePlayers = response.split("\\^");
+        return new ArrayList<>(Arrays.asList(activePlayers));
+    }
+
     // LEADERBOARD
 
     /** gets leaderboard from database and stores as a nested list (List<List<LeaderboardEntry>>)
