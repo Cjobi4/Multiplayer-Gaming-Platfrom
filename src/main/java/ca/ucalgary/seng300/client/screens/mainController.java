@@ -51,6 +51,15 @@ public class mainController {
        //renderLeaderboard();// New functionality for later use
     }
 
+    public void renderLeaderboard(List<LeaderBoardRows> rows){
+        leaderboardBox.getChildren().clear();
+
+        for (LeaderBoardRows row : rows){
+           // leaderboardBox.getChildren().add(showLeaderboardRow()); //
+        }
+
+    }
+
 
 
 
