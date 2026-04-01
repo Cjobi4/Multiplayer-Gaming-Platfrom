@@ -186,7 +186,7 @@ public class Network extends Thread {
                 break;
 
             case GET_MATCH_RECORD:
-                req.future.complete(getMatchRecords(Integer.parseInt(parameters[0])));
+                req.future.complete(getMatchRecords(parameters[0]));
                 break;
 
             case JOIN_TTT_QUEUE:
@@ -419,13 +419,13 @@ public class Network extends Thread {
 
     // MATCH RECORD
 
-    public List<MatchRecord> getMatchRecords(int userID) throws Exception {
+    public List<MatchRecord> getMatchRecords(String username) throws Exception {
 
         //send description byte
         socket.getOutputStream().write(GET_MATCH_RECORD);
 
-        // send userID
-        sendRequestParameter(String.valueOf(userID));
+        // send username
+        sendRequestParameter(username);
 
         List<MatchRecord> records = new ArrayList<>();
         String response = "";
