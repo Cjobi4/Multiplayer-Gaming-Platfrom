@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.rules.leaderboard;
 
+import java.util.Objects;
+
 /**
  * Represents a single entry in the leaderboard.
  *
@@ -32,7 +34,13 @@ public class LeaderboardEntry {
         return String.format("%d. %s: %d wins", rank, playerName, wins);
     }
 
-
+    // Used for testing, particular in assertEquals
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        LeaderboardEntry that = (LeaderboardEntry) o;
+        return playerID == that.playerID && wins == that.wins && matches == that.matches && Objects.equals(playerName, that.playerName);
+    }
 
     // getters
     public int getPlayerID(){
