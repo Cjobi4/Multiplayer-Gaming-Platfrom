@@ -8,6 +8,7 @@ import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -44,21 +47,52 @@ public class mainController {
     @FXML
     public void initialize() {
         sampleData();
+        loadCombinedLeaderboard();
     }
 
     private void loadCombinedLeaderboard(){
        List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
-       //renderLeaderboard();// New functionality for later use
+       renderLeaderboard(rows);// New functionality for later use
     }
 
     public void renderLeaderboard(List<LeaderBoardRows> rows){
         leaderboardBox.getChildren().clear();
 
         for (LeaderBoardRows row : rows){
-           // leaderboardBox.getChildren().add(showLeaderboardRow()); //
+            leaderboardBox.getChildren().add(showLeaderboardRow(row));
         }
 
     }
+
+    public HBox showLeaderboardRow(LeaderBoardRows row){
+        Label rankLabel = new Label("#" + row.getRank());
+        Label nameLabel = new Label(row.getPlayerName());
+        Label winsLabel = new Label(row.getWins() + " W");
+        Label matchesLabel = new Label(row.getMatches() + " M");
+
+        rankLabel.setMinWidth(45);
+        nameLabel.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(nameLabel, Priority.ALWAYS);
+
+        HBox rowBox = new HBox(15);
+        rowBox.setAlignment(Pos.CENTER_LEFT);
+        rowBox.getChildren().addAll(rankLabel, nameLabel, winsLabel, matchesLabel);
+
+        rowBox.setStyle("""
+            -fx-background-color: #f3c1cf;
+            -fx-background-radius: 10;
+            -fx-padding: 10;
+        """);
+
+        rankLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+        nameLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+        winsLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+        matchesLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+
+        return rowBox;
+    }
+
+
 
 
 

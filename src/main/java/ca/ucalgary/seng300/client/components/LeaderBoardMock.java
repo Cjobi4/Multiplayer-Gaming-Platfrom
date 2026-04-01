@@ -14,7 +14,7 @@ public class LeaderBoardMock {
         rows.add(new LeaderBoardRows(3, "Anaya", 69, 100));
         rows.add(new LeaderBoardRows(4, "Owen", 63, 140));
         rows.add(new LeaderBoardRows(5, "Wekai", 55, 98));
-        rows.add(new LeaderBoardRows(6, "Sanmeet", 50, 100));
+        rows.add(new LeaderBoardRows(6, "Jacob", 50, 100));
         rows.add(new LeaderBoardRows(7, "Sajan", 15, 200));
 
         return rows;
