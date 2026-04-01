@@ -58,6 +58,48 @@ public class Network extends Thread {
     public static final byte send_chat = 126;
     public static final byte receive_chat = 127;
 
+    /*
+        HOW TO USE THE NETWORK CLASS
+
+        1. The first screen must initialize the network with the server IP and port:
+           Network.getInstance("192.168.1.1", 14001);
+
+        2. All subsequent requests are made through queueRequest().
+           queueRequest() takes the type of request as a parameter (see list above), as well as the parameters themselves as a String[]
+           Never call network methods directly or create a new Network object.
+
+        3. Results must be cast to the expected return type, use .get() to block until a request is fulfilled
+
+        Here are some examples on how you can request from the server:
+
+        // CREATE ACCOUNT
+        boolean success = (Boolean) Network.getInstance().queueRequest(Network.CREATE_ACCOUNT, new String[]{"username", "password"}).get();
+
+        // LOGIN
+        boolean loggedIn = (Boolean) Network.getInstance().queueRequest(Network.LOGIN, new String[]{"username", "password"}).get();
+
+        // LOGOUT
+        boolean loggedOut = (Boolean) Network.getInstance().queueRequest(Network.LOGOUT, null).get();
+
+        // GET GAME LIST — no return value, just populates GameRegistry
+        Network.getInstance().queueRequest(Network.GET_GAME_LIST, null).get();
+        // access games after via GameRegistry.getInstance().ListAll();
+
+        // GET LEADERBOARD
+        List<List<LeaderboardEntry>> leaderboard = (List<List<LeaderboardEntry>>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, null).get();
+        // leaderboard.get(0) = TTT, leaderboard.get(1) = C4, leaderboard.get(2) = combined ttt and c4
+
+        // GET MATCH RECORDS
+        List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{"username"}).get();
+
+        // JOINING QUEUE
+        boolean joinedTTT = (Boolean) Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get();
+        boolean joinedC4  = (Boolean) Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get();
+
+        // LEAVING QUEUE
+        boolean leftTTT = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_TTT_QUEUE, null).get();
+        boolean leftC4  = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_C4_QUEUE, null).get();
+    */
 
     /** Constructor
      *
@@ -96,7 +138,10 @@ public class Network extends Thread {
         return instance;
     }
 
-
+    /** Internal class to handle requests being processed
+     * Created by queueRequest() and processed by run()
+     * future holds the result
+     */
     class Request {
         CompletableFuture<Object> future = new CompletableFuture<>();
         private int type;
@@ -116,11 +161,16 @@ public class Network extends Thread {
         }
     }
 
+    /**
+     *  Runs in background on a separate thread, listens for server-initiated transmissions such as incoming chat messages
+     *  Processes client-initiated requests from the request queue
+     *  Checks queue every 5 seconds if no server transmission is received
+     */
     @Override
     public void run() {
         try {
 
-            socket.setSoTimeout(5000);
+            socket.setSoTimeout(3000);
 
             while (true) {
                 try {
@@ -148,6 +198,13 @@ public class Network extends Thread {
         }
     }
 
+    /** To be called whenever a request is made
+     *
+     * @param type type of request
+     * @param parameters parameters for request
+     * @return
+     * @throws Exception
+     */
     public CompletableFuture<Object> queueRequest(int type, String[] parameters) throws Exception {
         Request req = new Request(type, parameters);
         requestQueue.put(req);
@@ -155,16 +212,26 @@ public class Network extends Thread {
         return req.future;
     }
 
+
+    /**
+     * Takes a request and processes it depending on what it is
+     * Uses future to process the result so caller can retrieve it
+     *
+     * Only called from run()
+     *
+     * @param req
+     * @throws Exception
+     */
     private void processRequest(Request req) throws Exception {
         String[] parameters = req.getParameters();
         switch (req.getType()) {
 
             case CREATE_ACCOUNT:
-                req.future.complete(login(parameters[0], parameters[1]));
+                req.future.complete(registerAccount(parameters[0], parameters[1]));
                 break;
 
             case LOGIN:
-                req.future.complete(registerAccount(parameters[0], parameters[1]));
+                req.future.complete(login(parameters[0], parameters[1]));
                 break;
 
             case LOGOUT:
@@ -233,7 +300,7 @@ public class Network extends Thread {
         sendRequestParameter(pwd);
 
         // interpret whether the login attempt was successful or not
-        return readResponseString().equals("true");
+        return readResponseString().equals("1");
     }
 
     public boolean logout() throws Exception {
@@ -257,7 +324,7 @@ public class Network extends Thread {
         sendRequestParameter(password);
 
         // interpret whether registration was successful or not
-        return readResponseString().equals("true");
+        return readResponseString().equals("1");
     }
 
 
@@ -275,7 +342,8 @@ public class Network extends Thread {
     /** Parsing of game data to be used to construct game objects
      *
      * Strings received in the format:
-     * id^title^description^tag1`tag2`...^color^gameURL^fullscreen
+     * GameID^Title^Description^Tag1`Color1`Tag2`Color2`...
+     * Server sends 1 after all games, or 0 if server error occurs
      *
      * @throws Exception
      */
@@ -289,15 +357,24 @@ public class Network extends Thread {
                 readResponseString(), readResponseString()
         };
 
+        // either 0 or 1 sent after transmission
+        String terminator = readResponseString();
+
+        if (terminator.equals("0")) {
+            // server error
+            return;
+        }
+
         // iterating through each array entry (corresponding to a different game) and splitting by ^
         for (String gameInfo : responses) {
 
             String[] gameFields = gameInfo.split("\\^");
 
             // parsing the string
-            String title = gameFields[0];
-            String description = gameFields[1];
-            String[] tagComponents = gameFields[2].split("`");
+            String id = gameFields[0];
+            String title = gameFields[1];
+            String description = gameFields[2];
+            String[] tagComponents = gameFields[3].split("`");
 
             // building tag objects
             List<Tag> tags = new ArrayList<>();
@@ -306,12 +383,16 @@ public class Network extends Thread {
                 tags.add(new Tag(tagComponents[i], tagComponents[i+1]));
             }
 
-            // can change tags being passed as string[], also need to get local leaderboard to pass in?
-            GameRegistry.getInstance().register(new Game(null, title, description, tags, null));
+            GameRegistry.getInstance().register(new Game(id, title, description, tags));
         }
-        // TODO: handle -1 (network fails to send data)
     }
 
+    /** Request for joining the queue
+     *
+     * @param game pass in game type
+     * @return
+     * @throws Exception
+     */
     public boolean joinQueue(GameType game) throws Exception {
         if (game == GameType.TICTACTOE) {
             socket.getOutputStream().write(JOIN_TTT_QUEUE);
@@ -323,6 +404,12 @@ public class Network extends Thread {
         return readResponseString().equals("1");
     }
 
+    /** Request for leaving queue
+     *
+     * @param game pass in game type
+     * @return
+     * @throws Exception
+     */
     public boolean leaveQueue(GameType game) throws Exception {
         if (game == GameType.TICTACTOE) {
             socket.getOutputStream().write(LEAVE_TTT_QUEUE);
@@ -334,6 +421,7 @@ public class Network extends Thread {
         return readResponseString().equals("1");
     }
 
+    // TODO: Update with PlayerRegistry...
     public List<String> getOnlinePlayers() throws Exception {
 
         // send description byte
@@ -415,6 +503,12 @@ public class Network extends Thread {
 
     // MATCH RECORD
 
+    /** Request to get the game records of a user
+     *
+     * @param username
+     * @return
+     * @throws Exception
+     */
     public List<MatchRecord> getMatchRecords(String username) throws Exception {
 
         //send description byte
@@ -539,6 +633,10 @@ public class Network extends Thread {
 
     // CRYPTO
 
+    /** Complete handshake sequence to take place at beginning of program
+     *
+     * @throws Exception
+     */
     private void establishHandshake() throws Exception {
 
         // check for existing clientID, sending clientID or send "new" if no clientID exists
@@ -576,6 +674,7 @@ public class Network extends Thread {
             clientID = decrypt(readResponse());
         }
 
+        // only matters if clientID persistent when restarting program?
         else if (response == 1) {
             // server has clientID and AES key, just initialize client side with existing key
             generateAESKey();
