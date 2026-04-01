@@ -185,6 +185,10 @@ public class Network extends Thread {
                 req.future.complete(getLeaderboard());
                 break;
 
+            case GET_MATCH_RECORD:
+                req.future.complete(getMatchRecords(Integer.parseInt(parameters[0])));
+                break;
+
             case JOIN_TTT_QUEUE:
                 req.future.complete(joinQueue(GameType.TICTACTOE));
                 break;
@@ -199,6 +203,10 @@ public class Network extends Thread {
 
             case LEAVE_C4_QUEUE:
                 req.future.complete(leaveQueue(GameType.CONNECT4));
+                break;
+
+            case GET_ONLINE_PLAYERS:
+                req.future.complete(getOnlinePlayers());
                 break;
 
             case send_chat:
