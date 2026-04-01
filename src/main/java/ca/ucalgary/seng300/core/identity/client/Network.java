@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class Network extends Thread {
     private static byte[] sharedKey = null;
@@ -64,6 +65,26 @@ public class Network extends Thread {
     }
 
 
+    class Request {
+        CompletableFuture<Object> future = new CompletableFuture<>();
+        private int type;
+        private String[] parameters;
+
+        Request(int type, String[] parameters) {
+            this.type = type;
+            this.parameters = parameters;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public String[] getParameters() {
+            return parameters;
+        }
+    }
+
+    
     // LOGIN
 
     /** sends login request to the server
