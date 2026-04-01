@@ -16,6 +16,33 @@ public class TTTgameController {
     public Button backButton;
 
     @FXML
+    public Button ttt00;
+
+    @FXML
+    public Button ttt01;
+
+    @FXML
+    public Button ttt02;
+
+    @FXML
+    public Button ttt10;
+
+    @FXML
+    public Button ttt11;
+
+    @FXML
+    public Button ttt12;
+
+    @FXML
+    public Button ttt20;
+
+    @FXML
+    public Button ttt21;
+
+    @FXML
+    public Button ttt22;
+
+    @FXML
     protected void onGameOverButtonClick(ActionEvent event) {
         try {
             //Load fxml file
@@ -64,4 +91,5 @@ public class TTTgameController {
             System.err.println("Error: Could not load TTTopponentSelectPage.fxml. Check file path!");
         }
     }
+
 }
