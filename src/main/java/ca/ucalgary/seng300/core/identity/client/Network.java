@@ -3,7 +3,6 @@ package ca.ucalgary.seng300.core.identity.client;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
-import ca.ucalgary.seng300.rules.leaderboard.LeaderboardDatabase;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
 import ca.ucalgary.seng300.shared.models.Game;
@@ -17,8 +16,6 @@ import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
@@ -26,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -574,7 +570,7 @@ public class Network extends Thread {
             socket.getOutputStream().write(clientPubKey);
 
             // derive AES key
-            AESKeyInitial();
+            generateAESKey();
 
             // save clientID from server
             clientID = decrypt(readResponse());
@@ -582,7 +578,7 @@ public class Network extends Thread {
 
         else if (response == 1) {
             // server has clientID and AES key, just initialize client side with existing key
-            AESKeyInitial();
+            generateAESKey();
         }
     }
 
@@ -618,44 +614,12 @@ public class Network extends Thread {
         return clientKeyPair.getPublic().getEncoded();
     }
 
-    // TODO: ditch ks
-    /** Ensuring program has everything it needs to encrypt/decrypt, preparation
-     *
-     */
-    public static void AESKeyInitial(){
-
-        try {
-            // check if previous key store exists
-            File file = new File("./passwords.jks");
-            KeyStore ks = KeyStore.getInstance("pkcs12");
-            char[] pwd = "password".toCharArray();
-
-            // make new one if doesn't exist
-            if (!file.exists()) {
-                ks.load(null, pwd);
-                AESGenerateKey(ks);
-            } else {
-                // trying to load the file
-                try (FileInputStream fis = new FileInputStream(file)) {
-                    ks.load(fis,pwd);
-                }
-                AESKey = (SecretKey) ks.getKey("key", pwd);
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // create secure RNG
-        sRan = new SecureRandom();
-    }
 
     /** Turning the shared key into a usable AES encryption key
      *
-     * @param ks
      * @throws Exception
      */
-    private static void AESGenerateKey(KeyStore ks) throws Exception {
+    private static void generateAESKey() throws Exception {
 
         // using shared key to generate hash
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -666,13 +630,8 @@ public class Network extends Thread {
         System.arraycopy(hash, 0, shortHash, 0, 16);
         AESKey = new SecretKeySpec(shortHash, "AES");
 
-        // convert key to secret key
-        KeyStore.SecretKeyEntry secKey = new KeyStore.SecretKeyEntry(AESKey);
-        KeyStore.ProtectionParameter proPara = new KeyStore.PasswordProtection("password".toCharArray());
-
-        // adding secret key to key store
-        ks.setEntry("key", secKey, proPara);
-
+        // create secure rng
+        sRan = new SecureRandom();
     }
 
     /** encryption method
