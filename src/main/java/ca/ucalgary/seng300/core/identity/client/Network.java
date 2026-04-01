@@ -131,23 +131,47 @@ public class Network extends Thread {
         switch (req.getType()) {
 
             case CREATE_ACCOUNT:
+                req.future.complete(login(parameters[0], parameters[1]));
+                break;
 
             case LOGIN:
+                req.future.complete(registerAccount(parameters[0], parameters[1]));
+                break;
 
             case LOGOUT:
+                req.future.complete(logout());
+                break;
 
             case GET_GAME_LIST:
+                getGames();
+
+                req.future.complete(null);
+                break;
 
             case GET_LEADERBOARD:
+                req.future.complete(getLeaderboard());
+                break;
 
             case JOIN_TTT_QUEUE:
+                req.future.complete(joinQueue(GameType.TICTACTOE));
+                break;
 
             case LEAVE_TTT_QUEUE:
+                req.future.complete(leaveQueue(GameType.TICTACTOE));
+                break;
 
             case JOIN_C4_QUEUE:
+                req.future.complete(joinQueue(GameType.CONNECT4));
+                break;
 
             case LEAVE_C4_QUEUE:
+                req.future.complete(leaveQueue(GameType.CONNECT4));
+                break;
 
+            case send_chat:
+                sendMessage(parameters[0], parameters[1], parameters[2]);
+                req.future.complete(null);
+                break;
         }
 
     }
