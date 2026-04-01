@@ -28,11 +28,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Network extends Thread {
     private static byte[] sharedKey = null;
     private static SecretKey AESKey;
     private static SecureRandom sRan;
+    private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
 
     private static final String serverIP ="10.2.1.179";
     private static final int serverPort = 501;
@@ -54,6 +57,7 @@ public class Network extends Thread {
     // to be added/modified later
     public static final byte send_chat = 126;
     public static final byte receive_chat = 127;
+
 
     /** Constructor
      *
@@ -81,6 +85,37 @@ public class Network extends Thread {
 
         public String[] getParameters() {
             return parameters;
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+
+            socket.setSoTimeout(5000);
+
+            while (true) {
+                try {
+
+                    int descriptionByte = socket.getInputStream().read();
+                    // chats are the only unprompted requests currently...add matchmaking later
+                    if (descriptionByte == receive_chat) {
+                        receiveMessage();
+                    }
+                }
+
+                catch (SocketTimeoutException e) {
+
+                    if (!requestQueue.isEmpty()) {
+                        Request req = requestQueue.take();
+                    }
+                }
+            }
+
+        }
+
+        catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
