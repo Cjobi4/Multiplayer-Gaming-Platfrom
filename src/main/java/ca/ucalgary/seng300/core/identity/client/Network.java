@@ -8,6 +8,7 @@ import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Message;
+import ca.ucalgary.seng300.shared.models.Tag;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
@@ -289,19 +290,22 @@ public class Network extends Thread {
 
             String[] gameFields = gameInfo.split("\\^");
 
-            // parsing the string. tags are stored in a string[] to be used later
-            String id = gameFields[0];
-            String title = gameFields[1];
-            String description = gameFields[2];
-            String[] tags = gameFields[3].split("`");
-            String color = gameFields[4];
+            // parsing the string
+            String title = gameFields[0];
+            String description = gameFields[1];
+            String[] tagComponents = gameFields[2].split("`");
 
-            // TODO: Build tags object before passing into game constructor
+            // building tag objects
+            List<Tag> tags = new ArrayList<>();
+
+            for (int i = 0; i < tagComponents.length - 1; i += 2) {
+                tags.add(new Tag(tagComponents[i], tagComponents[i+1]));
+            }
 
             // can change tags being passed as string[], also need to get local leaderboard to pass in?
-            GameRegistry.getInstance().register(new Game(id, title, description, null, null));
+            GameRegistry.getInstance().register(new Game(null, title, description, tags, null));
         }
-        // TODO: handle -1 (network fails to send data) & establish how tags/config will entirely be set up
+        // TODO: handle -1 (network fails to send data)
     }
 
     public boolean joinQueue(GameType game) throws Exception {
