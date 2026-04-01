@@ -126,6 +126,32 @@ public class Network extends Thread {
         return req.future;
     }
 
+    private void processRequest(Request req) throws Exception {
+        String[] parameters = req.getParameters();
+        switch (req.getType()) {
+
+            case CREATE_ACCOUNT:
+
+            case LOGIN:
+
+            case LOGOUT:
+
+            case GET_GAME_LIST:
+
+            case GET_LEADERBOARD:
+
+            case JOIN_TTT_QUEUE:
+
+            case LEAVE_TTT_QUEUE:
+
+            case JOIN_C4_QUEUE:
+
+            case LEAVE_C4_QUEUE:
+
+        }
+
+    }
+
     // LOGIN
 
     /** sends login request to the server
