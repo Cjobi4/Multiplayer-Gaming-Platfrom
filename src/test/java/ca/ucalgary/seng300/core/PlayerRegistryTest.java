@@ -28,18 +28,6 @@ public class PlayerRegistryTest {
 
 
     @Test
-    void testPlayerRegistryFindByIdReturnsPlayer() {
-
-    }
-
-
-    @Test
-    void testPlayerRegistryFindByIdReturnsNull() {
-
-    }
-
-
-    @Test
     void testPlayerRegistryFindByNameReturnsPlayer() {
 
     }
