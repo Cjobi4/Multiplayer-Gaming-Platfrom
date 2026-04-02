@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.core.registry;
 
+import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Player;
 
 import java.util.ArrayList;
@@ -25,6 +26,11 @@ public class PlayerRegistry {
         }
 
         return instance;
+    }
+
+    public void register(Player p)
+    {
+        players.add(p);
     }
 
     public Player findById(String id)
