@@ -143,7 +143,7 @@ public class TTTgameController {
             }
         }
         if (current.makeMove(i,j,player)) { //updates if the move was valid
-            turnDisplay.setText("Nice!");
+            turnDisplay.setText("Yippee!");
             if (current.getGameState() == GameState.PLAYER_WIN){
                 gameOver(); //ends game if someone wins
             }
