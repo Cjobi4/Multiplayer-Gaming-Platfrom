@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.games.GameState;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,7 +12,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
-
+import ca.ucalgary.seng300.games.GameState;
 
 import java.io.IOException;
 
@@ -45,6 +46,34 @@ public class TTTgameController {
 
             //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            //Create new scene and set it on the stage
+            Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
+            stage.setScene(gameOverScene);
+            stage.setTitle("Game Over"); //Change stage title to reflect current scene
+            stage.show();
+
+            // Create Match Record (Not sure where to get player info, will be needed to make a match record)
+
+            // MatchRecord matchRecord = new MatchRecord();
+
+            // Update Leaderboard
+
+            // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
+        }
+    }
+
+    protected void gameOver(){ //copy of the button version
+        try {
+            //Load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
+            Parent gameOverRoot = loader.load();
+
+            //Get current stage from the button click
+            Stage stage = (Stage) ttt00.getScene().getWindow();
 
             //Create new scene and set it on the stage
             Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
@@ -115,7 +144,10 @@ public class TTTgameController {
         }
         if (current.makeMove(i,j,player)) { //updates if the move was valid
             turnDisplay.setText("Nice!");
-            current.switchTurn();
+            if (current.getGameState() == GameState.PLAYER_WIN){
+                gameOver(); //ends game if someone wins
+            }
+//            current.switchTurn();
         }else{
             turnDisplay.setText("Please make a valid move");
         }
