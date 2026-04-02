@@ -2,11 +2,13 @@ package ca.ucalgary.seng300.core.identity.client;
 
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.core.registry.PlayerRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Message;
+import ca.ucalgary.seng300.shared.models.Player;
 import ca.ucalgary.seng300.shared.models.Tag;
 
 import javax.crypto.Cipher;
@@ -86,9 +88,16 @@ public class Network extends Thread {
         Network.getInstance().queueRequest(Network.GET_GAME_LIST, null).get();
         // access games after via GameRegistry.getInstance().ListAll();
 
-        // GET LEADERBOARD
-        List<List<LeaderboardEntry>> leaderboard = (List<List<LeaderboardEntry>>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, null).get();
-        // leaderboard.get(0) = TTT, leaderboard.get(1) = C4, leaderboard.get(2) = combined ttt and c4
+        // GET LEADERBOARD takes parameter -> (0 = TTT, 1 = C4, 2 = COMBINED)
+        List<LeaderboardEntry> leaderboard = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"0"}).get();
+
+        // GET ONLINE PLAYERS — no return value, populates PlayerRegistry
+        Network.getInstance().queueRequest(Network.GET_ONLINE_PLAYERS, null).get();
+
+        // SEND TTT MOVE
+        Network.getInstance().queueRequest(Network.SEND_MOVE_TTT, new String[]{board.toString()});
+
+        // RECEIVE TTT MOVE
 
         // GET MATCH RECORDS
         List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{"username"}).get();
@@ -246,7 +255,7 @@ public class Network extends Thread {
                 break;
 
             case GET_LEADERBOARD:
-                req.future.complete(getLeaderboard());
+                req.future.complete(getLeaderboard(Integer.parseInt(parameters[0])));
                 break;
 
             case GET_MATCH_RECORD:
@@ -270,13 +279,20 @@ public class Network extends Thread {
                 break;
 
             case GET_ONLINE_PLAYERS:
-                req.future.complete(getOnlinePlayers());
+                getOnlinePlayers();
+                req.future.complete(null);
+                break;
+
+            case SEND_MOVE_TTT:
+                sendMoveTTT(parameters[0]);
+                req.future.complete(null);
                 break;
 
             case send_chat:
                 sendMessage(parameters[0], parameters[1], parameters[2]);
                 req.future.complete(null);
                 break;
+
         }
 
     }
@@ -421,7 +437,7 @@ public class Network extends Thread {
     }
 
     // TODO: Update with PlayerRegistry...
-    public List<String> getOnlinePlayers() throws Exception {
+    public void getOnlinePlayers() throws Exception {
 
         // send description byte
         socket.getOutputStream().write(GET_ONLINE_PLAYERS);
@@ -429,11 +445,16 @@ public class Network extends Thread {
         String response = readResponseString();
 
         if (response.equals("0")) {
-            return null;
+            return;
         }
 
+        PlayerRegistry.getInstance().clear();
+
         String[] activePlayers = response.split("\\^");
-        return new ArrayList<>(Arrays.asList(activePlayers));
+
+        for (String player : activePlayers) {
+            PlayerRegistry.getInstance().register(new Player(player));
+        }
     }
 
     public void sendMoveTTT(String boardState) throws Exception {
