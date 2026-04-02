@@ -129,10 +129,10 @@ public class mainController {
     @FXML
     protected void onGameSelectButtonClick(ActionEvent event) {
         if (connect4Select.isSelected()) {
-            switchScene(event, "/fxml/C4OpponentSelectPage.fxml", "Connect 4 - Select Opponent");
+            switchScene(event, "/fxml/C4opponentSelectPage.fxml", "Connect 4 - Select Opponent");
             errorField.setText("");
         } else if (TicTacToeSelect.isSelected()) {
-            switchScene(event, "/fxml/TTTOpponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
+            switchScene(event, "/fxml/TTTopponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
             errorField.setText("");
         } else {
             errorField.setText("Please select a game first!");
@@ -142,10 +142,10 @@ public class mainController {
     @FXML
     protected void onMatchMakeButtonClick(ActionEvent event) {
         if (connect4Select.isSelected()) {
-            switchScene(event, "/fxml/C4OpponentSelectPage.fxml", "Connect 4 - Select Opponent");
+            switchScene(event, "/fxml/C4opponentSelectPage.fxml", "Connect 4 - Select Opponent");
             errorField.setText("");
         } else if (TicTacToeSelect.isSelected()) {
-            switchScene(event, "/fxml/TTTOpponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
+            switchScene(event, "/fxml/TTTopponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
             errorField.setText("");
         } else {
             errorField.setText("Please select a game first!");
