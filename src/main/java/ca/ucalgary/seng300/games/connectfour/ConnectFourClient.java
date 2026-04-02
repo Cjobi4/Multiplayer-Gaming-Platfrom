@@ -1,16 +1,17 @@
 package ca.ucalgary.seng300.games.connectfour;
 
 import ca.ucalgary.seng300.games.GameState;
+import ca.ucalgary.seng300.core.identity.client.Session;
 
 /**
  * The Client-side controller for Connect Four.
  * This class handles the communication between the UI and the Game Logic.
  * @author Hoang Khoi Nguyen
  * @email hoangkhoi.nguyen@ucalgary.ca
- * @version 2.0 04/01/2026
+ * @version 3.0 04/02/2026
  */
 
-public class ConnectFourClient {
+public class ConnectFourClient extends Thread{
     private ConnectFourGame game;
     private char myToken; // 'X' or 'O'
 
