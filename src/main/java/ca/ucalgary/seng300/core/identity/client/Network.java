@@ -53,6 +53,7 @@ public class Network extends Thread {
     public static final byte JOIN_C4_QUEUE = 9;
     public static final byte LEAVE_C4_QUEUE = 10;
     public static final byte GET_ONLINE_PLAYERS = 11;
+    public static final byte SEND_MOVE_TTT = 12;
 
     // to be added/modified later
     public static final byte send_chat = 126;
@@ -327,8 +328,6 @@ public class Network extends Thread {
         return readResponseString().equals("1");
     }
 
-
-
     // GAMES
 
     /** Sends game_list description byte to server
@@ -435,6 +434,18 @@ public class Network extends Thread {
 
         String[] activePlayers = response.split("\\^");
         return new ArrayList<>(Arrays.asList(activePlayers));
+    }
+
+    public void sendMoveTTT(String boardState) throws Exception {
+        // send description byte
+        socket.getOutputStream().write(SEND_MOVE_TTT);
+
+        // send board
+        sendRequestParameter(boardState);
+    }
+
+    public String receiveMoveTTT() throws Exception {
+
     }
 
     // LEADERBOARD
