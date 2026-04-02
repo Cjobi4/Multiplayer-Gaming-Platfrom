@@ -27,6 +27,9 @@ public class TTTgameController {
     public Button ttt21;
     public Button ttt22;
 
+    TicTacToeGame current = new TicTacToeGame();
+    Button grid[][] = {{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
+
     @FXML
     protected void onGameOverButtonClick(ActionEvent event) {
         try {
@@ -76,5 +79,18 @@ public class TTTgameController {
             System.err.println("Error: Could not load TTTopponentSelectPage.fxml. Check file path!");
         }
     }
+
+    private void updateBoard(){
+       TicTacToeBoard board = current.getBoard();
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (!board.isCellEmpty(row, col)){
+                    //TODO ill come back to this
+                }
+            }
+            }
+    }
+
+
 
 }
