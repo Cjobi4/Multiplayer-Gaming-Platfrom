@@ -129,4 +129,19 @@ public class ConnectFourBoardTest {
 
         assertEquals(expectedReturn, actualReturn, "The board should be full.");
     }
+
+    @Test
+    void testPrintBoardWhenBoardIsEmpty() {
+        ConnectFourBoard board = new ConnectFourBoard();
+    }
+
+    @Test
+    void testPrintBoardWhenBoardIsFull() {
+        ConnectFourBoard board = new ConnectFourBoard();
+    }
+
+    @Test
+    void testPrintBoardWhenBoardIsPartiallyFull(){
+        ConnectFourBoard board = new ConnectFourBoard();
+    }
 }
