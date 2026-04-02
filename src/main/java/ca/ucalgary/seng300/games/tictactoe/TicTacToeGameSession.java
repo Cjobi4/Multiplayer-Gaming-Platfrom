@@ -46,7 +46,6 @@ public class TicTacToeGameSession extends Thread{
         return game;
     }
 
-
     //not complete, will be finished in later ticket
     @Override
     public void run(){
