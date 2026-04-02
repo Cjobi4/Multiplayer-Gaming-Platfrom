@@ -40,11 +40,6 @@ public class Game {
         return id;
     }
 
-
-    public LeaderBoard getLeaderBoard() {
-        return leaderBoard;
-    }
-
     public List<Tag> getTags() {
         return tags;
     }
