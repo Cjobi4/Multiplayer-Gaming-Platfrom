@@ -80,15 +80,16 @@ public class TTTgameController {
         }
     }
 
+    //Everytime this is called, the board is updated
     private void updateBoard(){
        TicTacToeBoard board = current.getBoard();
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 if (!board.isCellEmpty(row, col)){
-                    //TODO ill come back to this
+                    grid[row][col].setText(String.valueOf(board.getCellInfo(row,col)));
                 }
             }
-            }
+        }
     }
 
 
