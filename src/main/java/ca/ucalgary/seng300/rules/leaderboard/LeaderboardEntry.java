@@ -15,7 +15,7 @@ public class LeaderboardEntry {
     private int wins;
     private int matches;
 
-    public LeaderboardEntry(int playerID, String username, int wins, int matches){
+    public LeaderboardEntry(String username, int wins, int matches){
         this.wins = wins;
         this.matches = matches;
         this.username = username;
