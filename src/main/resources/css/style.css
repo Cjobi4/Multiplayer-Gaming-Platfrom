@@ -30,3 +30,12 @@
     -fx-background-color: #7d393e;
     -fx-translate-y: 2;
 }
+
+.scroll-pane {
+    -fx-background: #FCE0D2;
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
