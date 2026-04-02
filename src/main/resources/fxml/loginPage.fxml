@@ -34,7 +34,7 @@
                   <Font name="Dubai Bold" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="230.0" layoutY="205.0" prefHeight="17.0" prefWidth="243.0" text="ERROR FIELD" textFill="#ff006e">
+            <Label fx:id="errorField" layoutX="230.0" layoutY="205.0" prefHeight="17.0" prefWidth="243.0" text="ERROR FIELD" textFill="#ff006e">
                <font>
                   <Font name="Dubai Medium" size="17.0" />
                </font>

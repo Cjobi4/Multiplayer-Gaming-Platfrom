@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ public class loginController {
     public Button loginButton;
     public Button createAccountButton;
     public Button backButton;
+    public Label errorField;
 
     @FXML
     protected void onLoginButtonClick(ActionEvent event) {
@@ -89,6 +91,22 @@ public class loginController {
 
         }
 
+    }
+
+    private void switchScene(ActionEvent event, String fxmlPath, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader((getClass().getResource(fxmlPath)));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root, 600, 400);
+            stage.setScene(scene);
+            stage.setTitle(title);
+            stage.show();
+        } catch (IOException e) {
+            errorField.setText("Error: could not load " + fxmlPath);
+        }
     }
 
 }
