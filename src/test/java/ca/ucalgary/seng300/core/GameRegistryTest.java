@@ -182,4 +182,29 @@ public class GameRegistryTest {
         assertEquals(expectedLabel, actualLabel, "Label should be equal to expected label, which is: " + expectedLabel);
         assertEquals(expectedColor, actualColor, "Color should be equal to expected color, which is: " + expectedColor);
     }
+
+    /**
+     * This test tests that the description is stored properly
+     * Testing the method getDescription from Game Clas
+     * Input: store description in the creation of new game
+     * Expected Output: input of description
+     * Actual Output: the value stored in description
+     */
+    @Test
+    void testGetDescriptionReturnsCorrectGameDescription() {
+        // initialization of Tags and Leaderboard
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+
+        // create game and add it to the registry
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        gameRegistry.register(game1);
+
+        String expectedDescription = game1.getDescription();
+
+        Game gameFound = gameRegistry.findById("game1");
+        String actualDescription = gameFound.getDescription();
+
+        assertEquals(expectedDescription, actualDescription, "Description should be equal to expected description which is: " + expectedDescription);
+    }
 }
