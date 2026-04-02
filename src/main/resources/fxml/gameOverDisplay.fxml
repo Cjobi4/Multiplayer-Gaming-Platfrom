@@ -16,7 +16,6 @@
                   <Font name="Dubai Bold" size="24.0" />
                </font>
             </Label>
-            <Button fx:id="returnToMainButton" layoutX="477.0" layoutY="478.0" mnemonicParsing="false" onAction="#onReturnToMainButtonClick" prefHeight="25.0" prefWidth="135.0" styleClass="basic-button" text="Return to Main Menu" />
             <Label layoutX="270.0" layoutY="100.0" text="Username:" textFill="#866b59">
                <font>
                   <Font name="Dubai Bold" size="14.0" />
@@ -43,13 +42,7 @@
                   <Font name="Dubai Bold" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="337.0" layoutY="425.0" prefHeight="35.0" prefWidth="125.0" text="Play Again?" textAlignment="CENTER" textFill="#866b59">
-               <font>
-                  <Font name="Dubai Bold" size="24.0" />
-               </font>
-            </Label>
-            <Button fx:id="newOpponentButton" layoutX="186.0" layoutY="478.0" mnemonicParsing="false" onAction="#onNewOpponentButtonClick" prefHeight="25.0" prefWidth="135.0" styleClass="basic-button" text="Select New Opponent" />
-            <Button fx:id="playAgainButton" layoutX="332.0" layoutY="478.0" mnemonicParsing="false" onAction="#onPlayAgainButtonClick" prefHeight="15.0" prefWidth="135.0" styleClass="basic-button" text="Play Again" />
+            <Button fx:id="returnToMainButton" layoutX="250.0" layoutY="430.0" mnemonicParsing="false" onAction="#onReturnToMainButtonClick" prefHeight="30.0" prefWidth="300.0" styleClass="basic-button" text="Return To Main Menu" />
          </children>
       </AnchorPane>
    </children>

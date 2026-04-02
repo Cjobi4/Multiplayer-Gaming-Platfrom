@@ -17,7 +17,6 @@ public class Game {
     private final String description;
 
     private List<Tag> tags = new ArrayList<>();
-    private final LeaderBoard leaderBoard;
 
     /**
      * Constructor for creating a new game object. Tags, LaunchConfigs, and leaderboard object must be created first
@@ -25,9 +24,8 @@ public class Game {
      * @param title the title of the game
      * @param description the game description
      * @param tags the tags for the game
-     * @param leaderboard the leaderboard attached to the game
      */
-    public Game (String id, String title, String description, List<Tag> tags, LeaderBoard leaderboard)
+    public Game (String id, String title, String description, List<Tag> tags)
     {
         this.id = id;
         this.title = title;
@@ -36,16 +34,10 @@ public class Game {
         // These are not string objects, but must be pulled from database.
         // Must be made using respective classes constructor before passing into here
         this.tags = tags;
-        this.leaderBoard = leaderboard;
     }
 
     public String getId() {
         return id;
-    }
-
-
-    public LeaderBoard getLeaderBoard() {
-        return leaderBoard;
     }
 
     public List<Tag> getTags() {

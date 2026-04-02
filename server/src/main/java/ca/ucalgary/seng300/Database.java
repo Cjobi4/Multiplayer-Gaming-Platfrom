@@ -4,8 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class Database
 {
@@ -13,10 +13,8 @@ public class Database
     private static final String url = "jdbc:sqlite:database.db";
     private static Connection conn;
     private static Statement stmt;
-    private static final String salt = "salt";
-    private static int nextAvailID;     //the next available userID to be assigned
 
-    private static Hashtable<Integer, Session> loggedInUsers = new Hashtable<>();
+    private static Hashtable<String, Session> loggedInUsers = new Hashtable<>();
 
     //matchmaking threads
     private static Matchmaker tttMatchmaker;
@@ -58,17 +56,15 @@ public class Database
 
             //create a tables for data (if they doesn't already exist)
             stmt.execute("CREATE TABLE IF NOT EXISTS userLoginInfo ("
-                    + "userid INTEGER PRIMARY KEY,"
-                    + "username TEXT NOT NULL,"
+                    + "username TEXT PRIMARY KEY,"
                     + "password TEXT NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS gameInfo ("
-                            + "gameid INTEGER PRIMARY KEY,"
-                            + "gameData MEMO NOT NULL);");
+                    + "gameid INTEGER PRIMARY KEY,"
+                    + "gameData MEMO NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS leaderboard ("
-                    + "userid INTEGER PRIMARY KEY,"
-                    + "username TEXT NOT NULL,"
+                    + "username TEXT PRIMARY KEY,"
                     + "tttWins INTEGER NOT NULL,"
                     + "tttMatchesPlayed INTEGER NOT NULL,"
                     + "c4Wins INTEGER NOT NULL,"
@@ -76,10 +72,10 @@ public class Database
 
             stmt.execute("CREATE TABLE IF NOT EXISTS matchRecord ("
                     + "gameid INTEGER PRIMARY KEY,"
-                    + "p1Userid INTEGER NOT NULL,"
-                    + "p2Userid INTEGER NOT NULL,"
+                    + "p1Username TEXT NOT NULL,"
+                    + "p2Username TEXT NOT NULL,"
                     + "gametype TEXT NOT NULL,"
-                    + "winnerID INTEGER NOT NULL,"
+                    + "winnerName TEXT NOT NULL,"
                     + "date TEXT NOT NULL);");
 
 
@@ -92,28 +88,20 @@ public class Database
             if (rs.getInt(1) == 0)
             {
                 //create the hashed password
-                String hashedPassword = hash("password");
+                String hashedPassword = hash("password", "password");
 
                 //must use prepared statement and not statement bc special characters in hash will disrupt command
-                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(userid, username, password) VALUES(0, ?, ?)");
+                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(username, password) VALUES(?, ?)");
                 pstmt.setString(1, "admin");
                 pstmt.setString(2, hashedPassword);
                 pstmt.executeUpdate();
 
-                //update the next available userid
-                nextAvailID = 1;
-
                 //add in a sample gameInfo
                 stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
                 stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
-                stmt.execute("INSERT INTO leaderboard(userid, username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed) VALUES(0, admin, 999, 999, 999, 999)");
-                stmt.execute("INSERT INTO matchRecord(gameid, p1Userid, p2Userid, gametype, winnerID, date) VALUES(gameid, 0, p2Userid, Tic-Tac-Toe, 0, date)");
-            }else   //if the table is not empty...
-            {
-                //set the next available userid
-                nextAvailID = rs.getInt(1);
+                stmt.execute("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed) VALUES(admin, 999, 999, 999, 999)");
+                stmt.execute("INSERT INTO matchRecord(gameid, p1Username, p2Username, gametype, winnerName, date) VALUES(gameid, admin, test, Tic-Tac-Toe, admin, date)");
             }
-
         } catch (SQLException e)
         {
             //also need to add in a check to shut down server here if something goes wrong
@@ -155,9 +143,10 @@ public class Database
     /**
      * Given a plaintext string, hashes it with SHA-256 to get a hexadecimal string
      * @param plaintext The string to be hashed
+     * @param salt The salt to be added to the plaintext before hashing.
      * @return The hashed version of the string, in hexidecimal. Returns empty string instead if SHA-256 couldn't be found.
      */
-    private static String hash(String plaintext)
+    private static String hash(String plaintext, String salt)
     {
         try
         {
@@ -189,32 +178,43 @@ public class Database
     /**
      * Given a username and password, creates a new account with those credentials. No login attempt is additionally
      * required, the user is logged in as the account is created.
-     * @param username The username for the new account in String format
+     * @param username The username for the new account in String format. Must be unique.
      * @param password The password for the new account in String format. Should be not be hashed. MUST be between 6-18
      *                 characters long
      * @param session The Session thread object responsible for this user
-     * @return If the account is created successfully, the newly assigned userid is returned. Otherwise, if the account
-     * creation fails, -1 is returned.
+     * @return If the account is created successfully, 1 is returned. If the account creation fails because the username
+     * has already been taken, return 0. Otherwise, if the account fails return -1.
      */
     public static int createAccount(String username, String password, Session session)
     {
         try
         {
+            //check if the username is unique
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM userLoginInfo WHERE (username = ?) LIMIT 1;");
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+
+            //if it wasn't notify user
+            if (rs.getInt(1) != 0)
+            {
+                return 0;
+            }
+
+            //if the username was unique...
             //hash the password first
-            String hashedPassword = hash(password);
+            String hashedPassword = hash(password, username);
 
             //then add it to the database
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(userid, username, password) VALUES(?, ?, ?)");
-            pstmt.setString(1, Integer.toString(nextAvailID));
+            pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(username, password) VALUES(?, ?)");
             pstmt.setString(2, username);
             pstmt.setString(3, hashedPassword);
             pstmt.executeUpdate();
 
             //update list of logged-in users
-            loggedInUsers.put(nextAvailID, session);
-            nextAvailID++;
+            loggedInUsers.put(username, session);
 
-            return nextAvailID - 1;
+            return 1;
         } catch (Exception e) //if something goes wrong, assume invalid input and reject acount creation
         {
             return -1;
@@ -223,11 +223,11 @@ public class Database
 
     /**
      * Given a username and password, checks to see if a set of login credentials should be accepted. If a match is
-     * found, the user is added to the HashTable loggedInUsers and the userid is returned.
+     * found, the user is added to the HashTable loggedInUsers.
      * @param username The username to be tested in String format
      * @param password The password to be tested in String format. Should be not be hashed.
      * @param session The Session thread object responsible for this user
-     * @return If a match was found, the corresponding userid is returned. Otherwise, if no match is found or the query
+     * @return If a match was found, 1 is returned. Otherwise, if no match is found or the query
      * fails, -1 is returned instead.
      */
     public static int checkLoginCredentials(String username, String password, Session session)
@@ -235,7 +235,7 @@ public class Database
         try
         {
             //hash the password first
-            String hashedPassword = hash(password);
+            String hashedPassword = hash(password, username);
 
             //then check for matches in the database
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM userLoginInfo WHERE (username = ?) AND (password = ?) LIMIT 1;");
@@ -247,10 +247,10 @@ public class Database
             if (rs.next())
             {
                 //add it to the list of logged-in users
-                loggedInUsers.put(rs.getInt("userid"), session);
+                loggedInUsers.put(username, session);
 
-                return rs.getInt("userid");
-            }else
+                return 1;
+            }else   //if no match is found, notify of failure
             {
                 return -1;
             }
@@ -261,17 +261,19 @@ public class Database
     }
 
     /**
-     * Given a userid and a game, returns the user's win rate.
-     * @param userid The user whose win rate is to be checked.
+     * Given a username and a game, returns the user's win rate.
+     * @param username The user whose win rate is to be checked.
      * @param game The name of the game for the user's win rate. "ttt" for Tic-tac-toe, and "c4" for Connect-4.
      * @return The win rate of the user, or -1 if it couldn't be retrieved.
      */
-    public static int getWinRate(int userid, String game)
+    public static int getWinRate(String username, String game)
     {
         try
         {
             //collect the user's leaderboard entry
-            ResultSet rs = stmt.executeQuery("SELECT * FROM leaderboard WHERE userid = " + userid + ";");
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM leaderboard WHERE (username = ?);");
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
 
             //move the pointer up
             rs.next();
@@ -286,12 +288,12 @@ public class Database
 
     /**
      * Logs out a user.
-     * @param userID The userID of the user to be logged out
+     * @param username The username of the user to be logged out
      */
-    public static void logOut(int userID)
+    public static void logOut(String username)
     {
         //remove the user from the list of logged-in users
-        loggedInUsers.remove(userID);
+        loggedInUsers.remove(username);
     }
 
     /**
@@ -328,16 +330,16 @@ public class Database
     }
 
     /**
-     * Gets all match records from the specified userid in Database.db tables.
+     * Gets all match records from the specified user in Database.db tables.
      * @return A ResultSet containing the match records. If something goes wrong with the query, return null instead.
      */
-    public static ResultSet getMatchRecord(int userid)
+    public static ResultSet getMatchRecord(String username)
     {
         try
         {
-            //collect all the leaderboard entries with matching userids
-            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE userid = ?;");
-            pstmt.setString(1, String.valueOf(userid));
+            //collect all the leaderboard entries with matching usernames
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE username = ?;");
+            pstmt.setString(1, String.valueOf(username));
             ResultSet rs = pstmt.executeQuery();
 
             return rs;
@@ -345,5 +347,33 @@ public class Database
         {
             return null;
         }
+    }
+
+    /**
+     * Returns a list of logged-in users, formatted for transmission.
+     * @return A list of logged-in users' usernames, with ^ separating each user.
+     */
+    public static String getLoggedInUsers()
+    {
+        StringBuilder sbuild = new StringBuilder();
+
+        //get a list of all the keys
+        Enumeration<String> keys = loggedInUsers.keys();
+        String key;
+
+        //go through all the logged-in users
+        while (keys.hasMoreElements())
+        {
+            key = keys.nextElement();
+
+            //add the user's username
+            sbuild.append(key);
+            sbuild.append("^");
+        }
+
+        //remove the trailing ^ symbol
+        sbuild.deleteCharAt(sbuild.length());
+
+        return sbuild.toString();
     }
 }
