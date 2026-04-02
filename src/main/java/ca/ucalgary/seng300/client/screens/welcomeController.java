@@ -7,6 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -15,50 +17,44 @@ public class welcomeController {
 
     public Button welcomeButton;
     public Button createAccountButton;
+    public TextField IPAdressTextField;
+    public Label errorField;
 
     @FXML
     protected void onWelcomeButtonClick(ActionEvent event) {
-        try {
-            //Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/loginPage.fxml"));
-            Parent loginRoot = loader.load();
-
-            //Get current stage from the button click
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            //Create new scene and set it on the stage
-            Scene loginScene = new Scene(loginRoot, 600, 400);
-            stage.setScene(loginScene);
-            stage.setTitle("Login Screen"); //Change stage title to reflect current scene
-            stage.show();
-
-        } catch (IOException e) {
-            System.err.println("Error: Could not load loginPage.fxml. Check file path!");
-
+        //Check if the field is empty or contains only whitespace
+        if(IPAdressTextField.getText() == null || IPAdressTextField.getText().trim().isEmpty()) {
+            errorField.setText("Please enter a valid IP Address to login!");
+        } else {
+                errorField.setText("");
+                switchScene(event, "/fxml/loginPage.fxml", "Login Screen");
         }
-
     }
 
     @FXML
     protected void onCreateAccountButtonClick(ActionEvent event) {
-        try {
-            //Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/createAccountPage.fxml"));
-            Parent createAccountRoot = loader.load();
-
-            //Get current stage from the button click
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            //Create new scene and set it on the stage
-            Scene createAccountScene = new Scene(createAccountRoot, 600, 400);
-            stage.setScene(createAccountScene);
-            stage.setTitle("Create Account"); //Change stage title to reflect current scene
-            stage.show();
-
-        } catch (IOException e) {
-            System.err.println("Error: Could not load createAccountPage.fxml. Check file path!");
-
+        if(IPAdressTextField.getText() == null || IPAdressTextField.getText().trim().isEmpty()) {
+            errorField.setText("Please enter a valid IP Address to create an account!");
+        } else {
+            errorField.setText("");
+            switchScene(event, "/fxml/createAccountPage.fxml", "Create Account");
         }
 
+    }
+
+    private void switchScene(ActionEvent event, String fxmlPath, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader((getClass().getResource(fxmlPath)));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root, 600, 400);
+            stage.setScene(scene);
+            stage.setTitle(title);
+            stage.show();
+        } catch (IOException e) {
+            errorField.setText("Error: could not load " + fxmlPath);
+        }
     }
 }
