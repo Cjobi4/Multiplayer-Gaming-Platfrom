@@ -34,22 +34,38 @@ public class loginController {
         } else {
             Network.getInstance().queueRequest(2, new String[] {userNameField.getText(), passwordField.getText()});
             errorField.setText("");
-            switchScene(event, "/fxml/loginPage.fxml", "Login Screen");
+            switchSceneLargerScreen(event, "/fxml/mainPage.fxml", "Login Screen");
         }
     }
 
 
     @FXML
     protected void onCreateAccountButtonClick(ActionEvent event) {
-        switchScene(event, "/fxml/createAccountPage.fxml", "Create Account");
+        switchSceneSmallerScreen(event, "/fxml/createAccountPage.fxml", "Create Account");
     }
 
     @FXML
     protected void onBackButtonClick(ActionEvent event) {
-        switchScene(event, "/fxml/welcomePage.fxml", "Welcome!");
+        switchSceneSmallerScreen(event, "/fxml/welcomePage.fxml", "Welcome!");
     }
 
-    private void switchScene(ActionEvent event, String fxmlPath, String title) {
+    private void switchSceneLargerScreen(ActionEvent event, String fxmlPath, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader((getClass().getResource(fxmlPath)));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene scene = new Scene(root, 800, 600);
+            stage.setScene(scene);
+            stage.setTitle(title);
+            stage.show();
+        } catch (IOException e) {
+            errorField.setText("Error: could not load " + fxmlPath);
+        }
+    }
+
+    private void switchSceneSmallerScreen(ActionEvent event, String fxmlPath, String title) {
         try {
             FXMLLoader loader = new FXMLLoader((getClass().getResource(fxmlPath)));
             Parent root = loader.load();
