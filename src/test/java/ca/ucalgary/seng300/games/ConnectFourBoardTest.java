@@ -25,4 +25,29 @@ public class ConnectFourBoardTest {
         assertEquals(expectedColumns, actualColumns, "Columns should be equal to expected number of rows: " + expectedRows);
         assertEquals(expectedRows, actualRows, "Rows should be equal to expected number of rows: " + expectedRows);
     }
+
+    @Test
+    void testDropPieceWhenColumnIsEmpty() {
+        ConnectFourBoard board = new ConnectFourBoard();
+    }
+
+    @Test
+    void testDropPieceWhenColumnIsFull() {
+        ConnectFourBoard board = new ConnectFourBoard();
+    }
+
+    @Test
+    void testIsFullWhenBoardIsEmpty() {
+        ConnectFourBoard board = new ConnectFourBoard();
+    }
+
+    @Test
+    void testIsFullWhenBoardIsNeitherEmptyNorFull() {
+        ConnectFourBoard board = new ConnectFourBoard();
+    }
+
+    @Test
+    void testIsFullWhenBoardIsFull() {
+        ConnectFourBoard board = new ConnectFourBoard();
+    }
 }
