@@ -473,7 +473,7 @@ public class Network extends Thread {
     // LEADERBOARD
 
     /** gets leaderboard from database and stores as a nested list (List<List<LeaderboardEntry>>)
-     * .0 can be used to access ttt, 1 for c4, 2 for combined
+     *  0 can be used to access ttt, 1 for c4, 2 for combined
      *
      * @return
      * @throws Exception
