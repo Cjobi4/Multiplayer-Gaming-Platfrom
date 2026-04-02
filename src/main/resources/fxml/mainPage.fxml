@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
@@ -29,6 +30,11 @@
                         <Font name="Dubai Regular" size="18.0" />
                      </font>
                   </Label>
+                  <ScrollPane fitToWidth="true" prefHeight="532.0" prefWidth="213.0">
+                     <content>
+                        <VBox fx:id="leaderboardBox" prefHeight="502.0" prefWidth="213.0" />
+                     </content>
+                  </ScrollPane>
                </children>
                <HBox.margin>
                   <Insets bottom="10.0" left="10.0" top="10.0" />
