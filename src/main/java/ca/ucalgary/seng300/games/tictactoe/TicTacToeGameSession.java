@@ -8,4 +8,25 @@ public class TicTacToeGameSession extends Thread{
     private TicTacToeGame game;
 
 
+    public TicTacToeGameSession(Session playerOneSession, Session playerTwoSession){
+        this.playerOneSession = playerOneSession;
+        this.playerTwoSession = playerTwoSession;
+        this.game = new TicTacToeGame();
+    }
+    public Session getPlayerOneSession(){
+        return playerOneSession;
+    }
+
+    public Session getPlayerTwoSession(){
+        return playerTwoSession;
+    }
+
+    public TicTacToeGame getGame(){
+        return game;
+    }
+
+    @Override
+    public void run(){
+        //placeholder function for rn will implement in a later ticket
+    }
 }
