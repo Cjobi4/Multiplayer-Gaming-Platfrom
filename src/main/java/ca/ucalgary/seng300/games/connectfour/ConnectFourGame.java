@@ -1,23 +1,58 @@
 package ca.ucalgary.seng300.games.connectfour;
 
-public class connectFourGame {
-
-    private connectFourBoard board;
+/**
+ * Manages the state and rules of a Connect Four game.
+ * Coordinates turns, win-checking, and draw conditions.
+ * @author Hoang Khoi Nguyen
+ * @email hoangkhoi.nguyen@ucalgary.ca
+ * @version 2.0 04/01/2026
+ */
+public class ConnectFourGame {
+    private ConnectFourBoard board;
     private char currentPlayer;
+    private boolean gameOver;
 
-    public void ConnectFourGame() {
-        board = new connectFourBoard();
+    /**
+     * Initializes a new game with a clean board.
+     * Player 'X' always starts first.
+     */
+    public ConnectFourGame() {
+        board = new ConnectFourBoard();
         currentPlayer = 'X';
+        gameOver = false;
     }
 
+    /**
+     * Executes a move for the current player in the specified column.
+     * If the move results in a win or draw, the game state is updated to over.
+     * * @param col The column index where the player wants to drop a piece.
+     * @return {@code true} if the move was valid and executed; {@code false} otherwise.
+     */
     public boolean makeMove(int col) {
-        return board.dropPiece(col, currentPlayer);
+        if (gameOver) return false;
+
+        boolean success = board.dropPiece(col, currentPlayer);
+        if (success) {
+            if (checkWin()) {
+                gameOver = true;
+            } else if (isDraw()) {
+                gameOver = true;
+            } else {
+                switchPlayer();
+            }
+        }
+        return success;
     }
 
+    /**
+     * Checks if the current player has four pieces in a row.
+     * * @return {@code true} if a horizontal, vertical, or diagonal line is found.
+     */
     public boolean checkWin() {
         return checkHorizontal() || checkVertical() || checkDiagonal();
     }
 
+    /** @return true if 4 in a row horizontally. */
     private boolean checkHorizontal() {
         for (int row = 0; row < board.getRows(); row++) {
             for (int col = 0; col < board.getCols() - 3; col++) {
@@ -33,6 +68,7 @@ public class connectFourGame {
         return false;
     }
 
+    /** @return true if 4 in a row vertically. */
     private boolean checkVertical() {
         for (int col = 0; col < board.getCols(); col++) {
             for (int row = 0; row < board.getRows() - 3; row++) {
@@ -48,6 +84,7 @@ public class connectFourGame {
         return false;
     }
 
+    /** @return true if 4 in a row diagonally (both directions). */
     private boolean checkDiagonal() {
         char p = currentPlayer;
 
@@ -78,18 +115,27 @@ public class connectFourGame {
         return false;
     }
 
+    /**
+     * Alternates the turn between player 'X' and player 'O'.
+     */
     public void switchPlayer() {
         currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
     }
 
+    /**
+     * Checks if the game has ended in a draw (board is full with no winner).
+     * * @return {@code true} if the board is full.
+     */
     public boolean isDraw() {
         return board.isFull();
     }
 
+    /** @return The character of the player whose turn it currently is. */
     public char getCurrentPlayer() {
         return currentPlayer;
     }
 
+    /** Prints the board state via the internal board instance. */
     public void printBoard() {
         board.printBoard();
     }
