@@ -2,11 +2,13 @@ package ca.ucalgary.seng300.core.identity.client;
 
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.core.registry.PlayerRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Message;
+import ca.ucalgary.seng300.shared.models.Player;
 import ca.ucalgary.seng300.shared.models.Tag;
 
 import javax.crypto.Cipher;
@@ -53,6 +55,7 @@ public class Network extends Thread {
     public static final byte JOIN_C4_QUEUE = 9;
     public static final byte LEAVE_C4_QUEUE = 10;
     public static final byte GET_ONLINE_PLAYERS = 11;
+    public static final byte SEND_MOVE_TTT = 12;
 
     // to be added/modified later
     public static final byte send_chat = 126;
@@ -85,9 +88,16 @@ public class Network extends Thread {
         Network.getInstance().queueRequest(Network.GET_GAME_LIST, null).get();
         // access games after via GameRegistry.getInstance().ListAll();
 
-        // GET LEADERBOARD
-        List<List<LeaderboardEntry>> leaderboard = (List<List<LeaderboardEntry>>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, null).get();
-        // leaderboard.get(0) = TTT, leaderboard.get(1) = C4, leaderboard.get(2) = combined ttt and c4
+        // GET LEADERBOARD takes parameter -> (0 = TTT, 1 = C4, 2 = COMBINED)
+        List<LeaderboardEntry> leaderboard = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"0"}).get();
+
+        // GET ONLINE PLAYERS — no return value, populates PlayerRegistry
+        Network.getInstance().queueRequest(Network.GET_ONLINE_PLAYERS, null).get();
+
+        // SEND TTT MOVE
+        Network.getInstance().queueRequest(Network.SEND_MOVE_TTT, new String[]{board.toString()});
+
+        // RECEIVE TTT MOVE
 
         // GET MATCH RECORDS
         List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{"username"}).get();
@@ -245,7 +255,7 @@ public class Network extends Thread {
                 break;
 
             case GET_LEADERBOARD:
-                req.future.complete(getLeaderboard());
+                req.future.complete(getLeaderboard(Integer.parseInt(parameters[0])));
                 break;
 
             case GET_MATCH_RECORD:
@@ -269,13 +279,20 @@ public class Network extends Thread {
                 break;
 
             case GET_ONLINE_PLAYERS:
-                req.future.complete(getOnlinePlayers());
+                getOnlinePlayers();
+                req.future.complete(null);
+                break;
+
+            case SEND_MOVE_TTT:
+                sendMoveTTT(parameters[0]);
+                req.future.complete(null);
                 break;
 
             case send_chat:
                 sendMessage(parameters[0], parameters[1], parameters[2]);
                 req.future.complete(null);
                 break;
+
         }
 
     }
@@ -326,8 +343,6 @@ public class Network extends Thread {
         // interpret whether registration was successful or not
         return readResponseString().equals("1");
     }
-
-
 
     // GAMES
 
@@ -422,7 +437,7 @@ public class Network extends Thread {
     }
 
     // TODO: Update with PlayerRegistry...
-    public List<String> getOnlinePlayers() throws Exception {
+    public void getOnlinePlayers() throws Exception {
 
         // send description byte
         socket.getOutputStream().write(GET_ONLINE_PLAYERS);
@@ -430,29 +445,45 @@ public class Network extends Thread {
         String response = readResponseString();
 
         if (response.equals("0")) {
-            return null;
+            return;
         }
 
+        PlayerRegistry.getInstance().clear();
+
         String[] activePlayers = response.split("\\^");
-        return new ArrayList<>(Arrays.asList(activePlayers));
+
+        for (String player : activePlayers) {
+            PlayerRegistry.getInstance().register(new Player(player));
+        }
+    }
+
+    public void sendMoveTTT(String boardState) throws Exception {
+        // send description byte
+        socket.getOutputStream().write(SEND_MOVE_TTT);
+
+        // send board
+        sendRequestParameter(boardState);
+    }
+
+    public String receiveMoveTTT() throws Exception {
+
     }
 
     // LEADERBOARD
 
     /** gets leaderboard from database and stores as a nested list (List<List<LeaderboardEntry>>)
-     * .get(0) can be used to access ttt, .get(1) for c4, and .get(2) for combined
+     * .0 can be used to access ttt, 1 for c4, 2 for combined
      *
      * @return
      * @throws Exception
      */
-    public List<List<LeaderboardEntry>> getLeaderboard() throws Exception {
+    public List<LeaderboardEntry> getLeaderboard(int leaderboardType) throws Exception {
 
         //send description byte
         socket.getOutputStream().write(GET_LEADERBOARD);
+        sendRequestParameter(String.valueOf(leaderboardType));
 
-        List<LeaderboardEntry> tttEntries = new ArrayList<>();
-        List<LeaderboardEntry> c4Entries = new ArrayList<>();
-        List<LeaderboardEntry> combinedEntries = new ArrayList<>();
+        List<LeaderboardEntry> entries = new ArrayList<>();
 
         String response = "";
         boolean receiving = true;
@@ -469,36 +500,22 @@ public class Network extends Thread {
             else {
                 String username = response;
 
-                // second response from server, sends the rest of the data as: playerid^tttWins^tttMatchsPlayed^c4Wins^c4MatchesPlayed
+                // data sent as: playerid^wins^matches
                 String[] parts = readResponseString().split("\\^");
 
-                int playerID = Integer.parseInt(parts[0]);
-                int tttWins = Integer.parseInt(parts[1]);
-                int tttMatches = Integer.parseInt(parts[2]);
-                int c4Wins = Integer.parseInt(parts[3]);
-                int c4Matches = Integer.parseInt(parts[4]);
+                int playerid = Integer.parseInt(parts[0]);
+                int wins = Integer.parseInt(parts[1]);
+                int matches = Integer.parseInt(parts[2]);
 
                 // parse string and add to individual lists
-                tttEntries.add(new LeaderboardEntry(playerID, username, tttWins, tttMatches));
-                c4Entries.add(new LeaderboardEntry(playerID, username, c4Wins, c4Matches));
-                combinedEntries.add(new LeaderboardEntry(playerID, username, tttWins + c4Wins, tttMatches + c4Matches));
+                entries.add(new LeaderboardEntry(playerid, username, wins, matches));
             }
-
         }
-
         // error from server side
         if (response.equals("0")) {
             return null;
         }
-
-        // combine data and return as one nested list
-        List<List<LeaderboardEntry>> results = new ArrayList<>();
-        results.add(tttEntries);
-        results.add(c4Entries);
-        results.add(combinedEntries);
-
-        // ttt can be accessed through "combined.get(0)", c4 through "combined.get(1)"
-        return results;
+        return entries;
     }
 
     // MATCH RECORD
