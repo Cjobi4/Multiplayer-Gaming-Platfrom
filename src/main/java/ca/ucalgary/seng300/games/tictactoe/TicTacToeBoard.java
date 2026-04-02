@@ -50,13 +50,36 @@ public class TicTacToeBoard {
         //ttt = tic tac toe just using an abbreviation for code, will put note at top of doc!
     }
 
+    //ADDING TIE DECETION
+    //simple function for checking if the board is full or not
+    public boolean isTheBoardFull() {
+        //iterate through all rows
+        for (int row = 0; row < 3; row++) {
+
+            //iterate through all columns
+            for (int col = 0; col < 3; col++) {
+
+                //if there is a column with an empty space
+                if (board[row][col] == ' ') {
+
+                    //return false (not a tie)
+                    return false;
+                }
+            }
+        }
+        //return true (there are no more playable moves)
+        return true;
+    }
+
 
     //methods for db integration
+
+    //These are finalized methods for database integration (HOW THE DATABASE TEAM CAN OBTAIN UPDATE AND SEND OUT TIC TAC TOE GAME BOARDS)
     @Override
     public String toString() {
         //this function converts the current status of the board into a string for storage in the database
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder gameSB = new StringBuilder();
         //this initiates a new stringbuilder called sb
 
         for (int row = 0; row < 3; row++) {
@@ -65,22 +88,24 @@ public class TicTacToeBoard {
             for (int col = 0; col < 3; col++) {
                 //iterate through all collumns
 
-                sb.append(board[row][col]);
+                gameSB.append(board[row][col]);
                 //add the value of a each cell to the string
 
                 if (!(row == 2 && col == 2)) {
                     //validation check for not being the last value/cell of the board
 
-                    sb.append(",");
+                    gameSB.append(",");
                     //this adds a comma between everything to separate values within the board in the string
                 }
             }
         }
-
-        return sb.toString();
+        return gameSB.toString();
         //returns the final string represntation of the board
     }
+    //new new new
+    //new new new
 
+    //This is the fromString function to help with
     public void fromString(String gameBoardString){
         //this function takes the string from the database and reconstructs a game board
 
