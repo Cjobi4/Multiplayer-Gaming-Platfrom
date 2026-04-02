@@ -225,5 +225,4 @@ public class TicTacToeGame {
         //otherwise return false (the game is NOT a tie)
         return false;
     }
-
 }
