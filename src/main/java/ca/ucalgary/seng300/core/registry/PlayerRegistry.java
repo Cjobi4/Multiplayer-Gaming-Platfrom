@@ -33,18 +33,6 @@ public class PlayerRegistry {
         players.add(p);
     }
 
-    public Player findById(String id)
-    {
-        for (Player player : players)
-        {
-            if (player.getId().equals(id))
-            {
-                return player;
-            }
-        }
-
-        return null;
-    }
 
     public Player findByName(String name)
     {
