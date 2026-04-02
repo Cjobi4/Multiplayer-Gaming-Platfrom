@@ -451,19 +451,18 @@ public class Network extends Thread {
     // LEADERBOARD
 
     /** gets leaderboard from database and stores as a nested list (List<List<LeaderboardEntry>>)
-     * .get(0) can be used to access ttt, .get(1) for c4, and .get(2) for combined
+     * .0 can be used to access ttt, 1 for c4, 2 for combined
      *
      * @return
      * @throws Exception
      */
-    public List<List<LeaderboardEntry>> getLeaderboard() throws Exception {
+    public List<LeaderboardEntry> getLeaderboard(int leaderboardType) throws Exception {
 
         //send description byte
         socket.getOutputStream().write(GET_LEADERBOARD);
+        sendRequestParameter(String.valueOf(leaderboardType));
 
-        List<LeaderboardEntry> tttEntries = new ArrayList<>();
-        List<LeaderboardEntry> c4Entries = new ArrayList<>();
-        List<LeaderboardEntry> combinedEntries = new ArrayList<>();
+        List<LeaderboardEntry> entries = new ArrayList<>();
 
         String response = "";
         boolean receiving = true;
@@ -480,36 +479,22 @@ public class Network extends Thread {
             else {
                 String username = response;
 
-                // second response from server, sends the rest of the data as: playerid^tttWins^tttMatchsPlayed^c4Wins^c4MatchesPlayed
+                // data sent as: playerid^wins^matches
                 String[] parts = readResponseString().split("\\^");
 
-                int playerID = Integer.parseInt(parts[0]);
-                int tttWins = Integer.parseInt(parts[1]);
-                int tttMatches = Integer.parseInt(parts[2]);
-                int c4Wins = Integer.parseInt(parts[3]);
-                int c4Matches = Integer.parseInt(parts[4]);
+                int playerid = Integer.parseInt(parts[0]);
+                int wins = Integer.parseInt(parts[1]);
+                int matches = Integer.parseInt(parts[2]);
 
                 // parse string and add to individual lists
-                tttEntries.add(new LeaderboardEntry(playerID, username, tttWins, tttMatches));
-                c4Entries.add(new LeaderboardEntry(playerID, username, c4Wins, c4Matches));
-                combinedEntries.add(new LeaderboardEntry(playerID, username, tttWins + c4Wins, tttMatches + c4Matches));
+                entries.add(new LeaderboardEntry(playerid, username, wins, matches));
             }
-
         }
-
         // error from server side
         if (response.equals("0")) {
             return null;
         }
-
-        // combine data and return as one nested list
-        List<List<LeaderboardEntry>> results = new ArrayList<>();
-        results.add(tttEntries);
-        results.add(c4Entries);
-        results.add(combinedEntries);
-
-        // ttt can be accessed through "combined.get(0)", c4 through "combined.get(1)"
-        return results;
+        return entries;
     }
 
     // MATCH RECORD
