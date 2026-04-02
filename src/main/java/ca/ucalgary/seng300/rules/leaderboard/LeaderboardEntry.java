@@ -11,20 +11,25 @@ package ca.ucalgary.seng300.rules.leaderboard;
  * comparable ordering for leaderboard sorting.</p>
  */
 public class LeaderboardEntry {
-    private int rank;
     private int playerID;
     private String playerName;
     private int wins;
     private int matches;
 
+    public LeaderboardEntry(int playerID, String playerName, int wins, int matches){
+        this.wins = wins;
+        this.playerID = playerID;
+        this.matches = matches;
+        this.playerName = playerName;
+    }
     public int compareTo(LeaderboardEntry e)
     {
         return Integer.compare(e.wins, this.wins);
     }
 
-    public String toDisplay(){
-        return String.format("%d. %s: %d wins", rank, playerName, wins);
-    }
+//    public String toDisplay(){
+//        return String.format("%d. %s: %d wins", rank, playerName, wins);
+//    }
 
 
 
@@ -32,9 +37,9 @@ public class LeaderboardEntry {
     public int getPlayerID(){
         return playerID;
     }
-    public int getRank(){
-        return rank;
-    }
+//    public int getRank(){
+//        return rank;
+//    }
     public String getPlayerName(){
         return playerName;
     }

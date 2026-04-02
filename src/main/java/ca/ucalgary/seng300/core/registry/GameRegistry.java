@@ -13,12 +13,13 @@ import java.util.List;
  * Client/UI in the screens package.
  */
 public class GameRegistry {
+    // TODO: Implement game registry — placeholder for Platform Core
 
     // the game registry
     private static GameRegistry instance;
 
     // the list of games
-    private List<Game> games;
+    private final List<Game> games;
 
     // constructor
     private GameRegistry()
@@ -49,7 +50,6 @@ public class GameRegistry {
         games.add(g);
     }
 
-
     /**
      * Searches the list of games by id, if it exists returns that game
      * @param id the string id of the game
@@ -77,3 +77,4 @@ public class GameRegistry {
         return games;
     }
 }
+
