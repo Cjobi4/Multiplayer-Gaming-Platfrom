@@ -146,6 +146,8 @@ public class TTTgameController {
             turnDisplay.setText("Yippee!");
             if (current.getGameState() == GameState.PLAYER_WIN){
                 gameOver(); //ends game if someone wins
+            } else if (current.getGameState() == GameState.PLAYER_DRAW) {
+                gameOver(); //ends game if draw
             }
 //            current.switchTurn();
         }else{
