@@ -115,9 +115,15 @@ public class Network extends Thread {
      *
      * @throws Exception
      */
-    public Network(String ip, int port) throws Exception {
-        socket = new Socket(ip, port);
-        establishHandshake();
+    public Network(String ip, int port)
+    {
+        try
+        {
+            socket = new Socket(ip, port);
+            establishHandshake();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     /** only called once when user enters the ip and port
@@ -130,6 +136,7 @@ public class Network extends Thread {
     public static Network getInstance(String ip, int port) throws Exception {
         if (instance == null) {
             instance = new Network(ip, port);
+            System.out.print("Created new network obj");
             instance.start();
         }
         return instance;
@@ -179,7 +186,7 @@ public class Network extends Thread {
     @Override
     public void run() {
         try {
-
+            System.out.print("attempting to start server");
             socket.setSoTimeout(3000);
 
             while (true) {
