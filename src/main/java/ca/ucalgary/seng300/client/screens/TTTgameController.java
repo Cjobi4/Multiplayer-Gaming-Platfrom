@@ -30,7 +30,11 @@ public class TTTgameController {
     public Text turnDisplay;
 
     TicTacToeGame current = new TicTacToeGame();
-    Button grid[][] = {{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
+    Button[][] grid;
+
+    public void initialize() {
+        grid = new Button[][]{{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
+    }
 
     @FXML
     protected void onGameOverButtonClick(ActionEvent event) {
@@ -110,7 +114,10 @@ public class TTTgameController {
             }
         }
         if (current.makeMove(i,j,player)) { //updates if the move was valid
+            turnDisplay.setText("Nice!");
             current.switchTurn();
+        }else{
+            turnDisplay.setText("Please make a valid move");
         }
 
         updateBoard();

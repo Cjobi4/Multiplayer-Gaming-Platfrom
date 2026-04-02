@@ -32,19 +32,19 @@
                             <children>
                         <FlowPane layoutX="220.0" layoutY="14.0" prefHeight="360.0" prefWidth="360.0" style="-fx-background-color: #F9EDE1;">
                            <children>
-                              <Button fx:id="ttt00" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
-                              <Button fx:id="ttt01" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
-                              <Button fx:id="ttt02" layoutX="130.0" layoutY="10.0" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
-                              <Button fx:id="ttt10" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
-                              <Button fx:id="ttt11" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
-                              <Button fx:id="ttt12" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
-                              <Button fx:id="ttt20" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
-                              <Button fx:id="ttt21" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
-                              <Button fx:id="ttt22" mnemonicParsing="false" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button fx:id="ttt00" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button fx:id="ttt01" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button fx:id="ttt02" layoutX="130.0" layoutY="10.0" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button fx:id="ttt10" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button fx:id="ttt11" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button fx:id="ttt12" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button fx:id="ttt20" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button fx:id="ttt21" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
+                              <Button fx:id="ttt22" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
                            </children>
                         </FlowPane>
                                 <Button fx:id="gameOverButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onGameOverButtonClick" prefHeight="13.0" prefWidth="126.0" text="Swap to Game Over Screen (Placeholder button)" />
-                        <Text fill="#866b59" layoutX="564.0" layoutY="200.0" rotate="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Your turn!!" wrappingWidth="126.40000000000009">
+                        <Text fx:id="turnDisplay" fill="#866b59" layoutX="564.0" layoutY="200.0" rotate="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Your turn!!" wrappingWidth="126.40000000000009">
                            <font>
                               <Font name="Dubai Medium" size="23.0" />
                            </font>
