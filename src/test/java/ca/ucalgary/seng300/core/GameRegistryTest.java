@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameRegistryTest {
 
     private GameRegistry gameRegistry;
-    private static Game game;
 
     /**
      * This uses a single instance of the game registry
@@ -42,7 +41,6 @@ public class GameRegistryTest {
     @Test
     void testRegisterGameAddsSingleGame() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        LeaderBoard leaderBoard = null;
         Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
         String expectedID = "game1";
 
@@ -66,7 +64,6 @@ public class GameRegistryTest {
     @Test
     void testFindByIdReturnsCorrectGameID() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        LeaderBoard leaderBoard = null;
         Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
         gameRegistry.register(game1);
         Game expectedGame = game1;
@@ -98,7 +95,6 @@ public class GameRegistryTest {
     @Test
     void testAddMultipleGameReturnsCorrectRegistrySize() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        LeaderBoard leaderBoard = null;
 
         Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
         Game game2 = new Game("game2", "TICTACTOE", "some_description", tags);
@@ -133,7 +129,6 @@ public class GameRegistryTest {
     @Test
     void testListAllReturnsAllGamesByIndex() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        LeaderBoard leaderBoard = null;
 
         Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
         gameRegistry.register(game1);
@@ -165,10 +160,9 @@ public class GameRegistryTest {
     void testGetTagReturnsCorrectTagValues() {
         // initializing the tags and leaderboard
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        LeaderBoard leaderBoard = null;
 
         // create game and add it to the registry
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
         gameRegistry.register(game1);
 
         String expectedLabel = "two-player";
@@ -194,10 +188,9 @@ public class GameRegistryTest {
     void testGetDescriptionReturnsCorrectGameDescription() {
         // initialization of Tags and Leaderboard
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        LeaderBoard leaderBoard = null;
 
         // create game and add it to the registry
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
         gameRegistry.register(game1);
 
         String expectedDescription = game1.getDescription();
