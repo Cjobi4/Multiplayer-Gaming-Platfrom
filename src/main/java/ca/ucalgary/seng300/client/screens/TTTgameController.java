@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
@@ -26,6 +27,7 @@ public class TTTgameController {
     public Button ttt20;
     public Button ttt21;
     public Button ttt22;
+    public Text turnDisplay;
 
     TicTacToeGame current = new TicTacToeGame();
     Button grid[][] = {{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
@@ -90,6 +92,28 @@ public class TTTgameController {
                 }
             }
         }
+    }
+
+    @FXML
+    protected void onGridButtonClick(ActionEvent event) {
+        char player = current.getCurrentPlayer(); //gets whose turn it is
+        Button clicked = (Button) event.getSource(); //gets what button was clicked
+        int i = 4; //four, so if not intialized, the turn shouldn't count
+        int j = 4;
+
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (clicked == grid[row][col]){
+                    i = row;
+                    j = col;
+                }
+            }
+        }
+        if (current.makeMove(i,j,player)) { //updates if the move was valid
+            current.switchTurn();
+        }
+
+        updateBoard();
     }
 
 
