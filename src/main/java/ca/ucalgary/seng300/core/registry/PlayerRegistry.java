@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.core.registry;
 
+import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Player;
 
 import java.util.ArrayList;
@@ -9,10 +10,11 @@ public class PlayerRegistry {
 
     private static PlayerRegistry instance;
 
-    private final List<Player> players;
+    private final ArrayList<Player> players;
 
     private PlayerRegistry()
     {
+
         this.players = new ArrayList<>();
     }
 
@@ -26,18 +28,11 @@ public class PlayerRegistry {
         return instance;
     }
 
-    public Player findById(String id)
+    public void register(Player p)
     {
-        for (Player player : players)
-        {
-            if (player.getId().equals(id))
-            {
-                return player;
-            }
-        }
-
-        return null;
+        players.add(p);
     }
+
 
     public Player findByName(String name)
     {
@@ -55,6 +50,11 @@ public class PlayerRegistry {
     public List<Player> listAll()
     {
         return players;
+    }
+
+    public void clear()
+    {
+        this.players.clear();
     }
 
 }

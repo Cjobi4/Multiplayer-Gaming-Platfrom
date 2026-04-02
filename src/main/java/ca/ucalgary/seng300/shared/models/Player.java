@@ -6,12 +6,10 @@ import javafx.beans.value.ObservableValue;
 
 public class Player {
 
-    private final StringProperty id;
     private final StringProperty name;
 
-    public Player(String id, String name) {
+    public Player( String name) {
 
-        this.id = new SimpleStringProperty(id);
         this.name = new SimpleStringProperty(name);
     }
 
@@ -20,16 +18,10 @@ public class Player {
         return name.get();
     }
 
-    public String getId() {
-        return id.get();
-    }
 
 
     public ObservableValue<String> nameProperty() {
         return name;
     }
 
-    public ObservableValue<String> idProperty() {
-        return id;
-    }
 }
