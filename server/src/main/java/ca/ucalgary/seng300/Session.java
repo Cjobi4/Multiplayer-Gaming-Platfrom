@@ -46,42 +46,8 @@ public class Session extends Thread
     }
 
     /**
-     * inner class for sending and receiving requests to the client FROM THE SERVER (server initiated transmissions)
-     */
-    class Request
-    {
-        CompletableFuture<String> future;
-        private int type;
-        private String[] parameters;
-
-        //constructor
-        Request(int t, String[] p)
-        {
-            type = t;
-            parameters = p;
-        }
-
-        //type getter
-        public int getType()
-        {
-            return type;
-        }
-
-        //parameter getter
-        public String[] getParameters()
-        {
-            return parameters;
-        }
-
-        //returns the result of the future (must handle exception)
-        public String getResult() throws Exception
-        {
-            return future.get();
-        }
-    }
-
-    /**
-     * Adds a request to the queue for the Session to execute.
+     * Adds a request to the queue for the Session to execute. This should be used when NO response is needed. A Request
+     * object is automatically made from the input and given to the Session.
      * @param type The request type, in int form
      * @param parameters The parameters for the request, in a String array with each parameter under a different index
      * @throws Exception NullPointerException if the request is null, or InterruptedException if is interrupted while
@@ -90,6 +56,18 @@ public class Session extends Thread
     public void addRequest(int type, String[] parameters) throws Exception
     {
         Request req = new Request(type, parameters);
+        requestQueue.put(req);
+    }
+
+    /**
+     * Adds a request to the queue for the Session to execute. This should be used when a result IS needed. The Request
+     * object MUST be created before being passed into the function for result retrieval.
+     * @param req The Request object to be added into the queue.
+     * @throws Exception NullPointerException if the request is null, or InterruptedException if is interrupted while
+     * waiting
+     */
+    public void addRequest(Request req) throws Exception
+    {
         requestQueue.put(req);
     }
 
@@ -313,8 +291,13 @@ public class Session extends Thread
                     }
                     break;
                 case 5:     //if it was a request for leaderboard data
-                    //collect the leaderboard entries from the database
-                    rs = Database.getAllLeaderboardEntries();
+                    //collect the game to be queried
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    message = Network.decrypt(messageBytes, AESKey);
+
+                    //collect the leaderboard entries from the database for that game
+                    rs = Database.getAllLeaderboardEntries(message);
 
                     //go through the results
                     if (rs != null && rs.next())
@@ -324,34 +307,25 @@ public class Session extends Thread
                         //go through each entry...
                         do
                         {
-                            //turn each entry into a single string
-                            for (int i = 1; i <= 6; i++)
-                            {
-                                //if it is the username, send that first
-                                if (i != 2)
-                                {
-                                    messageBytes = Network.encrypt(rs.getString(i), AESKey);
-                                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
-                                    client.getOutputStream().write(messageBytes);
-                                }else   //otherwise keep formatting the rest of data into a single string
-                                {
-                                    sbuild.append(rs.getString(i));
-                                    sbuild.append("^");     //use ^ as separators
-                                }
-                            }
+                            //send the username separately
+                            messageBytes = Network.encrypt(rs.getString(1), AESKey);
+                            client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                            client.getOutputStream().write(messageBytes);
 
-                            //remove the trailing ^ symbol
-                            sbuild.deleteCharAt(sbuild.length());
+                            //then turn the wins/losses into a single string
+                            sbuild.append(rs.getString(message + "Wins"));
+                            sbuild.append("^");
+                            sbuild.append(rs.getString(message + "MatchesPlayed"));
 
                             //send the formatted leaderboard entry to the client
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
                             System.out.println("leaderboard entry sent");  //for debug
-
-                            //notify the client of success
-                            client.getOutputStream().write(1);
                         } while (rs.next());
+
+                        //notify the client of success
+                        client.getOutputStream().write(1);
                     } else //if something went wrong and no leaderboard data was found, notify client
                     {
                         client.getOutputStream().write(0);

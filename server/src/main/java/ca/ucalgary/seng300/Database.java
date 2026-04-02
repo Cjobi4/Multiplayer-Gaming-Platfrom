@@ -68,13 +68,14 @@ public class Database
                     + "tttWins INTEGER NOT NULL,"
                     + "tttMatchesPlayed INTEGER NOT NULL,"
                     + "c4Wins INTEGER NOT NULL,"
-                    + "c4MatchesPlayed INTEGER NOT NULL);");
+                    + "c4MatchesPlayed INTEGER NOT NULL,"
+                    + "totalWins INTEGER NOT NULL,"
+                    + "totalMatchesPlayed INTEGER NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS matchRecord ("
-                    + "gameid INTEGER PRIMARY KEY,"
+                    + "gametype TEXT PRIMARY KEY,"
                     + "p1Username TEXT NOT NULL,"
                     + "p2Username TEXT NOT NULL,"
-                    + "gametype TEXT NOT NULL,"
                     + "winnerName TEXT NOT NULL,"
                     + "date TEXT NOT NULL);");
 
@@ -99,7 +100,7 @@ public class Database
                 //add in a sample gameInfo
                 stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
                 stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
-                stmt.execute("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed) VALUES(admin, 999, 999, 999, 999)");
+                stmt.execute("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(admin, 999, 999, 999, 999, 999, 999)");
                 stmt.execute("INSERT INTO matchRecord(gameid, p1Username, p2Username, gametype, winnerName, date) VALUES(gameid, admin, test, Tic-Tac-Toe, admin, date)");
             }
         } catch (SQLException e)
@@ -144,7 +145,7 @@ public class Database
      * Given a plaintext string, hashes it with SHA-256 to get a hexadecimal string
      * @param plaintext The string to be hashed
      * @param salt The salt to be added to the plaintext before hashing.
-     * @return The hashed version of the string, in hexidecimal. Returns empty string instead if SHA-256 couldn't be found.
+     * @return The hashed version of the string, in hexadecimal. Returns empty string instead if SHA-256 couldn't be found.
      */
     private static String hash(String plaintext, String salt)
     {
@@ -317,12 +318,12 @@ public class Database
      * @return A ResultSet containing all the leaderboard data. If something goes wrong with the query, return null
      * instead.
      */
-    public static ResultSet getAllLeaderboardEntries()
+    public static ResultSet getAllLeaderboardEntries(String game)
     {
         try
         {
             //collect all the leaderboard entries
-            return stmt.executeQuery("SELECT * FROM leaderboard;");
+            return stmt.executeQuery("SELECT * FROM leaderboard ORDER BY " + game + "Wins DESC;");
         } catch (SQLException e)
         {
             return null;
@@ -375,5 +376,53 @@ public class Database
         sbuild.deleteCharAt(sbuild.length());
 
         return sbuild.toString();
+    }
+
+    /**
+     * Given the results of a match, update the leaderboard entries and add it to the list of match records.
+     * @param playerOne The username of the first player from the game in String format.
+     * @param playerTwo The username of the second player from the game in String format.
+     * @param winner The username of the player that won in String format.
+     * @param date The date the match occurred in String format.
+     * @param game The game type that was played in String format. "ttt" for Tic-tac-toe, "c4" for Connect 4.
+     */
+    public static void addMatchResult(String playerOne, String playerTwo, String winner, String date, String game)
+    {
+        //if there was no winner don't count the match
+        if (winner != null)
+        {
+            try
+            {
+                //add it to the match record
+                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO matchRecord(gameType, p1Username, p2Username, winnerName, date) VALUES(?, ?, ?, ?, ?)");
+                pstmt.setString(1, game);
+                pstmt.setString(2, playerOne);
+                pstmt.setString(3, playerTwo);
+                pstmt.setString(4, winner);
+                pstmt.setString(5, date);
+                pstmt.execute();
+
+                String loser;
+
+                //find the username of the loser
+                if (winner.equals(playerOne))
+                {
+                    loser = playerTwo;
+                }else
+                {
+                    loser = playerOne;
+                }
+
+                //update the leaderboard entries
+                stmt.execute("UPDATE leaderboard SET " + game + "Wins = " + game + "Wins + 1, " +
+                        game + "MatchesPlayed = " + game + "MatchesPlayed + 1 WHERE username = " + winner + ";");
+                stmt.execute("UPDATE leaderboard SET " + game + "Wins = " + game + "Wins - 1, " +
+                        game + "MatchesPlayed = " + game + "MatchesPlayed + 1 WHERE username = " + loser + ";");
+            } catch (Exception e)   //if the match result couldn't be saved...
+            {
+                System.out.println("Match results not saved.");
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
