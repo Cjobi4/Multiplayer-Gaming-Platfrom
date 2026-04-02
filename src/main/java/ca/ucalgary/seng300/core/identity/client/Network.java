@@ -467,6 +467,7 @@ public class Network extends Thread {
 
     public String receiveMoveTTT() throws Exception {
 
+        return null;
     }
 
     // LEADERBOARD
@@ -503,12 +504,11 @@ public class Network extends Thread {
                 // data sent as: playerid^wins^matches
                 String[] parts = readResponseString().split("\\^");
 
-                int playerid = Integer.parseInt(parts[0]);
-                int wins = Integer.parseInt(parts[1]);
-                int matches = Integer.parseInt(parts[2]);
+                int wins = Integer.parseInt(parts[0]);
+                int matches = Integer.parseInt(parts[1]);
 
                 // parse string and add to individual lists
-                entries.add(new LeaderboardEntry(playerid, username, wins, matches));
+                entries.add(new LeaderboardEntry(username, wins, matches));
             }
         }
         // error from server side
@@ -560,7 +560,7 @@ public class Network extends Thread {
                 int winnerID = Integer.parseInt(parts[3]);
                 String date = parts[4];
 
-                records.add(new MatchRecord(playerOneID, playerTwoID, gameType, winnerID, date));
+                records.add(new MatchRecord(String.valueOf(playerOneID), String.valueOf(playerTwoID), gameType, String.valueOf(winnerID), date));
             }
         }
         if (response.equals("0")) {

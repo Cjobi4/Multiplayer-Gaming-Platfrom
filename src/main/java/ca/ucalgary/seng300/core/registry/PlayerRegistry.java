@@ -64,4 +64,9 @@ public class PlayerRegistry {
         return players;
     }
 
+    public void clear()
+    {
+        this.players.clear();
+    }
+
 }

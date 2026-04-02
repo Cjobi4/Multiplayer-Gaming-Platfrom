@@ -45,8 +45,8 @@ public class mainController {
     private void sampleData(){
         List<Tag> Connect4Tag = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
         List<Tag> TicTacToeTag = Arrays.asList(new Tag("Two Player", "purple"), new Tag("Classic", "Green"));
-        games.add(new Game("101", "Connect 4", "A two-player game where the first to connect four discs in a row wins.", Connect4Tag, null )); // have leaderboard as null for now
-        games.add(new Game("102", "TicTacToe", "A two-player game where the first to get three marks in a row wins.", TicTacToeTag, null )); // have leaderboard as null for now
+        games.add(new Game("101", "Connect 4", "A two-player game where the first to connect four discs in a row wins.", Connect4Tag)); // have leaderboard as null for now
+        games.add(new Game("102", "TicTacToe", "A two-player game where the first to get three marks in a row wins.", TicTacToeTag)); // have leaderboard as null for now
     }
 
     public Game findById(String id)
