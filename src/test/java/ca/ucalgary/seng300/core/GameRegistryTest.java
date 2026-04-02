@@ -125,6 +125,7 @@ public class GameRegistryTest {
     }
 
     /**
+     * Testing if all games are correctly added into the game registry
      * Inputs: game1, game2, game3
      * Expected Outputs: IDs of "game1", "game2", "game3"
      * Actual Outputs: the IDs of the games stored in game registry
@@ -153,5 +154,32 @@ public class GameRegistryTest {
         assertEquals(game1Expected, games.get(0).getId(), "Expected id of index 0 game is 'game1'");
         assertEquals(game2Expected, games.get(1).getId(), "Expected id of index 1 game is 'game2'");
         assertEquals(game3Expected, games.get(2).getId(), "Expected id of index 2 game is 'game3'");
+    }
+
+    /**
+     * This test tests the getTag() method from the Game Class
+     * Input: Creating a Tag list
+     * Expected Outputs: label --> "two-player", color --> "RED"
+     */
+    @Test
+    void testGetTagReturnsCorrectTagValues() {
+        // initializing the tags and leaderboard
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        LeaderBoard leaderBoard = null;
+
+        // create game and add it to the registry
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        gameRegistry.register(game1);
+
+        String expectedLabel = "two-player";
+        String expectedColor = "RED";
+
+        Game gameFound = gameRegistry.findById("game1");
+        List<Tag> actualTag = gameFound.getTags();
+        String actualLabel = actualTag.get(0).getLabel();
+        String actualColor = actualTag.get(0).getColor();
+
+        assertEquals(expectedLabel, actualLabel, "Label should be equal to expected label, which is: " + expectedLabel);
+        assertEquals(expectedColor, actualColor, "Color should be equal to expected color, which is: " + expectedColor);
     }
 }
