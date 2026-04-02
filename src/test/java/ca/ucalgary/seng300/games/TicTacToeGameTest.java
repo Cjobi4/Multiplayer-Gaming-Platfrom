@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TicTacToeGameTest {
+    // smaller personal note,
+
     /*
     Test that upon initialization all the default values are correct
      */
@@ -47,10 +49,47 @@ public class TicTacToeGameTest {
         Assertions.assertFalse(testGame.makeMove(1,1,'X'));
     }
 
+    /*
+    Simply checking for various tie scenarios
+     */
+    @Test
+    void testTieConditions(){
+        TicTacToeGame testGame = new TicTacToeGame();
 
+        TicTacToeBoard testBoard = new TicTacToeBoard();
+        Assertions.assertFalse(testGame.checkGameTie()); // false since game just started
+
+        testBoard.fromString("X,X, ,O,X,O,X,O,X"); //full board, but X wins
+        testGame.setBoard(testBoard);
+        testGame.makeMove(2,2,'X'); // need to make the move to trigger a board change
+        Assertions.assertFalse(testGame.checkGameTie());
+
+        testBoard.fromString("O,X, ,X,O,O,X,O,X"); // tie game, no winner
+        testGame.setBoard(testBoard);
+        testGame.makeMove(0,2,'O'); // once again, need to make the winning move
+        Assertions.assertTrue(testGame.checkGameTie());
+    }
+
+    /*
+    Multiple win checkers, because a lot of potential scenarios
+     */
+
+    // For all of these tests, I'll use 'X' because win logic remains the same regardless of char
+    @Test
+    void testWinHorizontalConditions(){
+        TicTacToeGame testGame = new TicTacToeGame();
+
+        TicTacToeBoard testBoard = new TicTacToeBoard();
+        testBoard.fromString("");
+    }
 
     @Test
-    void testWinConditions(){
+    void testWinVertical(){
+
+    }
+
+    @Test
+    void testWinDiagonal(){
 
     }
 }
