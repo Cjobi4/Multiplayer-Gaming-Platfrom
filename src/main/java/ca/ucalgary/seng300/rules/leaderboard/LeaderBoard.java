@@ -25,10 +25,21 @@ public class LeaderBoard {
         // get the leaderboard based on rank
         try {
             List<List<LeaderboardEntry>> leaderboard = (List<List<LeaderboardEntry>>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, null).get();
-            if (gameType == GameType.TICTACTOE) return leaderboard.get(0);
-            else if (gameType == GameType.CONNECT4) return leaderboard.get(1);
-            else return leaderboard.get(2);
-
+            if (gameType == GameType.TICTACTOE) {
+                List<LeaderboardEntry> leaderboardTTT = leaderboard.getFirst();
+                leaderboardTTT.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
+                return leaderboardTTT;
+            }
+            else if (gameType == GameType.CONNECT4) {
+                List<LeaderboardEntry> leaderboardC4 = leaderboard.get(1);
+                leaderboardC4.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
+                return leaderboardC4;
+            }
+            else {
+                List<LeaderboardEntry> leaderboardCombined = leaderboard.get(2);
+                leaderboardCombined.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
+                return leaderboardCombined;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -37,7 +48,7 @@ public class LeaderBoard {
     /**
      *
      * @param username
-     * @return the record (username, TTT wins, TTT matches, C4 wins, C4 matches, total wins, total matches)
+     * @return User Record (username, TTT wins, TTT matches, C4 wins, C4 matches, total wins, total matches)
      */
     public static UserRecord getUserRecord (String username){
         try {
