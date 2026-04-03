@@ -34,45 +34,128 @@ public class ConnectFourGameTest {
 
     @Test
     void testConnectFourVertical1stColWinsCorrect(){
-        // 1. arrange
+        ConnectFourGame game = new ConnectFourGame();
 
-        // 2. act
+        game.makeMove(0);   // x
+        game.makeMove(1);   // o 1
+        game.makeMove(2);   // x
+        game.makeMove(1);   // o 2
+        game.makeMove(0);   // x
+        game.makeMove(1);   // o 3
+        game.makeMove(2);   // x
+        game.makeMove(1);   // o 4
 
-        // 3. assertions
+        boolean expectedWinCondition = true;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true for the 1 column vertical.");
     }
 
     @Test
     void testConnectFourVertical2ndColWinsCorrect(){
+        ConnectFourGame game = new ConnectFourGame();
 
+        game.makeMove(2);   // player x 1
+        game.makeMove(1);   // player o
+        game.makeMove(2);   // player x 2
+        game.makeMove(1);   // player o
+        game.makeMove(2);   // player x 3
+        game.makeMove(0);   // player o
+        game.makeMove(2);   // player x
+
+        boolean expectedWinCondition = true;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true for the 2 column vertical.");
     }
 
     @Test
     void testConnectFourVertical3rdColWinsCorrect(){
+        ConnectFourGame game = new ConnectFourGame();
 
+        game.makeMove(3);   // player x 1
+        game.makeMove(1);   // player o
+        game.makeMove(3);   // player x 2
+        game.makeMove(1);   // player o
+        game.makeMove(3);   // player x 3
+        game.makeMove(0);   // player o
+        game.makeMove(3);   // player x
+
+        boolean expectedWinCondition = true;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true for the 3 column vertical.");
     }
 
     @Test
     void testConnectFourVertical4thColWinsCorrect(){
+        ConnectFourGame game = new ConnectFourGame();
 
+        game.makeMove(4);   // player x 1
+        game.makeMove(1);   // player o
+        game.makeMove(4);   // player x 2
+        game.makeMove(1);   // player o
+        game.makeMove(4);   // player x 3
+        game.makeMove(0);   // player o
+        game.makeMove(4);   // player x
+
+        boolean expectedWinCondition = true;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true for the 4 column vertical.");
     }
 
     @Test
     void testConnectFourVertical5thColWinsCorrect(){
+        ConnectFourGame game = new ConnectFourGame();
 
+        game.makeMove(5);   // player x 1
+        game.makeMove(1);   // player o
+        game.makeMove(5);   // player x 2
+        game.makeMove(1);   // player o
+        game.makeMove(5);   // player x 3
+        game.makeMove(0);   // player o
+        game.makeMove(5);   // player x
+
+        boolean expectedWinCondition = true;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true for the 5 column vertical.");
     }
 
     @Test
     void testConnectFourVertical6thColWinsCorrect(){
+        ConnectFourGame game = new ConnectFourGame();
 
+        game.makeMove(6);   // player x 1
+        game.makeMove(1);   // player o
+        game.makeMove(6);   // player x 2
+        game.makeMove(1);   // player o
+        game.makeMove(6);   // player x 3
+        game.makeMove(0);   // player o
+        game.makeMove(6);   // player x
+
+        boolean expectedWinCondition = true;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true for the 6 column vertical.");
     }
 
     @Test
     void testBackslashDiagonalWinsCorrect(){
-        // 1. arrange
+        ConnectFourGame game = new ConnectFourGame();
 
-        // 2. act
+        // need to create a backslash of 'O'
+        game.makeMove(0); //x
+        game.makeMove(1); // o
+        game.makeMove(2); // x
+        game.makeMove(3); // o
+        game.makeMove(4); // x
+        game.makeMove(2); // o
+        game.makeMove(1);  // x
+        game.makeMove(1);  // o
+        game.makeMove(0); // x
+        game.makeMove(2); // o
+        game.makeMove(0); // x
+        game.makeMove(0); // 4th o to create the diagonal
 
-        // 3. assertions
+        boolean expectedWinCondition = true;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true and it was: " + actualWinCondition);
     }
 
     @Test
