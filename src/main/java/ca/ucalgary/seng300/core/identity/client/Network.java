@@ -346,10 +346,13 @@ public class Network extends Thread {
         return socket.getInputStream().read();
     }
 
-    public boolean logout() throws Exception {
+    /**
+     * Tells server to log out, no return value
+     *
+     * @throws Exception
+     */
+    public void logout() throws Exception {
         socket.getOutputStream().write(LOGOUT);
-
-        return readResponseString().equals("1");
     }
 
     /**
