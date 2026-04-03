@@ -1,7 +1,10 @@
 target/
 !**/src/main/**/target/
 !**/src/test/**/target/
-.kotlin
+
+### Maven ###
+.m2/
+dependency-reduced-pom.xml
 
 ### IntelliJ IDEA ###
 .idea/
@@ -16,13 +19,17 @@ out/
 ### Mac OS ###
 .DS_Store
 
-# --- Logs ---
-*.log
-
 ### Windows ###
 Thumbs.db
 Desktop.ini
 
+### Logs ###
+*.log
+
 ### Java build ###
 *.class
 *.jar
+
+### Database ###
+*.sqlite
+*.db

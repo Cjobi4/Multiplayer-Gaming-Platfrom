@@ -13,14 +13,26 @@ cache:
   paths:
     - .m2/repository/
 
-# Compilation passes
-build:
+# Client compilation passes
+build-client:
   stage: build
   script:
     - mvn $MAVEN_CLI_OPTS clean compile
 
-# All tests pass
-test:
+# Server compilation passes
+build-server:
+  stage: build
+  script:
+    - cd server && mvn $MAVEN_CLI_OPTS clean compile
+
+# Client tests pass
+test-client:
   stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
+
+# Server tests pass
+test-server:
+  stage: test
+  script:
+    - cd server && mvn $MAVEN_CLI_OPTS test

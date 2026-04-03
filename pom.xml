@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ca.ucalgary.seng300</groupId>
-  <artifactId>javafx-starter</artifactId>
+  <artifactId>online-multiplayer-platform</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <properties>
@@ -35,10 +35,9 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>5.8.1</version>
+      <version>5.11.4</version>
       <scope>test</scope>
     </dependency>
-    <!-- TODO: Quality & Testing to add JUnit 5 -->
   </dependencies>
 
   <build>
@@ -52,6 +51,13 @@
         <configuration>
           <release>25</release>
         </configuration>
+      </plugin>
+
+      <!-- Test runner -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
       </plugin>
 
       <!-- JavaFX launcher -->
