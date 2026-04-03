@@ -189,49 +189,4 @@ public class ConnectFourGameTest {
 
         // 3. assertions
     }
-
-    @Test
-    void testHorizontal2ndRowWinsCorrect(){
-        // 1. arrange
-
-        // 2. act
-
-        // 3. assertions
-    }
-
-    @Test
-    void testHorizontal3rdRowWinsCorrect(){
-        // 1. arrange
-
-        // 2. act
-
-        // 3. assertions
-    }
-
-    @Test
-    void testHorizontal4thRowWinsCorrect(){
-        // 1. arrange
-
-        // 2. act
-
-        // 3. assertions
-    }
-
-    @Test
-    void testHorizontal5thRowWinsCorrect(){
-        // 1. arrange
-
-        // 2. act
-
-        // 3. assertions
-    }
-
-    @Test
-    void testHorizontal6thRowWinsCorrect(){
-        // 1. arrange
-
-        // 2. act
-
-        // 3. assertions
-    }
 }
