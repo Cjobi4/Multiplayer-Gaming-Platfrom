@@ -3,8 +3,10 @@ package ca.ucalgary.seng300.client.screens;
 import ca.ucalgary.seng300.client.components.LeaderBoardMock;
 import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -53,8 +55,18 @@ public class mainController {
     }
 
     private void loadCombinedLeaderboard(){
-       List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
-       renderLeaderboard(rows);// New functionality for later use
+        leaderboardBox.getChildren().clear();
+
+        Task<List<LeaderboardEntry>> task = new Task<>() {
+            @Override
+            protected List<LeaderboardEntry> call() throws Exception {}
+        };
+
+       //List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
+
+
+
+       //renderLeaderboard(rows);// New functionality for later use
     }
 
     public void renderLeaderboard(List<LeaderBoardRows> rows){
