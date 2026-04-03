@@ -10,20 +10,35 @@ import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This test class focuses on testing for the methods and logic in the ConnectFourBoard.java class
+ */
 public class ConnectFourBoardTest {
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
 
+    /**
+     * This is set up in order to help get the content of the printBoard method tests
+     */
     @BeforeEach
     public void setUpStreams(){
         System.setOut(new PrintStream(outContent));
     }
 
+    /**
+     * This is set up in order to help get the content of the printBoard method tests
+     */
     @AfterEach
     public void restoreStreams(){
         System.setOut(originalOut);
     }
 
+    /**
+     * Testing the ConnectFourBoard method
+     * Input : NA
+     * Expected Output: A board of size 6x7 with cells initialized to '.'
+     * Actual Output: the board created by the ConnectFourBoard method
+     */
     @Test
     void testConnectFourBoardSetsUp6x7() {
         ConnectFourBoard board = new ConnectFourBoard();
@@ -36,7 +51,7 @@ public class ConnectFourBoardTest {
         // checking if the actual board is initialized to have '.' in each cell
         for (int row = 0; row < expectedRows; row++) {
             for (int col = 0; col < expectedColumns; col++) {
-                assertEquals('.', board.getCell(row, col), "Cell at (" + row + ", " + col + ") should be initialized to ','");
+                assertEquals('.', board.getCell(row, col), "Cell at (" + row + ", " + col + ") should be initialized to '.'");
             }
         }
 
@@ -44,6 +59,12 @@ public class ConnectFourBoardTest {
         assertEquals(expectedRows, actualRows, "Rows should be equal to expected number of rows: " + expectedRows);
     }
 
+    /**
+     * Testing the dropPieceMethod
+     * Input: Column 5 and player 'X' into dropPiece
+     * Expected Output: boolean true
+     * Actual Output: boolean statement about whether the piece could be added or not
+     */
     @Test
     void testDropPieceWhenColumnIsEmpty() {
         ConnectFourBoard board = new ConnectFourBoard();
@@ -57,6 +78,12 @@ public class ConnectFourBoardTest {
         assertEquals(expectedPiece, actualPiece, "The piece should be dropped and should show as the player.");
     }
 
+    /**
+     * Testing the dropPieceMethod
+     * Input: fill the whole board with player 'O' pieces
+     * Expected Output: boolean false
+     * Actual Output: boolean statement about whether the piece could be added or not
+     */
     @Test
     void testDropPieceWhenColumnIsFull() {
         ConnectFourBoard board = new ConnectFourBoard();
@@ -77,6 +104,12 @@ public class ConnectFourBoardTest {
         assertEquals(expectedReturn, actualReturn, "Should not be able to add player X's piece when the column/board is full");
     }
 
+    /**
+     * Testing the dropPieceMethod logic
+     * Input: adding a piece to an out-of-bounds column
+     * Expected Output: boolean false
+     * Actual Output: boolean statement about whether the piece could be added or not
+     */
     @Test
     void testDropPieceWhenOutOfBounds() {
         ConnectFourBoard board = new ConnectFourBoard();
@@ -85,6 +118,12 @@ public class ConnectFourBoardTest {
         assertFalse(board.dropPiece(7, player), "The chosen column is out of bounds, thus the method dropPiece(col, player) should return as false.");
     }
 
+    /**
+     * Testing isFull method
+     * Input: empty board
+     * Expected Output: false
+     * Actual Output: boolean value of board.isFull()
+     */
     @Test
     void testIsFullWhenBoardIsEmpty() {
         ConnectFourBoard board = new ConnectFourBoard();
@@ -94,6 +133,12 @@ public class ConnectFourBoardTest {
         assertEquals(expectedReturn, actualReturn, "The board should not be full.");
     }
 
+    /**
+     * Testing isFull method
+     * Input: partially filled board
+     * Expected Output: false
+     * Actual Output: boolean value of board.isFull()
+     */
     @Test
     void testIsFullWhenBoardIsNeitherEmptyNorFull() {
         ConnectFourBoard board = new ConnectFourBoard();
@@ -130,6 +175,12 @@ public class ConnectFourBoardTest {
         assertEquals(expectedReturn, actualReturn, "The board should not be full.");
     }
 
+    /**
+     * Testing isFull method
+     * Input: filled board
+     * Expected Output: true
+     * Actual Output: boolean value of board.isFull()
+     */
     @Test
     void testIsFullWhenBoardIsFull() {
         ConnectFourBoard board = new ConnectFourBoard();
@@ -148,6 +199,12 @@ public class ConnectFourBoardTest {
         assertEquals(expectedReturn, actualReturn, "The board should be full.");
     }
 
+    /**
+     * Testing the printBoard method
+     * Input: empty board
+     * Expected Output: A board of size 6x7 with cells initialized to '.'
+     * Actual Output: board printed by the printBoard method
+     */
     @Test
     void testPrintBoardWhenBoardIsEmpty() {
         ConnectFourBoard board = new ConnectFourBoard();
@@ -165,6 +222,12 @@ public class ConnectFourBoardTest {
         assertEquals(expectedOutput, actualOutput, "The board should be empty.");
     }
 
+    /**
+     * Testing the printBoard method
+     * Input: partially full board
+     * Expected Output: A board of size 6x7 with some of the cells filled
+     * Actual Output: board printed by the printBoard method
+     */
     @Test
     void testPrintBoardWhenBoardIsPartiallyFull(){
         ConnectFourBoard board = new ConnectFourBoard();
