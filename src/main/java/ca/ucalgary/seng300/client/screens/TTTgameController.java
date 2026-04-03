@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
+import ca.ucalgary.seng300.shared.models.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
