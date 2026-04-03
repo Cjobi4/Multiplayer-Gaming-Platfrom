@@ -151,15 +151,60 @@ public class ConnectFourBoardTest {
     @Test
     void testPrintBoardWhenBoardIsEmpty() {
         ConnectFourBoard board = new ConnectFourBoard();
-    }
+        board.printBoard();
 
-    @Test
-    void testPrintBoardWhenBoardIsFull() {
-        ConnectFourBoard board = new ConnectFourBoard();
+        String expectedOutput = ". . . . . . . \n" +
+                                ". . . . . . . \n" +
+                                ". . . . . . . \n" +
+                                ". . . . . . . \n" +
+                                ". . . . . . . \n" +
+                                ". . . . . . . \n" +
+                                "0 1 2 3 4 5 6\n";
+
+        String actualOutput = outContent.toString();
+        assertEquals(expectedOutput, actualOutput, "The board should be empty.");
     }
 
     @Test
     void testPrintBoardWhenBoardIsPartiallyFull(){
         ConnectFourBoard board = new ConnectFourBoard();
+        char player1 = 'X';
+        char player2 = 'O';
+
+        // adding pieces to the board
+        board.dropPiece(0, player1);
+        board.dropPiece(0, player2);
+        board.dropPiece(0, player1);
+        board.dropPiece(0, player2);
+        board.dropPiece(0, player1);
+        board.dropPiece(0, player2);
+
+        board.dropPiece(1, player1);
+        board.dropPiece(1, player2);
+
+        board.dropPiece(2, player1);
+        board.dropPiece(2, player2);
+
+        board.dropPiece(3, player1);
+
+        board.dropPiece(4, player2);
+
+        board.dropPiece(5, player1);
+        board.dropPiece(5, player2);
+
+        board.dropPiece(6, player1);
+        board.dropPiece(6, player2);
+
+        // what the board should look like
+        String expectedOutput = "O . . . . . . \n" +
+                                "X . . . . . . \n" +
+                                "O . . . . . . \n" +
+                                "X . . . . . . \n" +
+                                "O O O . . O O \n" +
+                                "X X X X O X X \n" +
+                                "0 1 2 3 4 5 6\n";
+        board.printBoard();
+        String actualOutput = outContent.toString();
+        assertEquals(expectedOutput, actualOutput, "The board should be partially full.");
     }
 }
