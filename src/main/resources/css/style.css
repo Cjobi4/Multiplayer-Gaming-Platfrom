@@ -43,3 +43,7 @@
 .scroll-pane .viewport {
     -fx-background-color: transparent;
 }
+
+.connect4-Button{
+    -fx-background-radius: 100;
+}
