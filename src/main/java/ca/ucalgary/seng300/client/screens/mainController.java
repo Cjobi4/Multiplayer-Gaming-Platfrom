@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.client.screens;
 import ca.ucalgary.seng300.client.components.LeaderBoardMock;
 import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
@@ -57,24 +58,40 @@ public class mainController {
     private void loadCombinedLeaderboard(){
         leaderboardBox.getChildren().clear();
 
-        Task<List<LeaderboardEntry>> task = new Task<>() {
+        Task<List<LeaderboardEntry>> task = new Task<>() { // Found the element Task which allows the database queries to run in the background rather than freezing up the UI
             @Override
-            protected List<LeaderboardEntry> call() throws Exception {}
+            protected List<LeaderboardEntry> call() {
+                return LeaderBoard.getLeaderboard(null); // using null because that is the only way to be able to get the else statement to run in the LeaderBoard class
+            }
         };
 
+        task.setOnSucceeded(e -> renderLeaderboard(task.getValue()));
+        task.setOnFailed(e -> {
+            leaderboardBox.getChildren().clear();
+
+            Label errorLabel = new Label("Failed to load leaderboard");
+            errorLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: red;");
+            leaderboardBox.getChildren().add(errorLabel);
+
+            if (task.getException() != null) {
+                task.getException().printStackTrace();
+            }
+        });
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+
        //List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
-
-
-
        //renderLeaderboard(rows);// New functionality for later use
     }
 
-    public void renderLeaderboard(List<LeaderBoardRows> rows){
-        leaderboardBox.getChildren().clear();
-
-        for (LeaderBoardRows row : rows){
-            leaderboardBox.getChildren().add(showLeaderboardRow(row));
-        }
+    public void renderLeaderboard(List<LeaderboardEntry> rows){
+//        leaderboardBox.getChildren().clear();
+//
+//        for (LeaderBoardRows row : rows){
+//            leaderboardBox.getChildren().add(showLeaderboardRow(row));
+//        }
 
     }
 
