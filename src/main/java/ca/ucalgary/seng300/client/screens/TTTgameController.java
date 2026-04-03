@@ -10,6 +10,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
@@ -31,6 +35,9 @@ public class TTTgameController {
     public Button ttt21;
     public Button ttt22;
     public Text turnDisplay;
+    public ScrollPane chatScrollPane;
+    public VBox chatContainer;
+    public TextField messageInput;
 
     TicTacToeGame current = new TicTacToeGame();
     Button[][] grid;
@@ -49,6 +56,26 @@ public class TTTgameController {
             messageInput.clear();
             refreshChatDisplay();
         }
+    }
+
+    private void refreshChatDisplay() {
+        chatContainer.getChildren().clear();
+
+        for (Message m : ChatRegistry.getInstance().ListAll()) {
+            Label msgLable = new Label(m.getSender() + ": " + m.getContent());
+
+            msgLable.setWrapText(true);
+            msgLable.setMaxWidth(750);
+            msgLable.setStyle("-fx-background-color:  #F9EDE1;" +
+                    "-fx-padding: 8;" +
+                    "-fx-background-radius: 10;" +
+                    "-fx-font-family: Dubai;" +
+                    "-fx-text-fill: #866b59;" +
+                    "-fx-margin: 5;");
+
+            chatContainer.getChildren().add(msgLable);
+        }
+        chatScrollPane.setVvalue(1.0);
     }
 
     @FXML
