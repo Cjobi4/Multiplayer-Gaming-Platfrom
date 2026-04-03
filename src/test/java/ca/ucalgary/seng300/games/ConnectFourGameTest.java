@@ -35,12 +35,37 @@ public class ConnectFourGameTest {
     }
 
     @Test
-    void testConnectFourVerticalRightMostEdgeWinsCorrect(){
+    void testConnectFourVertical1stColWinsCorrect(){
         // 1. arrange
 
         // 2. act
 
         // 3. assertions
+    }
+
+    @Test
+    void testConnectFourVertical2ndColWinsCorrect(){
+
+    }
+
+    @Test
+    void testConnectFourVertical3rdColWinsCorrect(){
+
+    }
+
+    @Test
+    void testConnectFourVertical4thColWinsCorrect(){
+
+    }
+
+    @Test
+    void testConnectFourVertical5thColWinsCorrect(){
+
+    }
+
+    @Test
+    void testConnectFourVertical6thColWinsCorrect(){
+
     }
 
     @Test
