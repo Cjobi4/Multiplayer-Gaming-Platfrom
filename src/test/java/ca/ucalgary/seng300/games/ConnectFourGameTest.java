@@ -16,6 +16,25 @@ public class ConnectFourGameTest {
     }
 
     @Test
+    void testSwitchPlayerCorrectlySwitchesPlayerFromXtoO() {
+        ConnectFourGame game = new ConnectFourGame();
+        game.switchPlayer();
+        char expectedCurrentPlayer = 'O';
+        char actualCurrentPlayer = game.getCurrentPlayer();
+
+        assertEquals(expectedCurrentPlayer, actualCurrentPlayer, "The expected current player after switching player was 'O' and the actual current player is: " + actualCurrentPlayer);
+    }
+
+    @Test
+    void testGetCurrentPlayerAfterMoveMade() {
+        ConnectFourGame game = new ConnectFourGame();
+        char expectedCurrentPlayer = 'O';
+        char actualCurrentPlayer = game.getCurrentPlayer();
+
+        assertEquals(expectedCurrentPlayer, actualCurrentPlayer, "The current player should be 'O' and the actual current player is: " + actualCurrentPlayer);
+    }
+
+    @Test
     void testConnectFourVertical0thColumnWinsCorrect(){
         ConnectFourGame game = new ConnectFourGame();
 
