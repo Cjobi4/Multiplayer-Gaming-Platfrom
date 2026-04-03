@@ -397,6 +397,7 @@ public class Network extends Thread {
             String title = gameFields[1];
             String description = gameFields[2];
             String[] tagComponents = gameFields[3].split("`");
+            String fxmlPath = gameFields[4];
 
             // building tag objects
             List<Tag> tags = new ArrayList<>();
@@ -405,7 +406,7 @@ public class Network extends Thread {
                 tags.add(new Tag(tagComponents[i], tagComponents[i+1]));
             }
 
-            GameRegistry.getInstance().register(new Game(id, title, description, tags));
+            GameRegistry.getInstance().register(new Game(id, title, description, tags,  fxmlPath));
         }
     }
 
