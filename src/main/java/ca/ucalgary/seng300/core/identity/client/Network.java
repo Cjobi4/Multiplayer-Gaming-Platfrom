@@ -383,14 +383,6 @@ public class Network extends Thread {
 
     // GAMES
 
-    /** Sends game_list description byte to server
-     *
-     * @throws Exception
-     */
-    public void requestGamesList() throws Exception {
-        socket.getOutputStream().write(GET_GAME_LIST);
-    }
-
     /** Parsing of game data to be used to construct game objects
      *
      * Strings received in the format:
@@ -401,8 +393,8 @@ public class Network extends Thread {
      */
     public void getGames() throws Exception {
 
-        // send game list request
-        requestGamesList();
+        // send description byte
+        socket.getOutputStream().write(GET_GAME_LIST);
 
         // reading two responses (one for each game) and storing in an array of strings
         String[] responses = {
@@ -410,9 +402,9 @@ public class Network extends Thread {
         };
 
         // either 0 or 1 sent after transmission
-        String terminator = readResponseString();
+        int terminator = socket.getInputStream().read();
 
-        if (terminator.equals("0")) {
+        if (terminator == 0) {
             // server error
             return;
         }
