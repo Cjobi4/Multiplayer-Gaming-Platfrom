@@ -32,6 +32,10 @@ public class Session extends Thread
     //private final int JOIN_C4_QUEUE = 9;
     //private final int LEAVE_C4_QUEUE = 10;
     //private final int GET_USER_LIST = 11;
+    //private final int MATCH_FOUND = 12;
+    //private final int KICKED_FROM_QUEUE = 13;
+    //private final int MATCH_ACCEPTED = 14;
+    //private final int MATCH_REJECTED = 15;
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -80,7 +84,6 @@ public class Session extends Thread
         try
         {
             int requestType;
-            client.setSoTimeout(5000);  //server pauses checking every 5 seconds
             Request req;
 
             //then start listening for incoming requests
@@ -88,6 +91,8 @@ public class Session extends Thread
             {
                 try //listen for incoming transmissions
                 {
+                    client.setSoTimeout(3000);  //server pauses checking every 3 seconds
+
                     //see what type of request it is
                     requestType = client.getInputStream().read();
 
@@ -169,6 +174,9 @@ public class Session extends Thread
         int result;
         ResultSet rs;
         StringBuilder sbuild;
+
+        //make sure the connection doesn't time out while waiting for response
+        client.setSoTimeout(10000);
 
         //these requests don't need the user to be logged in
         switch (requestType) {
