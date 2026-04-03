@@ -18,8 +18,6 @@ public class ConnectFourGameTest {
     @Test
     void testConnectFourVertical0thColumnWinsCorrect(){
         ConnectFourGame game = new ConnectFourGame();
-        char player1 =  'X';
-        char player2 = 'O';
 
         game.makeMove(0);   // player x 1
         game.makeMove(1);   // player o
