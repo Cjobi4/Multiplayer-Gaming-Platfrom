@@ -348,12 +348,20 @@ public class Network extends Thread {
         return readResponseString().equals("1");
     }
 
-    public boolean registerAccount(String username, String password) throws Exception {
-
-        // checking if password meets minimum length requirements
-        if (password.length() < 6 || password.length() > 18) {
-            return false;
-        }
+    /**
+     * Request for registering an account
+     *
+     * If username is already taken, return 0
+     * If registration was successful, return 1
+     * If registration fails due to incorrect credentials (invalid pass length or username contains ` or ^) return 2
+     * If other (server failure) return 3
+     *
+     * @param username
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    public int registerAccount(String username, String password) throws Exception {
 
         // send description byte
         socket.getOutputStream().write(CREATE_ACCOUNT);
@@ -363,7 +371,7 @@ public class Network extends Thread {
         sendRequestParameter(password);
 
         // interpret whether registration was successful or not
-        return readResponseString().equals("1");
+        return socket.getInputStream().read();
     }
 
     // GAMES
