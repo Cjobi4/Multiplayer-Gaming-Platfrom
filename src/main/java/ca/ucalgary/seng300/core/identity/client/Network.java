@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -75,40 +74,56 @@ public class Network extends Thread {
 
         Here are some examples on how you can request from the server:
 
-        // CREATE ACCOUNT
-        boolean success = (Boolean) Network.getInstance().queueRequest(Network.CREATE_ACCOUNT, new String[]{"username", "password"}).get();
+        -- CREATE ACCOUNT --
+                boolean success = (Boolean) Network.getInstance().queueRequest(Network.CREATE_ACCOUNT, new String[]{"username", "password"}).get();
 
-        // LOGIN
-        boolean loggedIn = (Boolean) Network.getInstance().queueRequest(Network.LOGIN, new String[]{"username", "password"}).get();
+        -- LOGIN --
+                boolean loggedIn = (Boolean) Network.getInstance().queueRequest(Network.LOGIN, new String[]{"username", "password"}).get();
 
-        // LOGOUT
-        boolean loggedOut = (Boolean) Network.getInstance().queueRequest(Network.LOGOUT, null).get();
+        -- LOGOUT --
+                boolean loggedOut = (Boolean) Network.getInstance().queueRequest(Network.LOGOUT, null).get();
 
-        // GET GAME LIST — no return value, just populates GameRegistry
-        Network.getInstance().queueRequest(Network.GET_GAME_LIST, null).get();
-        // access games after via GameRegistry.getInstance().ListAll();
+        -- GET GAME LIST - has no return value, just populates GameRegistry --
 
-        // GET LEADERBOARD takes parameter -> (0 = TTT, 1 = C4, 2 = COMBINED)
-        List<LeaderboardEntry> leaderboard = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"0"}).get();
+                Network.getInstance().queueRequest(Network.GET_GAME_LIST, null).get();
 
-        // GET ONLINE PLAYERS — no return value, populates PlayerRegistry
-        Network.getInstance().queueRequest(Network.GET_ONLINE_PLAYERS, null).get();
+           access games after via GameRegistry.getInstance().ListAll();
 
-        // SEND TTT MOVE
-        Network.getInstance().queueRequest(Network.SEND_MOVE_TTT, new String[]{board.toString()});
+        -- GET LEADERBOARD takes parameter -> ("ttt" for TTT leaderboard, "c4" for C4 leaderboard, or "total" for COMBINED leaderboard) --
 
-        // RECEIVE TTT MOVE
+         Tic-Tac-Toe:
+                Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"});
 
-        // GET MATCH RECORDS
-        List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{"username"}).get();
+         Connect 4:
+                Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"c4"});
 
-        // JOINING QUEUE
-        boolean joinedTTT = (Boolean) Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get();
-        boolean joinedC4  = (Boolean) Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get();
+         Combined:
+                Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"total"});
 
-        // LEAVING QUEUE
-        boolean leftTTT = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_TTT_QUEUE, null).get();
-        boolean leftC4  = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_C4_QUEUE, null).get();
+        -- GET ONLINE PLAYERS — no return value, populates PlayerRegistry --
+                Network.getInstance().queueRequest(Network.GET_ONLINE_PLAYERS, null).get();
+
+        -- SEND TTT MOVE --
+
+                Network.getInstance().queueRequest(Network.SEND_MOVE_TTT, new String[]{board.toString()});
+
+        * RECEIVE TTT MOVE
+
+        -- GET MATCH RECORDS --
+
+                List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{"username"}).get();
+
+        -- JOINING QUEUE --
+
+          Join TTT Queue:
+                boolean joinedTTT = (Boolean) Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get();
+
+          Join C4 Queue:
+                boolean joinedC4  = (Boolean) Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get();
+
+        -- LEAVING QUEUE --
+                boolean leftTTT = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_TTT_QUEUE, null).get();
+                boolean leftC4  = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_C4_QUEUE, null).get();
     */
 
     /** Constructor
@@ -262,7 +277,7 @@ public class Network extends Thread {
                 break;
 
             case GET_LEADERBOARD:
-                req.future.complete(getLeaderboard(Integer.parseInt(parameters[0])));
+                req.future.complete(getLeaderboard(parameters[0]));
                 break;
 
             case GET_MATCH_RECORD:
@@ -444,7 +459,6 @@ public class Network extends Thread {
         return readResponseString().equals("1");
     }
 
-    // TODO: Update with PlayerRegistry...
     public void getOnlinePlayers() throws Exception {
 
         // send description byte
@@ -480,17 +494,19 @@ public class Network extends Thread {
 
     // LEADERBOARD
 
-    /** gets leaderboard from database and stores as a nested list (List<List<LeaderboardEntry>>)
-     *  0 can be used to access ttt, 1 for c4, 2 for combined
+    /** gets leaderboard from database and stores as list (List<LeaderboardEntry>)
+     *  parameters: pass in "ttt", "c4", or "total" for their corresponding leaderboards
+     *  total is the combined w/l across both games
      *
      * @return
      * @throws Exception
      */
-    public List<LeaderboardEntry> getLeaderboard(int leaderboardType) throws Exception {
+    public List<LeaderboardEntry> getLeaderboard(String leaderboardType) throws Exception {
 
         //send description byte
         socket.getOutputStream().write(GET_LEADERBOARD);
-        sendRequestParameter(String.valueOf(leaderboardType));
+
+        sendRequestParameter(leaderboardType);
 
         List<LeaderboardEntry> entries = new ArrayList<>();
 
@@ -499,7 +515,7 @@ public class Network extends Thread {
 
         while (receiving) {
 
-            // receive username as response, or "0"/"1" if end of entries
+            // receive username as first response, or "0"/"1" if end of entries
             response = readResponseString();
 
             if (response.equals("0") || response.equals("1")) {
@@ -509,7 +525,7 @@ public class Network extends Thread {
             else {
                 String username = response;
 
-                // data sent as: playerid^wins^matches
+                // data sent as: wins^matches
                 String[] parts = readResponseString().split("\\^");
 
                 int wins = Integer.parseInt(parts[0]);
