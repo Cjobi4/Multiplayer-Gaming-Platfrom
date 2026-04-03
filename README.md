@@ -4,26 +4,95 @@ A turn-based online multiplayer game platform built with JavaFX for SENG 300.
 
 ## Prerequisites
 
+### Client
 - **JDK 25**
 - **Git**
 
-## Build Instructions
+### Server
+- **JDK 25**
+- **Git**
+- **SQLite**
+- **SQLite JDBC driver**
+- **Admin access may be required for firewall setup**
+
+## Client Build and Run
+
+### Build Instructions
 
 ```bash
 ./mvnw clean compile
 ```
 
-## Run Instructions
+### Run Instructions
 
 ```bash
 ./mvnw javafx:run
 ```
 
-## Test Instructions
+### Test Instructions
 
 ```bash
 ./mvnw test
 ```
+
+## Server Build and Run
+
+### Build Instructions
+
+Navigate to the server directory and compile:
+```bash
+../mvnw clean compile
+```
+
+To build the executable JAR:
+```bash
+../mvnw clean package
+```
+
+### Run Instructions
+
+```bash
+../mvnw exec:java
+```
+
+**Note:** The server cannot run directly from IntelliJ IDE due to firewall restrictions. Running from terminal/command line with admin privileges is required.
+
+### Test Instructions
+```bash
+cd server
+../mvnw test
+```
+
+### Firewall Configuration for Windows
+
+Before running the server for the first time:
+
+1. Open **Windows Defender Firewall** → **Advanced Settings**
+2. Create **Inbound Rule**:
+    - Type: Port
+    - Protocol: TCP, Port: 14001
+    - Action: Allow the connection
+    - Profile: All
+    - Name: "SENG300 Server Port"
+3. Create matching **Outbound Rule**
+4. Enable both rules when server is running
+5. **Disable rules when server is not running** (security best practice)
+
+
+### Server Configuration
+
+The server uses:
+- **Port:** 14001 (configurable in `Database.java`)
+- **Database:** SQLite
+
+
+## Network Notes
+
+- The server listens for TCP connections on port `14001`.
+- Clients connect using the server machine’s internal IP address and port.
+- Under the current test setup, client and server must be on the same network.
+- If the server IP address changes, the client configuration may need to be updated.
+
 
 ## Project Structure
 
@@ -36,13 +105,6 @@ project-root/
 │   ├── rules-validation/  # Rules & Validation designs
 │   ├── quality-testing/   # Test plans
 │   └── integration-release/  # I&R process docs
-├── server/
-│    ├── src/
-│    │    ├──main/
-│    │    │     java/ca/ucalgary/seng300/
-│    │    │         └── ServerMain          
-│    │    └── test/            
-│    └── pom.xml
 ├── src/
 │   ├── main/
 │   │   ├── java/ca/ucalgary/seng300/
@@ -59,16 +121,6 @@ project-root/
 ├── CURRENT_STATE.md       # Feature status matrix
 └── team.md                # Sub-team roster
 ```
-
-## Server Module setup
-The server module runs independently from the JavaFX client.
-
-After pulling, add the server module in IntelliJ:
-
-1. **File → Project Structure → Modules  → Add (Symbol "+" on top-left corner) → Import module**
-2. Select `pom.xml` under **server folder**
-3. Click **Open**
-
 
 ## Key Documents
 
