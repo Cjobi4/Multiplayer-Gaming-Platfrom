@@ -40,6 +40,18 @@ public class TTTgameController {
     }
 
     @FXML
+    protected void onSendMessage() {
+        String text = messageInput.getText();
+        if (text != null && !text.isEmpty()) {
+            Message newMessage = new Message(text, "Player 1");
+
+            ChatRegistry.getInstance().addMessage(newMessage);
+            messageInput.clear();
+            refreshChatDisplay();
+        }
+    }
+
+    @FXML
     protected void onGameOverButtonClick(ActionEvent event) {
         try {
             //Load fxml file
