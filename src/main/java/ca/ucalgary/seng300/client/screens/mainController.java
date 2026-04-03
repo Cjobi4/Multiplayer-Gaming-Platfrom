@@ -117,7 +117,7 @@ public class mainController {
             return;
         }
 
-        Game game = games.findByName(input);
+        Game game = findGame(input);
 
         if(game != null){
             displayGame(game); // This will be the function that connects to the labels allowing to display on labels
@@ -127,6 +127,36 @@ public class mainController {
             gameTitleLabel.setText("Game not found");
         }
 
+    }
+
+    private Game findGame(String query) {
+        if (query == null) {
+            return null;
+        }
+
+        String normalizedQuery = query.trim().toLowerCase();
+
+        if (normalizedQuery.isEmpty()) {
+            return null;
+        }
+
+        for (Game game : games.ListAll()) {
+            if (game.getTitle() != null && game.getTitle().toLowerCase().contains(normalizedQuery)) {
+                return game;
+            }
+
+            if (game.getId() != null && game.getId().equalsIgnoreCase(normalizedQuery)) {
+                return game;
+            }
+
+            for (Tag tag : game.getTags()) {
+                if (tag.getLabel() != null && tag.getLabel().toLowerCase().contains(normalizedQuery)) {
+                    return game;
+                }
+            }
+        }
+
+        return null;
     }
 
     private String formatTags(List<Tag> tags) {
@@ -173,8 +203,14 @@ public class mainController {
 
         if (selected != null)
         {
-            switchScene(event, "/fxml/" + games.findByName(selected.getText()).getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
-            errorField.setText("");
+            Game selectedGame = findGame(selected.getText());
+
+            if (selectedGame != null) {
+                switchScene(event, "/fxml/" + selectedGame.getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
+                errorField.setText("");
+            } else {
+                errorField.setText("Could not find the selected game.");
+            }
         }
         else
         {
@@ -189,8 +225,14 @@ public class mainController {
 
         if (selected != null)
         {
-            switchScene(event, "/fxml/" + games.findByName(selected.getText()).getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
-            errorField.setText("");
+            Game selectedGame = findGame(selected.getText());
+
+            if (selectedGame != null) {
+                switchScene(event, "/fxml/" + selectedGame.getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
+                errorField.setText("");
+            } else {
+                errorField.setText("Could not find the selected game.");
+            }
         }
         else
         {
