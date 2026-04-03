@@ -39,10 +39,15 @@ public class mainController {
     public VBox gameOptions;
 
     private GameRegistry games = GameRegistry.getInstance();
+    ToggleGroup group = new ToggleGroup();
 
     @FXML
     public void initialize() {
-        sampleData();
+
+        if (games.ListAll().isEmpty()) {
+            sampleData();
+        }
+
         loadCombinedLeaderboard();
         DisplayGameList();
     }
@@ -98,8 +103,8 @@ public class mainController {
     private void sampleData(){
         List<Tag> Connect4Tag = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
         List<Tag> TicTacToeTag = Arrays.asList(new Tag("Two Player", "purple"), new Tag("Classic", "Green"));
-        games.register(new Game("101", "Connect 4", "A two-player game where the first to connect four discs in a row wins.", Connect4Tag)); // have leaderboard as null for now
-        games.register(new Game("102", "TicTacToe", "A two-player game where the first to get three marks in a row wins.", TicTacToeTag)); // have leaderboard as null for now
+        games.register(new Game("101", "Connect 4", "A two-player game where the first to connect four discs in a row wins.", Connect4Tag, "C4")); // have leaderboard as null for now
+        games.register(new Game("102", "TicTacToe", "A two-player game where the first to get three marks in a row wins.", TicTacToeTag, "TTT"));
     }
 
     @FXML
@@ -163,28 +168,34 @@ public class mainController {
 
     @FXML
     protected void onGameSelectButtonClick(ActionEvent event) {
-//        if (connect4Select.isSelected()) {
-//            switchScene(event, "/fxml/C4opponentSelectPage.fxml", "Connect 4 - Select Opponent");
-//            errorField.setText("");
-//        } else if (TicTacToeSelect.isSelected()) {
-//            switchScene(event, "/fxml/TTTopponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
-//            errorField.setText("");
-//        } else {
-//            errorField.setText("Please select a game first!");
-//        }
+
+        RadioButton selected = (RadioButton) group.getSelectedToggle();
+
+        if (selected != null)
+        {
+            switchScene(event, "/fxml/" + games.findByName(selected.getText()).getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
+            errorField.setText("");
+        }
+        else
+        {
+            errorField.setText("Please select a game first!");
+        }
     }
 
     @FXML
     protected void onMatchMakeButtonClick(ActionEvent event) {
-//        if (connect4Select.isSelected()) {
-//            switchScene(event, "/fxml/C4opponentSelectPage.fxml", "Connect 4 - Select Opponent");
-//            errorField.setText("");
-//        } else if (TicTacToeSelect.isSelected()) {
-//            switchScene(event, "/fxml/TTTopponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
-//            errorField.setText("");
-//        } else {
-//            errorField.setText("Please select a game first!");
-//        }
+
+        RadioButton selected = (RadioButton) group.getSelectedToggle();
+
+        if (selected != null)
+        {
+            switchScene(event, "/fxml/" + games.findByName(selected.getText()).getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
+            errorField.setText("");
+        }
+        else
+        {
+            errorField.setText("Please select a game first!");
+        }
     }
 
     private void switchScene(ActionEvent event, String fxmlPath, String title) {
@@ -230,7 +241,7 @@ public class mainController {
     protected void DisplayGameList()
     {
        List<Game> GameList = GameRegistry.getInstance().ListAll();
-        ToggleGroup group = new ToggleGroup();
+       gameOptions.getChildren().clear();
 
        for (Game game : GameList)
        {
