@@ -82,30 +82,31 @@ public class mainController {
         thread.setDaemon(true);
         thread.start();
 
-       //List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
-       //renderLeaderboard(rows);// New functionality for later use
     }
 
-    public void renderLeaderboard(List<LeaderboardEntry> rows){
-//        leaderboardBox.getChildren().clear();
-//
-//        for (LeaderBoardRows row : rows){
-//            leaderboardBox.getChildren().add(showLeaderboardRow(row));
-//        }
+    public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
+          leaderboardBox.getChildren().clear();
 
+          for(int i = 0; i < leaderboard.size(); i++){
+              LeaderboardEntry entry = leaderboard.get(1);
+              leaderboardBox.getChildren().add(showLeaderboardRow(i+1, entry));
+          }
     }
 
-    public HBox showLeaderboardRow(LeaderBoardRows row){
-        Label rankLabel = new Label("#" + row.getRank());
-        Label nameLabel = new Label(row.getPlayerName());
-        Label winsLabel = new Label(row.getWins() + " W");
-        Label matchesLabel = new Label(row.getMatches() + " M");
+    public HBox showLeaderboardRow(int rank,LeaderboardEntry entry){
+        Label rankLabel = new Label("#" + rank);
+        Label nameLabel = new Label(entry.getUsername());
+        Label winsLabel = new Label(entry.getWins() + " W");
+        Label matchesLabel = new Label(entry.getMatches() + " M");
 
-        rankLabel.setMinWidth(45);
+        rankLabel.setMinWidth(30);
+        winsLabel.setMinWidth(40);
+        matchesLabel.setMinWidth(40);
+
         nameLabel.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
-        HBox rowBox = new HBox(15);
+        HBox rowBox = new HBox(5);
         rowBox.setAlignment(Pos.CENTER_LEFT);
         rowBox.getChildren().addAll(rankLabel, nameLabel, winsLabel, matchesLabel);
 
@@ -122,9 +123,6 @@ public class mainController {
 
         return rowBox;
     }
-
-
-
 
 
 
