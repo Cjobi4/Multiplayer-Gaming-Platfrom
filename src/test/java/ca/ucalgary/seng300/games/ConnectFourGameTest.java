@@ -160,11 +160,25 @@ public class ConnectFourGameTest {
 
     @Test
     void testForwardSlashDiagonalWinsCorrect(){
-        // 1. arrange
+        ConnectFourGame game = new ConnectFourGame();
 
-        // 2. act
+        // manually add each piece
+        game.makeMove(2); //x
+        game.makeMove(3); //o
+        game.makeMove(3); // x
+        game.makeMove(4); // o
+        game.makeMove(5); //x
+        game.makeMove(4); // o
+        game.makeMove(4); //x
+        game.makeMove(5); // o
+        game.makeMove(6); // x
+        game.makeMove(5); // o
+        game.makeMove(5); // x
 
-        // 3. assertions
+        boolean expectedWinCondition = true;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true and it was: " + actualWinCondition);
+
     }
 
     @Test
