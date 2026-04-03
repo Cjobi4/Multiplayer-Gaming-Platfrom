@@ -216,4 +216,29 @@ public class ConnectFourGameTest {
         boolean actualWinCondition = game.checkWin();
         assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true and it was: " + actualWinCondition);
     }
+
+    @Test
+    void testCheckWinWhenBoardIsEmptyReturnsFalse() {
+        ConnectFourGame game = new ConnectFourGame();
+        boolean expectedWinCondition = false;
+        boolean actualWinCondition = game.checkWin();
+
+        assertEquals(expectedWinCondition, actualWinCondition, "It is an empty board, thus the win condition should be false.");
+    }
+
+    @Test
+    void testCheckWinWhenBoardHasNoWinsReturnsFalse() {
+        ConnectFourGame game = new ConnectFourGame();
+
+        // adding pieces to the board
+        game.makeMove(0); //x
+        game.makeMove(1); //o
+        game.makeMove(1); //x
+        game.makeMove(2); //o
+        game.makeMove(2); //x
+
+        boolean expectedWinCondition = false;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be false.");
+    }
 }
