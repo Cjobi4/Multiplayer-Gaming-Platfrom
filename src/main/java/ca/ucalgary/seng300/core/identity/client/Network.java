@@ -545,6 +545,7 @@ public class Network extends Thread {
     // MATCH RECORD
 
     /** Request to get the game records of a user
+     *  Pass in username and all game records including the player will be returned in a List<MatchRecord>
      *
      * @param username
      * @return
@@ -569,22 +570,25 @@ public class Network extends Thread {
             if (response.equals("0") || response.equals("1")) {
                 receiving = false;
             } else {
+
+                // data received as gametype^p1Username^p2Username^winnerName^date
+
                 String[] parts = response.split("\\^");
 
-                int playerOneID = Integer.parseInt((parts[0]));
-                int playerTwoID = Integer.parseInt((parts[1]));
                 GameType gameType;
 
-                if (parts[2].equals("TICTACTOE")) {
+                if (parts[0].equals("ttt")) {
                     gameType = GameType.TICTACTOE;
                 } else {
                     gameType = GameType.CONNECT4;
                 }
 
-                int winnerID = Integer.parseInt(parts[3]);
+                String playerOne = parts[1];
+                String playerTwo = parts[2];
+                String winner = parts[3];
                 String date = parts[4];
 
-                records.add(new MatchRecord(String.valueOf(playerOneID), String.valueOf(playerTwoID), gameType, String.valueOf(winnerID), date));
+                records.add(new MatchRecord(playerOne, playerTwo, gameType, winner, date));
             }
         }
         if (response.equals("0")) {
