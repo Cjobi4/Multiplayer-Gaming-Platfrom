@@ -33,8 +33,12 @@
                <children>
                   <AnchorPane prefHeight="395.0" prefWidth="800.0" style="-fx-background-color: #F9EDE1;">
                      <children>
+                        <FlowPane layoutX="190.0" layoutY="14.0" prefHeight="360.0" prefWidth="420.0" style="-fx-background-color: #b3937f;">
+                           <children>
+                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" />
+                           </children>
+                        </FlowPane>
                         <Button fx:id="gameOverButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onGameOverButtonClick" prefHeight="63.0" prefWidth="80.0" text="Swap to Game Over Screen (Placeholder button)" />
-                        <FlowPane layoutX="190.0" layoutY="14.0" prefHeight="360.0" prefWidth="420.0" style="-fx-background-color: #b3937f;" />
                      </children>
                   </AnchorPane>
                </children>
