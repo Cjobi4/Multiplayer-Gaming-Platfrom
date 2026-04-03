@@ -97,6 +97,8 @@ public class TTTgameController {
 
             // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
 
+            ChatRegistry.getInstance().clearChat();
+
         } catch (IOException e) {
             System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
         }
