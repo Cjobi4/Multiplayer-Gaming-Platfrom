@@ -47,7 +47,6 @@
                                         <Button fx:id="ttt22" mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="120.0" prefWidth="120.0" style="-fx-background-color: #fcc0c4;" styleClass="TTT-Button" />
                                     </children>
                                 </FlowPane>
-                                <Button fx:id="gameOverButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onGameOverButtonClick" prefHeight="13.0" prefWidth="126.0" text="Swap to Game Over Screen (Placeholder button)" />
                                 <Text fx:id="turnDisplay" fill="#866b59" layoutX="564.0" layoutY="200.0" rotate="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Your turn!!" wrappingWidth="126.40000000000009">
                                     <font>
                                         <Font name="Dubai Medium" size="23.0" />
