@@ -321,15 +321,19 @@ public class Network extends Thread {
 
     // LOGIN
 
-    /** sends login request to the server
-     *  returns True if successful login
+    /**
+     *  Request for logging in
+     *
+     *  If registration was successful, return 1
+     *  If registration fails due to incorrect credentials (invalid pass length or username contains ` or ^) return 2
+     *  If other (server failure) return 3
      *
      * @param username
      * @param pwd
      * @return
      * @throws Exception
      */
-    public boolean login(String username, String pwd) throws Exception {
+    public int login(String username, String pwd) throws Exception {
 
         // send description byte
         socket.getOutputStream().write(LOGIN);
@@ -339,7 +343,7 @@ public class Network extends Thread {
         sendRequestParameter(pwd);
 
         // interpret whether the login attempt was successful or not
-        return readResponseString().equals("1");
+        return socket.getInputStream().read();
     }
 
     public boolean logout() throws Exception {
