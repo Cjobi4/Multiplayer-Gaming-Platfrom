@@ -188,7 +188,7 @@ public class Session extends Thread
 
                 //check to see if the password meets the password requirements, and see if the username has restricted special characters
                 if (newPassword.length() < 8 || newPassword.length() > 18
-                        || !newUsername.contains("`") || !newUsername.contains("^"))
+                        || newUsername.contains("`") || newUsername.contains("^"))
                 {
                     //if it doesn't pass don't make an account
                     client.getOutputStream().write(2);
@@ -229,7 +229,7 @@ public class Session extends Thread
 
                 //check to see if the password meets the password requirements, and see if the username has restricted special characters
                 if (passwordInput.length() < 8 || passwordInput.length() > 18
-                        || !usernameInput.contains("`") || !usernameInput.contains("^"))
+                        || usernameInput.contains("`") || usernameInput.contains("^"))
                 {
                     //if it doesn't pass don't make an account
                     client.getOutputStream().write(0);

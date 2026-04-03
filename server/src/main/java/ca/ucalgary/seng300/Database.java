@@ -89,7 +89,7 @@ public class Database
             if (rs.getInt(1) == 0)
             {
                 //create the hashed password
-                String hashedPassword = hash("password", "password");
+                String hashedPassword = hash("password", "admin");
 
                 //must use prepared statement and not statement bc special characters in hash will disrupt command
                 PreparedStatement pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(username, password) VALUES(?, ?)");
@@ -97,9 +97,16 @@ public class Database
                 pstmt.setString(2, hashedPassword);
                 pstmt.executeUpdate();
 
+                //repeat for second test account
+                hashedPassword = hash("password", "test");
+                pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(username, password) VALUES(?, ?)");
+                pstmt.setString(1, "test");
+                pstmt.setString(2, hashedPassword);
+                pstmt.executeUpdate();
+
                 //add in a sample gameInfo
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^gameURL^YES)");
+                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^TTT^YES)");
+                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^C4^YES)");
                 stmt.execute("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(admin, 999, 999, 999, 999, 999, 999)");
                 stmt.execute("INSERT INTO matchRecord(gameid, p1Username, p2Username, gametype, winnerName, date) VALUES(gameid, admin, test, Tic-Tac-Toe, admin, date)");
             }
@@ -280,7 +287,7 @@ public class Database
             rs.next();
 
             //return the winrate
-            return rs.getInt(game + "Wins") / rs.getInt(game + "MatchesPlayed");
+            return rs.getInt(game + "Wins") / rs.getInt(game + "MatchesPlayed") * 100;
         } catch (SQLException e)
         {
             return -1;
