@@ -178,15 +178,23 @@ public class ConnectFourGameTest {
         boolean expectedWinCondition = true;
         boolean actualWinCondition = game.checkWin();
         assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true and it was: " + actualWinCondition);
-
     }
 
     @Test
     void testHorizontal1stRowWinsCorrect(){
-        // 1. arrange
+        ConnectFourGame game = new ConnectFourGame();
 
-        // 2. act
+        game.makeMove(0); //x
+        game.makeMove(1); //o
+        game.makeMove(1); //x
+        game.makeMove(2); //o
+        game.makeMove(2); //x
+        game.makeMove(3); //o
+        game.makeMove(3); // x
+        game.makeMove(4); // o --> last piece to create 4 in a row horizontally
 
-        // 3. assertions
+        boolean expectedWinCondition = true;
+        boolean actualWinCondition = game.checkWin();
+        assertEquals(expectedWinCondition, actualWinCondition, "The win condition should be true and it was: " + actualWinCondition);
     }
 }
