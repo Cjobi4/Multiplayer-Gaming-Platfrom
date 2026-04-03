@@ -1,6 +1,4 @@
 target/
-!**/src/main/**/target/
-!**/src/test/**/target/
 
 ### Maven ###
 .m2/
@@ -30,6 +28,21 @@ Desktop.ini
 *.class
 *.jar
 
+### JVM ###
+*.hprof
+hs_err_pid*.log
+
 ### Database ###
 *.sqlite
 *.db
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+### Editor temp ###
+*.swp
+*.swo
+*~
+
+### Environment ###
+.env

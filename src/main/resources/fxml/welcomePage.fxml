@@ -14,7 +14,7 @@
          <children>
             <ImageView fitHeight="311.0" fitWidth="517.0" layoutX="47.0" layoutY="37.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/Welcome%20page%20image.png" />
+                  <Image url="@../images/welcome-page-image.png" />
                </image>
             </ImageView>
             <Button fx:id="welcomeButton" layoutX="207.0" layoutY="211.0" mnemonicParsing="false" onAction="#onWelcomeButtonClick" prefHeight="25.0" prefWidth="115.0" styleClass="basic-button" text="Login" textFill="#866b59">

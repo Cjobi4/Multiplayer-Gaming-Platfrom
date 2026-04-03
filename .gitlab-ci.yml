@@ -1,4 +1,4 @@
-image: maven:3.9-eclipse-temurin-25
+image: maven:3.9.12-eclipse-temurin-25
 
 stages:
   - build
@@ -8,8 +8,19 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   MAVEN_CLI_OPTS: "--batch-mode --errors --show-version"
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
 cache:
-  key: maven-${CI_COMMIT_REF_SLUG}
+  key:
+    files:
+      - pom.xml
+      - server/pom.xml
+    prefix: maven-${CI_COMMIT_REF_SLUG}
   paths:
     - .m2/repository/
 
@@ -17,22 +28,32 @@ cache:
 build-client:
   stage: build
   script:
-    - mvn $MAVEN_CLI_OPTS clean compile
+    - ./mvnw $MAVEN_CLI_OPTS clean compile
 
 # Server compilation passes
 build-server:
   stage: build
   script:
-    - cd server && mvn $MAVEN_CLI_OPTS clean compile
+    - ./mvnw -f server/pom.xml $MAVEN_CLI_OPTS clean compile
 
 # Client tests pass
 test-client:
   stage: test
+  needs: ["build-client"]
   script:
-    - mvn $MAVEN_CLI_OPTS test
+    - ./mvnw $MAVEN_CLI_OPTS test
+  artifacts:
+    when: always
+    reports:
+      junit: target/surefire-reports/*.xml
 
 # Server tests pass
 test-server:
   stage: test
+  needs: ["build-server"]
   script:
-    - cd server && mvn $MAVEN_CLI_OPTS test
+    - ./mvnw -f server/pom.xml $MAVEN_CLI_OPTS test
+  artifacts:
+    when: always
+    reports:
+      junit: server/target/surefire-reports/*.xml
