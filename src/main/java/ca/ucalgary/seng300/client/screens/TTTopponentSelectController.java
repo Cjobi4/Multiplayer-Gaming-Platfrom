@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -40,10 +41,21 @@ public class TTTopponentSelectController implements Initializable {
 
     //List<Player> playerList = PlayerRegistry.getInstance().listAll();
 
-    ObservableList<Player> observableData = FXCollections.observableList(playerList);
+    ObservableList<LeaderboardEntry> observableData = FXCollections.observableArrayList();
 
     @FXML
     protected void onOpponentSelectedButtonClick(ActionEvent event) {
+        LeaderboardEntry selectedOpponent = opponentList.getSelectionModel().getSelectedItem();
+
+        if(selectedOpponent == null){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No opponent selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a opponent to play");
+            alert.showAndWait();
+            return;
+        }
+
         try {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TTTgamePage.fxml"));
