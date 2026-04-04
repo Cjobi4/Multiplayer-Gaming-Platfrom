@@ -99,6 +99,8 @@ public class TicTacToeBoard {
                 }
             }
         }
+        //Potential board string example:
+        //       x,o, , x,x, ,o,o,o
         return gameSB.toString();
         //returns the final string represntation of the board
     }

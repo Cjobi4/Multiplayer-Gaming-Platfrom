@@ -19,7 +19,7 @@ public class GameRegistry {
     private static GameRegistry instance;
 
     // the list of games
-    private List<Game> games;
+    private final List<Game> games;
 
     // constructor
     private GameRegistry()
