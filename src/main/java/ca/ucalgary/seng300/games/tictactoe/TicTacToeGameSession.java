@@ -18,6 +18,8 @@ public class TicTacToeGameSession extends Thread{
     //this stores the tic tac toe game logic that the session is using
     private TicTacToeGame game;
 
+    //bool tracker for session activity (still active or not()
+    private boolean activeSession;
 
     //this constructor will create a new serverside tic tac toe game session
     public TicTacToeGameSession(Object player1, Object player2){
@@ -52,6 +54,13 @@ public class TicTacToeGameSession extends Thread{
 
         //return the game
         return game;
+    }
+
+    //this is my getter for returning session activity
+    private boolean isActiveSession() {
+
+        //return the session activity
+        return activeSession;
     }
 
     public void sendBoardState() {
