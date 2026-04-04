@@ -101,6 +101,20 @@ public class TicTacToeGameSession extends Thread{
         }
     }
 
+    //NEW FUNCTION
+    //helper function for sending updates of the game
+    public void sendGameUpdate() {
+
+        //send the current board state
+        sendBoardState();
+
+        //send the current turn
+        sendCurrentTurn();
+
+        //send the current game state
+        sendGameState();
+    }
+
     //not complete, will be finished in later ticket
     @Override
     public void run() {
