@@ -63,6 +63,7 @@ public class TicTacToeGameSession extends Thread{
         return activeSession;
     }
 
+    //function for sending the board state
     public void sendBoardState() {
 
         //get the board state in a string
@@ -71,7 +72,7 @@ public class TicTacToeGameSession extends Thread{
         System.out.println("send the board state to both players!!!: " + boardState);
 
     }
-
+    //function for sending the current turn
     public void sendCurrentTurn() {
         //get the current turn in a char
         char getCurrentPlayer = game.getCurrentPlayer();
@@ -79,7 +80,7 @@ public class TicTacToeGameSession extends Thread{
         System.out.println("send the current turn to both players!!!: " + getCurrentPlayer);
     }
 
-
+    //function for sending the game state
     public void sendGameState() {
         //get the current game state
         String state = game.getGameState().name();
@@ -87,6 +88,7 @@ public class TicTacToeGameSession extends Thread{
         System.out.println("send the game state to both players!!!: " + state);
     }
 
+    //function for sending the game result
     public void sendGameResult() {
         //if a player has won, send a win message
         if (game.getGameState() == GameState.PLAYER_WIN) {
