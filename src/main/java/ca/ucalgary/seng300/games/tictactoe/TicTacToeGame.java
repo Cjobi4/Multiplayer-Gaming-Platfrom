@@ -229,4 +229,11 @@ public class TicTacToeGame {
     public void setBoard(TicTacToeBoard newBoard){
         this.board = newBoard;
     }
+
+    /*
+    Testing function, to manipulate game state
+     */
+    public void setGameState(GameState newState){
+        this.gameState = newState;
+    }
 }

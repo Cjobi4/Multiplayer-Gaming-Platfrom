@@ -8,7 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TicTacToeGameTest {
-    // smaller personal note,
+    // smaller somewhat unimportant note, but very stringent class
+    // relies extremely heavily on GameState, with no explicit setter though this isn't inherently an issue
 
     /*
     Test that upon initialization all the default values are correct
@@ -27,7 +28,7 @@ public class TicTacToeGameTest {
     }
 
     /*
-    Test that the move validation works as intended
+    Test that the move validation works as intended on bad moves
      */
     @Test
     void makeMoveTest(){
@@ -41,12 +42,31 @@ public class TicTacToeGameTest {
 
         // testing bounds and character checker
         Assertions.assertFalse(testGame.makeMove(5,4,'X'));
+        Assertions.assertFalse(testGame.makeMove(-1,-1,'O'));
         Assertions.assertFalse(testGame.makeMove(1,1, 'E'));
 
-        // theoretically valid move, because empty space in board
+        // valid move, because empty space in board
         Assertions.assertTrue(testGame.makeMove(1,1,'O'));
-        // should be false because trying to place in a non-empty space
+        Assertions.assertEquals('O', testGame.getBoard().getCellInfo(1,1)); // check the proper character was placed
+        // should be false because trying to place in a occupied space
         Assertions.assertFalse(testGame.makeMove(1,1,'X'));
+    }
+
+
+    /*
+    makeMove() depends on game state to allow/reject moves, regardless of validity
+     */
+    @Test
+    void testGameStateBlockers(){
+        TicTacToeGame testGame = new TicTacToeGame();
+
+        testGame.setGameState(GameState.PLAYER_WIN); // simulate a player winning
+        Assertions.assertFalse(testGame.makeMove(0,0,'X'));
+        // even though theoretically valid move, because it believes a player has won it rejects the move
+
+        testGame.setGameState(GameState.PLAYER_DRAW); // draw
+        Assertions.assertFalse(testGame.makeMove(0,0,'X'));
+        // same as before
     }
 
     /*
@@ -78,14 +98,49 @@ public class TicTacToeGameTest {
     @Test
     void testWinHorizontalConditions(){
         TicTacToeGame testGame = new TicTacToeGame();
-
         TicTacToeBoard testBoard = new TicTacToeBoard();
-        testBoard.fromString("");
+
+        testBoard.fromString("X,X,X, , , , , , ");
+        testGame.setBoard(testBoard);
+        Assertions.assertTrue(testGame.validateWin('X'));
+        Assertions.assertFalse(testGame.validateWin('O')); // worth testing that 'O' doesn't win
+        // horizontal win in row 1
+
+        testBoard.fromString(" , , ,X,X,X, , , ");
+        testGame.setBoard(testBoard);
+        Assertions.assertTrue(testGame.validateWin('X'));
+        Assertions.assertFalse(testGame.validateWin('O'));
+        // horizontal win in row 2
+
+        testBoard.fromString(" , , , , , ,X,X,X");
+        testGame.setBoard(testBoard);
+        Assertions.assertTrue(testGame.validateWin('X'));
+        Assertions.assertFalse(testGame.validateWin('O'));
+        // horizontal win in row 3
     }
 
     @Test
     void testWinVertical(){
+        TicTacToeGame testGame = new TicTacToeGame();
+        TicTacToeBoard testBoard = new TicTacToeBoard();
 
+        testBoard.fromString("X, , ,X, , ,X, , ");
+        testGame.setBoard(testBoard);
+        Assertions.assertTrue(testGame.validateWin('X'));
+        Assertions.assertFalse(testGame.validateWin('O')); // worth testing that 'O' doesn't win
+        // vertical win in column 1
+
+        testBoard.fromString(" ,X, , ,X, , ,X, ");
+        testGame.setBoard(testBoard);
+        Assertions.assertTrue(testGame.validateWin('X'));
+        Assertions.assertFalse(testGame.validateWin('O'));
+        // vertical win in column 2
+
+        testBoard.fromString(" , ,X, , ,X, , ,X");
+        testGame.setBoard(testBoard);
+        Assertions.assertTrue(testGame.validateWin('X'));
+        Assertions.assertFalse(testGame.validateWin('O'));
+        // vertical win in column 3
     }
 
     @Test
