@@ -142,7 +142,26 @@ public class TTTopponentSelectController implements Initializable {
 
                 return filteredLeaderboard;
             }
-        }
+        };
+
+        task.setOnSucceeded(e -> {
+            observableData.addAll(task.getValue());
+            opponentSelectedButton.setDisable(false);
+        });
+
+        task.setOnFailed(e -> {
+            opponentSelectedButton.setDisable(false);
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Leaderboard Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Could not load TTTLeaderboard");
+            alert.showAndWait();
+
+            if (task.getException() != null) {
+                task.getException().printStackTrace();
+            }
+        });
 
 
     }
