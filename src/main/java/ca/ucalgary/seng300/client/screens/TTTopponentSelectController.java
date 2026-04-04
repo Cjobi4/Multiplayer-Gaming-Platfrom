@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Player;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,11 +27,18 @@ public class TTTopponentSelectController implements Initializable {
     public Button backButton;
 
     @FXML
-    public TableView<Player> opponentList;
-    @FXML
-    public TableColumn<Player, String> playerColumn;
+    public TableView<LeaderboardEntry> opponentList;
 
-    List<Player> playerList = PlayerRegistry.getInstance().listAll();
+    @FXML
+    public TableColumn<LeaderboardEntry, String> playerColumn;
+
+    @FXML
+    public TableColumn<LeaderboardEntry, String> winsColumn;
+
+    @FXML
+    public TableColumn<LeaderboardEntry, String> matchesColumn;
+
+    //List<Player> playerList = PlayerRegistry.getInstance().listAll();
 
     ObservableList<Player> observableData = FXCollections.observableList(playerList);
 
