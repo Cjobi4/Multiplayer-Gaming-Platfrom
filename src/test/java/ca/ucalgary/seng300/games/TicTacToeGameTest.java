@@ -86,7 +86,7 @@ public class TicTacToeGameTest {
 
         testBoard.fromString("O,X, ,X,O,O,X,O,X"); // tie game, no winner
         testGame.setBoard(testBoard);
-        testGame.makeMove(0,2,'O'); // once again, need to make the winning move
+        testGame.makeMove(0,2,'O'); // making the draw move
         Assertions.assertTrue(testGame.checkGameTie());
     }
 
@@ -145,6 +145,36 @@ public class TicTacToeGameTest {
 
     @Test
     void testWinDiagonal(){
+        TicTacToeGame testGame = new TicTacToeGame();
+        TicTacToeBoard testBoard = new TicTacToeBoard();
 
+        testBoard.fromString("X, , , ,X, , , ,X");
+        testGame.setBoard(testBoard);
+        Assertions.assertTrue(testGame.validateWin('X'));
+        Assertions.assertFalse(testGame.validateWin('O')); // worth testing that 'O' doesn't win
+        // top left to bottom right win
+
+        testBoard.fromString(" , ,X, ,X, ,X, , ");
+        testGame.setBoard(testBoard);
+        Assertions.assertTrue(testGame.validateWin('X'));
+        Assertions.assertFalse(testGame.validateWin('O'));
+        // bottom left to top right win
+    }
+
+    /*
+    Testing when making a move results in a win
+     */
+    @Test
+    void testWinningGame(){
+        TicTacToeGame testGame = new TicTacToeGame();
+        TicTacToeBoard testBoard = new TicTacToeBoard();
+
+        // X is one move away from winning
+        testBoard.fromString("X,X, , , , , , , ");
+        testGame.setBoard(testBoard);
+        testGame.makeMove(0,2,'X'); // make the winning move
+
+        Assertions.assertEquals('X', testGame.getWinner()); // winner is X
+        Assertions.assertEquals(GameState.PLAYER_WIN,testGame.getGameState()); // proper game state
     }
 }
