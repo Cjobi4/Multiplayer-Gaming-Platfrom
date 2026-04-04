@@ -134,9 +134,9 @@ public class TTTopponentSelectController implements Initializable {
                 List<LeaderboardEntry> filteredLeaderboard = new ArrayList<>();
 
                 for(LeaderboardEntry entry : leaderboard){
-//                    if(playerOnline(entry.getUsername())){
-//                        filteredLeaderboard.add(entry);
-//                    }
+                    if(playerOnline(entry.getUsername())){
+                        filteredLeaderboard.add(entry);
+                    }
 
                 }
 
@@ -163,6 +163,12 @@ public class TTTopponentSelectController implements Initializable {
             }
         });
 
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
 
+    private boolean playerOnline(String username){
+        return PlayerRegistry.getInstance().findByName(username) != null;
     }
 }
