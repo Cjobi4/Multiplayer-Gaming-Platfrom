@@ -115,6 +115,20 @@ public class TicTacToeGameSession extends Thread{
         sendGameState();
     }
 
+    //this is my function for handling the situation when the game is over
+    public void gameOverHandler() {
+
+        //send the game results out
+        sendGameResult();
+
+        //set the active session to false
+        activeSession = false;
+
+        //interrupt the current thread so the game session will end
+        Thread.currentThread().interrupt();
+    }
+
+
     //not complete, will be finished in later ticket
     @Override
     public void run() {
