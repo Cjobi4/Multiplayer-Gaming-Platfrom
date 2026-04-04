@@ -67,9 +67,19 @@ public class TicTacToeGameSession extends Thread{
     }
 
 
-    public void sendGameState() throws Exception {
+    public void sendGameState() {
         String state = game.getGameState().name();
+        //TODO add a real i.e > playerOneSession.addRequest(12, new String[]{boardState}); communication aspect
+        System.out.println("send the game state to both players!!!: " + state);
+    }
 
+    public void sendGameResult() {
+        if (game.getGameState() == GameState.PLAYER_WIN) {
+            //TODO add a real i.e > playerOneSession.addRequest(12, new String[]{boardState}); communication aspect
+            System.out.println("send the winner to both players!!!: " + game.getWinner());
+        } else if (game.getGameState() == GameState.PLAYER_DRAW) {
+            System.out.println("send the draw to both players!!!: " + game.getWinner());
+        }
     }
 
     //not complete, will be finished in later ticket
