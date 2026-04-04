@@ -58,11 +58,13 @@ public class Network extends Thread {
     public static final byte KICKED_FROM_QUEUE = 13;
     public static final byte MATCH_ACCEPTED = 14;
     public static final byte MATCH_REJECTED = 15;
+    public static final byte RESPOND_QUEUE = 16;
 
     // to be added/modified later
+    public static final byte SEND_MOVE_TTT = 125;
     public static final byte send_chat = 126;
     public static final byte receive_chat = 127;
-    public static final byte SEND_MOVE_TTT = 12;
+
     /*
         HOW TO USE THE NETWORK CLASS
 
@@ -78,13 +80,18 @@ public class Network extends Thread {
         Here are some examples on how you can request from the server:
 
         -- CREATE ACCOUNT --
-                boolean success = (Boolean) Network.getInstance().queueRequest(Network.CREATE_ACCOUNT, new String[]{"username", "password"}).get();
+
+                Returns: 0 = username taken, 1 = success, 2 = invalid input, 3 = other failure
+                int result = (Integer) Network.getInstance().queueRequest(Network.CREATE_ACCOUNT, new String[]{"username", "password"}).get();
 
         -- LOGIN --
-                boolean loggedIn = (Boolean) Network.getInstance().queueRequest(Network.LOGIN, new String[]{"username", "password"}).get();
+
+                Returns: 1 = success, 0 = failure
+                int result = (Integer) Network.getInstance().queueRequest(Network.LOGIN, new String[]{"username", "password"}).get();
 
         -- LOGOUT --
-                boolean loggedOut = (Boolean) Network.getInstance().queueRequest(Network.LOGOUT, null).get();
+
+                Network.getInstance().queueRequest(Network.LOGOUT, null);
 
         -- GET GAME LIST - has no return value, just populates GameRegistry --
 
@@ -104,6 +111,7 @@ public class Network extends Thread {
                 Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"total"});
 
         -- GET ONLINE PLAYERS — no return value, populates PlayerRegistry --
+
                 Network.getInstance().queueRequest(Network.GET_ONLINE_PLAYERS, null).get();
 
         -- SEND TTT MOVE --
@@ -124,9 +132,15 @@ public class Network extends Thread {
           Join C4 Queue:
                 boolean joinedC4  = (Boolean) Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get();
 
-        -- LEAVING QUEUE --
-                boolean leftTTT = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_TTT_QUEUE, null).get();
-                boolean leftC4  = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_C4_QUEUE, null).get();
+        -- RESPONDING TO QUEUE --
+
+          Accept Queue
+                int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"1"}).get();
+
+          Decline Queue
+                int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"0"}).get();
+
+
     */
 
     /** Constructor
@@ -303,6 +317,10 @@ public class Network extends Thread {
             /*case LEAVE_C4_QUEUE:
                 req.future.complete(leaveQueue(GameType.CONNECT4));
                 break;*/
+            case RESPOND_QUEUE:
+                boolean accept = parameters[0].equals("1");
+                req.future.complete(respondQueue(accept));
+                break;
 
             case GET_ONLINE_PLAYERS:
                 getOnlinePlayers();
@@ -477,7 +495,6 @@ public class Network extends Thread {
         return null;
     }
 
-
     /**
      * Request for leaving queue
      * @param game
@@ -491,6 +508,49 @@ public class Network extends Thread {
             socket.getOutputStream().write(LEAVE_C4_QUEUE);
         }
         int leaveSuccessful = socket.getInputStream().read();
+    }
+
+    /**
+     * To respond to a queue pop
+     * Pass in true to accept, false to decline
+     * Returns
+     *      13 = kicked from queue (player declined queue)
+     *      14 = match accepted
+     *      15 = match rejected (opponent declined queue)
+     *      -1 default
+     *
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    public int respondQueue(boolean response) throws Exception {
+        if (response) {
+            // tell server match accepted
+            socket.getOutputStream().write(1);
+
+            // read server response
+            int desc = socket.getInputStream().read();
+            System.out.print("Server returned: " + desc);
+
+            // other player accepts, return 14
+            if (desc == MATCH_ACCEPTED) {
+                return MATCH_ACCEPTED;
+            }
+            // other player declined match 15
+            else if (desc == MATCH_REJECTED) {
+                return MATCH_REJECTED;
+            }
+        }
+        else {
+            socket.getOutputStream().write(0);
+            // receive 13 if player declines and is removed from queue
+            int exitQueue = socket.getInputStream().read();
+
+            if (exitQueue == KICKED_FROM_QUEUE) {
+                return KICKED_FROM_QUEUE;
+            }
+        }
+        return -1;
     }
 
     public void getOnlinePlayers() throws Exception {
