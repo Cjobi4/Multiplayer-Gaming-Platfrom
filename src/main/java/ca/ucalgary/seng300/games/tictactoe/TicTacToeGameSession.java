@@ -2,6 +2,8 @@ package ca.ucalgary.seng300.games.tictactoe;
 
 import ca.ucalgary.seng300.core.identity.client.Session;
 
+import java.io.IOException;
+
 //this class represents the server-side tic tac toe game session (extending thread)
 public class TicTacToeGameSession extends Thread{
 

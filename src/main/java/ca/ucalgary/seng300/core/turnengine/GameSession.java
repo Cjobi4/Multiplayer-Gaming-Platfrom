@@ -10,7 +10,7 @@ package ca.ucalgary.seng300.core.turnengine;
  * <p>TODO: Implement session lifecycle (start, submitMove, endTurn,
  * endGame) and integrate with MoveValidator from shared interfaces.</p>
  */
-public class GameSession {
+public class  GameSession {
     private String sessionId;
     private String playerId;
     private String gameId;
