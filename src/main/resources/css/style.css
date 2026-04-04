@@ -24,9 +24,22 @@
     -fx-border-color: #F9EDE1;
     -fx-border-width: 4px;
     -fx-background-radius: 25;
+    -fx-font: "Dubai Medium";
+    -fx-font-size: 47;
+    -fx-text-fill: #866B59;
+    -fx-font-weight: bold;
 }
 
 .TTT-Button:pressed {
     -fx-background-color: #7d393e;
     -fx-translate-y: 2;
+}
+
+.scroll-pane {
+    -fx-background: #FCE0D2;
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
 }
