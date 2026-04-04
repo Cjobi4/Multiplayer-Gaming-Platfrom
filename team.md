@@ -1,8 +1,11 @@
 # Team Roster
 
 Group 8 Online Multiplayer Game Platform
+
 University of Calgary
+
 SENG 300 Tutorial T08
+
 Winter 2026
 
 ## Sub-Teams

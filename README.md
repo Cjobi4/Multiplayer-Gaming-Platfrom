@@ -1,8 +1,11 @@
 # Online Multiplayer Game Platform
 
 Group 8 Online Multiplayer Game Platform
+
 University of Calgary
+
 SENG 300 Tutorial T08
+
 Winter 2026
 
 A turn-based online multiplayer game platform (Tic-Tac-Toe and Connect Four) built with JavaFX and a socket-based server.
