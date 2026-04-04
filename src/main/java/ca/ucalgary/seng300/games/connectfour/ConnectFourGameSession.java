@@ -1,14 +1,17 @@
+/*
 package ca.ucalgary.seng300.games.connectfour;
 
 import ca.ucalgary.seng300.core.identity.client.Session;
 
+*/
 /**
  * The Client-side controller for Connect Four.
  * This class handles the communication between the UI and the Game Logic.
  * @author Hoang Khoi Nguyen
  * @email hoangkhoi.nguyen@ucalgary.ca
  * @version 3.0 04/02/2026
- */
+ *//*
+
 
 public class ConnectFourGameSession extends Thread {
 
@@ -17,21 +20,25 @@ public class ConnectFourGameSession extends Thread {
     private ConnectFourGame game;
     private boolean isRunning = true;
 
-    /**
+    */
+/**
      * Constructor for the server-side game session.
      * @param p1 The Session object for the first player.
      * @param p2 The Session object for the second player.
-     */
+     *//*
+
     public ConnectFourGameSession(Session p1, Session p2) {
         this.playerOne = p1;
         this.playerTwo = p2;
         this.game = new ConnectFourGame(); // Initializes the board and rules
     }
 
-    /**
+    */
+/**
      * Returns the Session of the player whose turn it currently is.
      * @return The active player's Session object.
-     */
+     *//*
+
     public Session getCurrentPlayerSession() {
         return (game.getCurrentPlayer() == 'X') ? playerOne : playerTwo;
     }
@@ -80,9 +87,11 @@ public class ConnectFourGameSession extends Thread {
         }
     }
 
-    /**
+    */
+/**
      * Sends the current board state string to both players (Type 12).
-     */
+     *//*
+
     private void syncBoard() {
         String boardData = game.getBoard().toString();
         try {
@@ -93,9 +102,11 @@ public class ConnectFourGameSession extends Thread {
         }
     }
 
-    /**
+    */
+/**
      * Finalizes the match, notifies players, and records to the database.
-     */
+     *//*
+
     private void handleGameOver() {
         try {
             String resultMsg = (game.getGameState() == GameState.PLAYER_DRAW) ?
@@ -120,4 +131,4 @@ public class ConnectFourGameSession extends Thread {
             e.printStackTrace();
         }
     }
-}
+}*/
