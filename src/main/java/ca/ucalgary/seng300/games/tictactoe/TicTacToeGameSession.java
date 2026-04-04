@@ -128,6 +128,43 @@ public class TicTacToeGameSession extends Thread{
         Thread.currentThread().interrupt();
     }
 
+    //TODO PLATFORM TEAM DATABASE HELP ME
+    //this function is for processing a move that comes from the db
+    //this can be called once incoming move parsing is finished (next function)
+    public boolean moveProcessor(int row, int col, char playerSymbol) {
+
+        //valiation to make sure a session is active
+        if (!activeSession) {
+
+            //if the session is inactive, return false immediatley
+            return false;
+        }
+
+        //since the session is active,
+        //apply the move using the tic tac toe backend logic (makeMove() function!)
+        boolean moveSuccessCheck = game.makeMove(row, col, playerSymbol);
+
+        //if the move failed return false
+        if (!moveSuccessCheck) {
+
+            //return false if the move has faield
+            return false;
+        }
+
+        //since the move was a success,
+        //send a game update to both players
+        sendGameUpdate();
+
+        //if the game ends (so a win or a tie/draw)
+        if (game.getGameState() == GameState.PLAYER_WIN || game.getGameState() == GameState.PLAYER_DRAW) {
+
+            //handle game over situations
+            gameOverHandler();
+        }
+
+        //return true bc move has been completed/processed successfully
+        return true;
+    }
 
     //not complete, will be finished in later ticket
     @Override
