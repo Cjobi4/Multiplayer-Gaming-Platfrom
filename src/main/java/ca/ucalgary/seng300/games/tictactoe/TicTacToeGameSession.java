@@ -166,6 +166,15 @@ public class TicTacToeGameSession extends Thread{
         return true;
     }
 
+    //TODO actually build this placeholder function with real request/session parsing logic ( i need help w that with the databse integration session stuff)
+    //placeholder function to represent where incoming move resuests from platform core team would be handeled
+    public void recieveMoveHandler() {
+        //expected process
+        //recieve a move from an active player (move/request)
+        //parse the row, colmn, and player identity
+        //call moveSuccessCheck(row, col, playerSymbol)
+    }
+
     //not complete, will be finished in later ticket
     @Override
     public void run() {
