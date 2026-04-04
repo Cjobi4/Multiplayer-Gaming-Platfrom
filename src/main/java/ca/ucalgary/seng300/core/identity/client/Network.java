@@ -54,12 +54,15 @@ public class Network extends Thread {
     public static final byte JOIN_C4_QUEUE = 9;
     public static final byte LEAVE_C4_QUEUE = 10;
     public static final byte GET_ONLINE_PLAYERS = 11;
-    public static final byte SEND_MOVE_TTT = 12;
+    public static final byte MATCH_FOUND = 12;
+    public static final byte KICKED_FROM_QUEUE = 13;
+    public static final byte MATCH_ACCEPTED = 14;
+    public static final byte MATCH_REJECTED = 15;
 
     // to be added/modified later
     public static final byte send_chat = 126;
     public static final byte receive_chat = 127;
-
+    public static final byte SEND_MOVE_TTT = 12;
     /*
         HOW TO USE THE NETWORK CLASS
 
@@ -267,7 +270,8 @@ public class Network extends Thread {
                 break;
 
             case LOGOUT:
-                req.future.complete(logout());
+                logout();
+                req.future.complete(null);
                 break;
 
             case GET_GAME_LIST:
@@ -288,17 +292,17 @@ public class Network extends Thread {
                 req.future.complete(joinQueue(GameType.TICTACTOE));
                 break;
 
-            case LEAVE_TTT_QUEUE:
+            /*case LEAVE_TTT_QUEUE:
                 req.future.complete(leaveQueue(GameType.TICTACTOE));
-                break;
+                break;*/
 
             case JOIN_C4_QUEUE:
                 req.future.complete(joinQueue(GameType.CONNECT4));
                 break;
 
-            case LEAVE_C4_QUEUE:
+            /*case LEAVE_C4_QUEUE:
                 req.future.complete(leaveQueue(GameType.CONNECT4));
-                break;
+                break;*/
 
             case GET_ONLINE_PLAYERS:
                 getOnlinePlayers();
@@ -325,8 +329,7 @@ public class Network extends Thread {
      *  Request for logging in
      *
      *  If registration was successful, return 1
-     *  If registration fails due to incorrect credentials (invalid pass length or username contains ` or ^) return 2
-     *  If other (server failure) return 3
+     *  If registration fails due (invalid input or credentials) return 0
      *
      * @param username
      * @param pwd
@@ -432,13 +435,15 @@ public class Network extends Thread {
         }
     }
 
-    /** Request for joining the queue
+    /**
+     * Request for joining the queue
+     * Returns the username of the opponent if queue is successful
      *
      * @param game pass in game type
      * @return
      * @throws Exception
      */
-    public boolean joinQueue(GameType game) throws Exception {
+    public String joinQueue(GameType game) throws Exception {
         if (game == GameType.TICTACTOE) {
             socket.getOutputStream().write(JOIN_TTT_QUEUE);
         }
@@ -446,24 +451,46 @@ public class Network extends Thread {
             socket.getOutputStream().write(JOIN_C4_QUEUE);
         }
 
-        return readResponseString().equals("1");
+        // send 1 if queue is joined, 0 if not
+        int joinedQueue = socket.getInputStream().read();
+        if (joinedQueue == 0) {
+            return null;
+        }
+
+        // wait 90s to receive a match
+        socket.setSoTimeout(90000);
+        try {
+            // receive 12 if match found
+            int desc = socket.getInputStream().read();
+            if (desc == MATCH_FOUND) {
+                // received receive username
+                return readResponseString();
+            }
+        } catch (SocketTimeoutException e) {
+            // 90 sec passed, no queue pop. tell server to leave queue
+            leaveQueue(game);
+            return null;
+        } finally {
+            // reset socket timeout for run loop
+            socket.setSoTimeout(3000);
+        }
+        return null;
     }
 
-    /** Request for leaving queue
-     *
-     * @param game pass in game type
-     * @return
+
+    /**
+     * Request for leaving queue
+     * @param game
      * @throws Exception
      */
-    public boolean leaveQueue(GameType game) throws Exception {
+    public void leaveQueue(GameType game) throws Exception {
         if (game == GameType.TICTACTOE) {
             socket.getOutputStream().write(LEAVE_TTT_QUEUE);
         }
         else if (game == GameType.CONNECT4) {
             socket.getOutputStream().write(LEAVE_C4_QUEUE);
         }
-
-        return readResponseString().equals("1");
+        int leaveSuccessful = socket.getInputStream().read();
     }
 
     public void getOnlinePlayers() throws Exception {
