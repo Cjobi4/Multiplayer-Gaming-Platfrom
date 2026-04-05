@@ -12,7 +12,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
+/**
+ * This test class focuses on testing the methods in the PlayerRegistry class
+ */
 public class PlayerRegistryTest {
     private PlayerRegistry registry;
 
@@ -96,5 +98,22 @@ public class PlayerRegistryTest {
         List<Player> actualPlayers = registry.listAll();
 
         assertEquals(expectedPlayers, actualPlayers, "Player list should be empty.");
+    }
+
+    @Test
+    void testUnregisterPlayerSuccessfully() {
+        // set the registry to three players
+        Player testPlayer = new Player("jane doe");
+        registry.register(testPlayer);
+        Player testPlayer2 = new Player("mark lee");
+        registry.register(testPlayer2);
+        Player testPlayer3 = new Player("john suh");
+        registry.register(testPlayer3);
+
+        registry.unregister(testPlayer); // removing the first player
+        List<Player> expectedPlayers = Arrays.asList(testPlayer2, testPlayer3);
+        List<Player> actualPlayers = registry.listAll();
+
+        assertEquals(expectedPlayers, actualPlayers, "Player list should be equal.");
     }
 }
