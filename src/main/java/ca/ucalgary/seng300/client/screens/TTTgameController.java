@@ -87,6 +87,7 @@ public class TTTgameController {
             Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
             stage.setScene(gameOverScene);
             stage.setTitle("Game Over"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
             // Create Match Record (Not sure where to get player info, will be needed to make a match record)
@@ -118,6 +119,7 @@ public class TTTgameController {
             Scene opponentScene = new Scene(opponentRoot, 800, 600);
             stage.setScene(opponentScene);
             stage.setTitle("Tic-Tac-Toe - Opponent Select"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {
