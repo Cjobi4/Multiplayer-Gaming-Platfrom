@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.core.identity.client;
 
-public class Session {
+import com.sun.net.httpserver.Request;
+
+public abstract class Session {
 
     private int currentUserID;
     private String username;
@@ -22,4 +24,8 @@ public class Session {
         return 0;
     }
 
+    public abstract void addRequest(Request req);
+
+    // overload used in Matchmaker class
+    public abstract void addRequest(int code, Object obj);
 }
