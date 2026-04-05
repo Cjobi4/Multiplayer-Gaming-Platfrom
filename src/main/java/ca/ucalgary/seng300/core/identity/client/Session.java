@@ -23,9 +23,4 @@ public abstract class Session {
     public int getUserID() {
         return 0;
     }
-
-    public abstract void addRequest(Request req);
-
-    // overload used in Matchmaker class
-    public abstract void addRequest(int code, Object obj);
 }
