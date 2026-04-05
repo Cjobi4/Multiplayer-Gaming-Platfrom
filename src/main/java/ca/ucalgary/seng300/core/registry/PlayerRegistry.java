@@ -33,6 +33,11 @@ public class PlayerRegistry {
         players.add(p);
     }
 
+    public void unregister(Player p)
+    {
+        players.remove(p);
+    }
+
 
     public Player findByName(String name)
     {

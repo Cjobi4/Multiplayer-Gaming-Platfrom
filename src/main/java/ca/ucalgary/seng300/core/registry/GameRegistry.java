@@ -13,7 +13,6 @@ import java.util.List;
  * Client/UI in the screens package.
  */
 public class GameRegistry {
-    // TODO: Implement game registry — placeholder for Platform Core
 
     // the game registry
     private static GameRegistry instance;
@@ -60,6 +59,19 @@ public class GameRegistry {
         for (Game g : games)
         {
             if (g.getId().equals(id))
+            {
+                return g;
+            }
+        }
+
+        return null;
+    }
+
+    public Game findByName(String name)
+    {
+        for (Game g : games)
+        {
+            if (g.getTitle().equals(name))
             {
                 return g;
             }
