@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -24,6 +25,29 @@ public class C4gameController {
     public ScrollPane chatScrollPane;
     public VBox chatContainer;
     public TextField messageInput;
+    public GridPane c4grid;
+
+
+    Button[][] grid = new Button[6][7];
+
+    public void initialize() {
+        for (Node node : c4grid.getChildren()) {
+            if (node instanceof Button button) {
+                Integer row = GridPane.getRowIndex(button);
+                Integer col = GridPane.getColumnIndex(button);
+
+                if (row == null){
+                    row = 0;
+                }
+                if (col == null) {
+                    col = 0;
+                }
+
+                grid[row][col] = button;
+            }
+        }
+    }
+
 
     @FXML
     protected void onSendMessage() {

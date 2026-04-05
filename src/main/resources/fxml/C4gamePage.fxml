@@ -41,7 +41,7 @@
                               <Font name="Dubai Medium" size="18.0" />
                            </font>
                         </Text>
-                        <GridPane layoutX="190.0" layoutY="14.0" prefHeight="360.0" prefWidth="420.0" style="-fx-background-color: #b3937f;">
+                        <GridPane fx:id="c4grid" layoutX="190.0" layoutY="14.0" prefHeight="360.0" prefWidth="420.0" style="-fx-background-color: #b3937f;">
                           <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
