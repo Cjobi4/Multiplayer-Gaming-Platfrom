@@ -62,6 +62,9 @@ public class TicTacToeGame {
     }
 
     //this is my function for making a move and VALIDATING the move!
+    //change to accept a session object
+    //check the session object (git userID check it to compare who is playing, make sure a move request is from who (make sure who is playing))
+    //
     public boolean makeMove(int row, int col, char userGameIdentity) {
         //adding gameState integration now (ticket 177)
 

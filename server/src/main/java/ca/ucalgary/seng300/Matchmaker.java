@@ -38,6 +38,7 @@ public class Matchmaker extends Thread
         long queueStartTime;
         long queueTime;
         final double acceptableSkillDiff = 10;
+        int result;
 
         //keep checking to see if a player is waiting in the queue
         while (true)
@@ -55,7 +56,7 @@ public class Matchmaker extends Thread
                 }
 
                 //get the player's win rate
-                prioPWinRate = Database.getWinRate(prioPlayer.getUserID(), gameName);
+                prioPWinRate = Database.getWinRate(prioPlayer.getUsername(), gameName);
 
                 //start the timer
                 matchFound = false;
@@ -90,21 +91,57 @@ public class Matchmaker extends Thread
                     //check how long the player has been waiting in the queue (use to adjust acceptable skill difference)
                     queueTime = System.currentTimeMillis() - queueStartTime;
 
-                    //first go through all the check players (who have been waiting the longest)...
+                    //first go through all the checked players (who have been waiting the longest)...
                     for (int i = 0; i < checkedPlayers.size(); i++)
                     {
                         //if the player's win rate was unable to be retrieved or the difference in skill is acceptable...
                         if (prioPWinRate == -1 ||
-                                Math.abs(prioPWinRate - Database.getWinRate(checkedPlayers.get(i).getUserID(), gameName)) <= acceptableSkillDiff + (10 * (double)queueTime / 10000))
+                                Math.abs(prioPWinRate - Database.getWinRate(checkedPlayers.get(i).getUsername(), gameName)) <= acceptableSkillDiff + (10 * (double)queueTime / 10000))
                         {
                             //then match them together
-                            /// match
+                            result = createMatch(prioPlayer, checkedPlayers.get(i));
 
-                            checkedPlayers.remove(i);
-                            matchFound = true;
-                            break;
+                            //if both players declined or both accepted...
+                            if (result == 0)
+                            {
+                                //remove them both from the queue
+                                leaveMQueue(checkedPlayers.get(i));
+                                matchFound = true;
+
+                                //notify of removal from queue
+                                prioPlayer.addRequest(13, null);
+                                checkedPlayers.get(i).addRequest(13, null);
+                                break;
+                            } else if (result == 1)     //if only the prioPlayer declined
+                            {
+                                //stop looking for matches and move onto the next prioPlayer to be matched
+                                matchFound = true;
+
+                                //notify of outcome
+                                prioPlayer.addRequest(13, null);
+                                checkedPlayers.get(i).addRequest(15, null);
+                                break;
+                            } else if (result == 2)     //if only the possible opponent declined
+                            {
+                                //remove the possible opponent
+                                leaveMQueue(checkedPlayers.get(i));
+
+                                //notify of outcome
+                                prioPlayer.addRequest(15, null);
+                                checkedPlayers.get(i).addRequest(13, null);
+                            } else if (result == 3)
+                            {
+                                //remove them both from the queue
+                                leaveMQueue(checkedPlayers.get(i));
+                                matchFound = true;
+
+                                //notify of outcome
+                                prioPlayer.addRequest(14, null);
+                                checkedPlayers.get(i).addRequest(14, null);
+                                break;
+                            }
+                            //if the match creation failed, treat it like the difference in skill was too great and do nothing
                         }
-
                         //otherwise check the next player in checkedPlayers
                     }
 
@@ -116,7 +153,7 @@ public class Matchmaker extends Thread
 
                         //and compare their win rates
                         if (prioPWinRate == -1 ||
-                                Math.abs(prioPWinRate - Database.getWinRate(potentialPartner.getUserID(), gameName)) <= acceptableSkillDiff + (10 * (double)queueTime / 10000))
+                                Math.abs(prioPWinRate - Database.getWinRate(potentialPartner.getUsername(), gameName)) <= acceptableSkillDiff + (10 * (double)queueTime / 10000))
                         {
                             //if the difference is acceptable, match the two
 
@@ -202,6 +239,51 @@ public class Matchmaker extends Thread
         }catch (Exception e) //if it fails let the Session know the quitter's queue wasn't joined
         {
             return false;
+        }
+    }
+
+    /**
+     * Given two users with acceptable differences in win rate, notify them of the match and see if they accept. If they
+     * do, create a new game for them. Otherwise, notify the matchmaker.
+     * @param p1 The first Session object (user) to be matched.
+     * @param p2 The second Session object (user) to be matched.
+     * @return Returns 0 if both players decline, 1 if only p1 declines, 2 if only p2 declines, 3 if it succeeds, and 4
+     * if an exception is thrown.
+     */
+    private int createMatch(Session p1, Session p2)
+    {
+        try
+        {
+            //let the players know a match has been found
+            Request req1 = new Request(12, new String[]{p2.getUsername()});
+            Request req2 = new Request(12, new String[]{p1.getUsername()});
+
+            p1.addRequest(req1);
+            p2.addRequest(req2);
+
+            //see if they accepted it
+            String p1Accept = req1.getResult();
+            String p2Accept = req2.getResult();
+
+            //if anyone rejected it, let the server know who
+            if (p1Accept.equals("0") && p2Accept.equals("0"))
+            {
+                return 0;
+            }else if (p1Accept.equals("0"))
+            {
+                return 1;
+            }else if (p2Accept.equals("0"))
+            {
+                return 2;
+            }
+
+            //if no one rejected it (both players accepted), create a new match for them
+            /// make game
+
+            return 3;
+        } catch (Exception e)   //if something went wrong, notify Matchmaker
+        {
+            return 4;
         }
     }
 }
