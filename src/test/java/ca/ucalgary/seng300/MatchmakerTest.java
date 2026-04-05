@@ -16,16 +16,12 @@ class MatchmakerTest {
 
     /**
      * Using StubSocket for ease of testing
-     * setting up all tests for the tic tac toe game
+     * setting up all tests for the tic-tac-toe game
      */
     @BeforeAll
     static void setUp(){
         matchmaker = new Matchmaker("ttt");
         session = new Session(new StubSocket(new byte[0]));
-    }
-
-    @Test
-    void run() {
     }
 
     /**
