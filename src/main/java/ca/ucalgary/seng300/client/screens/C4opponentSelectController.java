@@ -80,6 +80,7 @@ public class C4opponentSelectController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        System.out.println("test");
         playerColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         opponentList.setItems(observableData);
     }

@@ -15,6 +15,7 @@ public class Game {
     private final String id;
     private final String title;
     private final String description;
+    private final String fxmlPath;
 
     private List<Tag> tags = new ArrayList<>();
 
@@ -25,11 +26,12 @@ public class Game {
      * @param description the game description
      * @param tags the tags for the game
      */
-    public Game (String id, String title, String description, List<Tag> tags)
+    public Game (String id, String title, String description, List<Tag> tags, String fxmlPath)
     {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.fxmlPath = fxmlPath;
 
         // These are not string objects, but must be pulled from database.
         // Must be made using respective classes constructor before passing into here
@@ -38,6 +40,10 @@ public class Game {
 
     public String getId() {
         return id;
+    }
+
+    public String getFxmlPath() {
+        return fxmlPath;
     }
 
     public List<Tag> getTags() {
