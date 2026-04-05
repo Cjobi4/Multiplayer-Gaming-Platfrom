@@ -22,8 +22,8 @@
             <TableView fx:id="opponentList" layoutX="75.0" layoutY="95.0" prefHeight="360.0" prefWidth="650.0" style="-fx-background-color: #FCE0D2;" styleClass="pane">
                <columns>
                   <TableColumn fx:id="playerColumn" prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Player Name" />
-                  <TableColumn minWidth="0.0" prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Lowest Score" />
-                  <TableColumn prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Highest Score" />
+                  <TableColumn fx:id="winsColumn" minWidth="0.0" prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Wins" />
+                  <TableColumn fx:id="matchesColumn" prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Matches Played" />
                </columns>
             </TableView>
             <HBox layoutX="550.0" layoutY="486.0" prefHeight="100.0" prefWidth="200.0">

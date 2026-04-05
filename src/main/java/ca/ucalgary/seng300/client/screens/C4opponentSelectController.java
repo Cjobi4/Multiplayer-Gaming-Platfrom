@@ -24,8 +24,9 @@ import java.util.ResourceBundle;
 
 public class C4opponentSelectController implements Initializable {
     public Button opponentSelectedButton;
-
     public Button backButton;
+
+
     @FXML
     public TableView<Player> opponentList;
     @FXML
