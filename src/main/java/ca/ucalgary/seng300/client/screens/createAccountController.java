@@ -78,6 +78,7 @@ public class createAccountController {
                             Scene mainScene = new Scene(mainRoot, 800, 600);
                             stage.setScene(mainScene);
                             stage.setTitle("Main Page");
+                            stage.setResizable(false);
                             stage.show();
                         } catch (IOException e) {
                             errorField.setText("Error: Could not load main page.");
@@ -105,6 +106,7 @@ public class createAccountController {
             Scene welcomeScene = new Scene(welcomeRoot, 600, 400);
             stage.setScene(welcomeScene);
             stage.setTitle("Welcome!"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {
