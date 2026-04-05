@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.core;
 
-import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
 import ca.ucalgary.seng300.shared.models.Player;
 import org.junit.jupiter.api.BeforeEach;
