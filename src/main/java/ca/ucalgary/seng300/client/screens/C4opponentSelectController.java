@@ -71,6 +71,7 @@ public class C4opponentSelectController implements Initializable {
             Scene gameScene = new Scene(gameRoot, 800, 600);
             stage.setScene(gameScene);
             stage.setTitle("Play Connect 4!"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {
@@ -89,6 +90,7 @@ public class C4opponentSelectController implements Initializable {
             Scene MainScene = new Scene(MainRoot, 800, 600);
             stage.setScene(MainScene);
             stage.setTitle("Main Page"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {
