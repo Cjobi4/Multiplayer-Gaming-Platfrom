@@ -59,6 +59,7 @@ public class loginController {
             Scene scene = new Scene(root, 800, 600);
             stage.setScene(scene);
             stage.setTitle(title);
+            stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
             errorField.setText("Error: could not load " + fxmlPath);
@@ -75,6 +76,7 @@ public class loginController {
             Scene scene = new Scene(root, 600, 400);
             stage.setScene(scene);
             stage.setTitle(title);
+            stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
             errorField.setText("Error: could not load " + fxmlPath);
