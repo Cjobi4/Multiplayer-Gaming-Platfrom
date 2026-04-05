@@ -24,6 +24,27 @@ public class C4gameController {
     public ScrollPane chatScrollPane;
     public VBox chatContainer;
     public TextField messageInput;
+    public Button c00;
+    public Button c01;
+    public Button c02;
+    public Button c03;
+    public Button c04;
+    public Button c05;
+    public Button c06;
+    public Button c10;
+    public Button c11;
+    public Button c12;
+    public Button c13;
+    public Button c14;
+    public Button c15;
+    public Button c16;
+    public Button c20;
+    public Button c21;
+    public Button c22;
+    public Button c23;
+    public Button c24;
+    public Button c25;
+    public Button c26;
 
     @FXML
     protected void onSendMessage() {
