@@ -355,16 +355,21 @@ public class Network extends Thread {
      * @throws Exception
      */
     public int login(String username, String pwd) throws Exception {
+        // giving 30s for response
+        socketRequestTimeout();
+        try {
+            // send description byte
+            socket.getOutputStream().write(LOGIN);
 
-        // send description byte
-        socket.getOutputStream().write(LOGIN);
+            // send parameters
+            sendRequestParameter(username);
+            sendRequestParameter(pwd);
 
-        // send parameters
-        sendRequestParameter(username);
-        sendRequestParameter(pwd);
-
-        // interpret whether the login attempt was successful or not
-        return socket.getInputStream().read();
+            // interpret whether the login attempt was successful or not
+            return socket.getInputStream().read();
+        } finally {
+            socketListenTimeout();
+        }
     }
 
     /**
@@ -390,16 +395,20 @@ public class Network extends Thread {
      * @throws Exception
      */
     public int registerAccount(String username, String password) throws Exception {
+        socketRequestTimeout();
+        try {
+            // send description byte
+            socket.getOutputStream().write(CREATE_ACCOUNT);
 
-        // send description byte
-        socket.getOutputStream().write(CREATE_ACCOUNT);
+            // send parameters
+            sendRequestParameter(username);
+            sendRequestParameter(password);
 
-        // send parameters
-        sendRequestParameter(username);
-        sendRequestParameter(password);
-
-        // interpret whether registration was successful or not
-        return socket.getInputStream().read();
+            // interpret whether registration was successful or not
+            return socket.getInputStream().read();
+        } finally {
+            socketListenTimeout();
+        }
     }
 
     // GAMES
@@ -413,43 +422,47 @@ public class Network extends Thread {
      * @throws Exception
      */
     public void getGames() throws Exception {
+        socketRequestTimeout();
+        try {
+            // send description byte
+            socket.getOutputStream().write(GET_GAME_LIST);
 
-        // send description byte
-        socket.getOutputStream().write(GET_GAME_LIST);
+            // reading two responses (one for each game) and storing in an array of strings
+            String[] responses = {
+                    readResponseString(), readResponseString()
+            };
 
-        // reading two responses (one for each game) and storing in an array of strings
-        String[] responses = {
-                readResponseString(), readResponseString()
-        };
+            // either 0 or 1 sent after transmission
+            int terminator = socket.getInputStream().read();
 
-        // either 0 or 1 sent after transmission
-        int terminator = socket.getInputStream().read();
-
-        if (terminator == 0) {
-            // server error
-            return;
-        }
-
-        // iterating through each array entry (corresponding to a different game) and splitting by ^
-        for (String gameInfo : responses) {
-
-            String[] gameFields = gameInfo.split("\\^");
-
-            // parsing the string
-            String id = gameFields[0];
-            String title = gameFields[1];
-            String description = gameFields[2];
-            String[] tagComponents = gameFields[3].split("`");
-            String fxmlPath = gameFields[4];
-
-            // building tag objects
-            List<Tag> tags = new ArrayList<>();
-
-            for (int i = 0; i < tagComponents.length - 1; i += 2) {
-                tags.add(new Tag(tagComponents[i], tagComponents[i+1]));
+            if (terminator == 0) {
+                // server error
+                return;
             }
 
-            GameRegistry.getInstance().register(new Game(id, title, description, tags,  fxmlPath));
+            // iterating through each array entry (corresponding to a different game) and splitting by ^
+            for (String gameInfo : responses) {
+
+                String[] gameFields = gameInfo.split("\\^");
+
+                // parsing the string
+                String id = gameFields[0];
+                String title = gameFields[1];
+                String description = gameFields[2];
+                String[] tagComponents = gameFields[3].split("`");
+                String fxmlPath = gameFields[4];
+
+                // building tag objects
+                List<Tag> tags = new ArrayList<>();
+
+                for (int i = 0; i < tagComponents.length - 1; i += 2) {
+                    tags.add(new Tag(tagComponents[i], tagComponents[i + 1]));
+                }
+
+                GameRegistry.getInstance().register(new Game(id, title, description, tags, fxmlPath));
+            }
+        } finally {
+            socketListenTimeout();
         }
     }
 
@@ -501,13 +514,17 @@ public class Network extends Thread {
      * @throws Exception
      */
     public void leaveQueue(GameType game) throws Exception {
-        if (game == GameType.TICTACTOE) {
-            socket.getOutputStream().write(LEAVE_TTT_QUEUE);
+        socketRequestTimeout();
+        try {
+            if (game == GameType.TICTACTOE) {
+                socket.getOutputStream().write(LEAVE_TTT_QUEUE);
+            } else if (game == GameType.CONNECT4) {
+                socket.getOutputStream().write(LEAVE_C4_QUEUE);
+            }
+            int leaveSuccessful = socket.getInputStream().read();
+        } finally {
+            socketListenTimeout();
         }
-        else if (game == GameType.CONNECT4) {
-            socket.getOutputStream().write(LEAVE_C4_QUEUE);
-        }
-        int leaveSuccessful = socket.getInputStream().read();
     }
 
     /**
@@ -524,52 +541,60 @@ public class Network extends Thread {
      * @throws Exception
      */
     public int respondQueue(boolean response) throws Exception {
-        if (response) {
-            // tell server match accepted
-            socket.getOutputStream().write(1);
+        socketRequestTimeout();
+        try {
+            if (response) {
+                // tell server match accepted
+                socket.getOutputStream().write(1);
 
-            // read server response
-            int desc = socket.getInputStream().read();
-            System.out.print("Server returned: " + desc);
+                // read server response
+                int desc = socket.getInputStream().read();
+                System.out.print("Server returned: " + desc);
 
-            // other player accepts, return 14
-            if (desc == MATCH_ACCEPTED) {
-                return MATCH_ACCEPTED;
+                // other player accepts, return 14
+                if (desc == MATCH_ACCEPTED) {
+                    return MATCH_ACCEPTED;
+                }
+                // other player declined match 15
+                else if (desc == MATCH_REJECTED) {
+                    return MATCH_REJECTED;
+                }
+            } else {
+                socket.getOutputStream().write(0);
+                // receive 13 if player declines and is removed from queue
+                int exitQueue = socket.getInputStream().read();
+
+                if (exitQueue == KICKED_FROM_QUEUE) {
+                    return KICKED_FROM_QUEUE;
+                }
             }
-            // other player declined match 15
-            else if (desc == MATCH_REJECTED) {
-                return MATCH_REJECTED;
-            }
+            return -1;
+        } finally {
+            socketListenTimeout();
         }
-        else {
-            socket.getOutputStream().write(0);
-            // receive 13 if player declines and is removed from queue
-            int exitQueue = socket.getInputStream().read();
-
-            if (exitQueue == KICKED_FROM_QUEUE) {
-                return KICKED_FROM_QUEUE;
-            }
-        }
-        return -1;
     }
 
     public void getOnlinePlayers() throws Exception {
+        socketRequestTimeout();
+        try {
+            // send description byte
+            socket.getOutputStream().write(GET_ONLINE_PLAYERS);
 
-        // send description byte
-        socket.getOutputStream().write(GET_ONLINE_PLAYERS);
+            String response = readResponseString();
 
-        String response = readResponseString();
+            if (response.equals("0")) {
+                return;
+            }
 
-        if (response.equals("0")) {
-            return;
-        }
+            PlayerRegistry.getInstance().clear();
 
-        PlayerRegistry.getInstance().clear();
+            String[] activePlayers = response.split("\\^");
 
-        String[] activePlayers = response.split("\\^");
-
-        for (String player : activePlayers) {
-            PlayerRegistry.getInstance().register(new Player(player));
+            for (String player : activePlayers) {
+                PlayerRegistry.getInstance().register(new Player(player));
+            }
+        } finally {
+            socketListenTimeout();
         }
     }
 
@@ -596,44 +621,46 @@ public class Network extends Thread {
      * @throws Exception
      */
     public List<LeaderboardEntry> getLeaderboard(String leaderboardType) throws Exception {
+        socketRequestTimeout();
+        try {
+            //send description byte
+            socket.getOutputStream().write(GET_LEADERBOARD);
 
-        //send description byte
-        socket.getOutputStream().write(GET_LEADERBOARD);
+            sendRequestParameter(leaderboardType);
 
-        sendRequestParameter(leaderboardType);
+            List<LeaderboardEntry> entries = new ArrayList<>();
 
-        List<LeaderboardEntry> entries = new ArrayList<>();
+            String response = "";
+            boolean receiving = true;
 
-        String response = "";
-        boolean receiving = true;
+            while (receiving) {
 
-        while (receiving) {
+                // receive username as first response, or "0"/"1" if end of entries
+                response = readResponseString();
 
-            // receive username as first response, or "0"/"1" if end of entries
-            response = readResponseString();
+                if (response.equals("0") || response.equals("1")) {
+                    receiving = false;
+                } else {
+                    String username = response;
 
-            if (response.equals("0") || response.equals("1")) {
-                receiving = false;
+                    // data sent as: wins^matches
+                    String[] parts = readResponseString().split("\\^");
+
+                    int wins = Integer.parseInt(parts[0]);
+                    int matches = Integer.parseInt(parts[1]);
+
+                    // parse string and add to individual lists
+                    entries.add(new LeaderboardEntry(username, wins, matches));
+                }
             }
-
-            else {
-                String username = response;
-
-                // data sent as: wins^matches
-                String[] parts = readResponseString().split("\\^");
-
-                int wins = Integer.parseInt(parts[0]);
-                int matches = Integer.parseInt(parts[1]);
-
-                // parse string and add to individual lists
-                entries.add(new LeaderboardEntry(username, wins, matches));
+            // error from server side
+            if (response.equals("0")) {
+                return null;
             }
+            return entries;
+        } finally {
+            socketListenTimeout();
         }
-        // error from server side
-        if (response.equals("0")) {
-            return null;
-        }
-        return entries;
     }
 
     // MATCH RECORD
@@ -646,50 +673,53 @@ public class Network extends Thread {
      * @throws Exception
      */
     public List<MatchRecord> getMatchRecords(String username) throws Exception {
+        socketRequestTimeout();
+        try {
+            //send description byte
+            socket.getOutputStream().write(GET_MATCH_RECORD);
 
-        //send description byte
-        socket.getOutputStream().write(GET_MATCH_RECORD);
+            // send username
+            sendRequestParameter(username);
 
-        // send username
-        sendRequestParameter(username);
+            List<MatchRecord> records = new ArrayList<>();
+            String response = "";
+            boolean receiving = true;
 
-        List<MatchRecord> records = new ArrayList<>();
-        String response = "";
-        boolean receiving = true;
+            while (receiving) {
 
-        while (receiving) {
+                response = readResponseString();
 
-            response = readResponseString();
-
-            if (response.equals("0") || response.equals("1")) {
-                receiving = false;
-            } else {
-
-                // data received as gametype^p1Username^p2Username^winnerName^date
-
-                String[] parts = response.split("\\^");
-
-                GameType gameType;
-
-                if (parts[0].equals("ttt")) {
-                    gameType = GameType.TICTACTOE;
+                if (response.equals("0") || response.equals("1")) {
+                    receiving = false;
                 } else {
-                    gameType = GameType.CONNECT4;
+
+                    // data received as gametype^p1Username^p2Username^winnerName^date
+
+                    String[] parts = response.split("\\^");
+
+                    GameType gameType;
+
+                    if (parts[0].equals("ttt")) {
+                        gameType = GameType.TICTACTOE;
+                    } else {
+                        gameType = GameType.CONNECT4;
+                    }
+
+                    String playerOne = parts[1];
+                    String playerTwo = parts[2];
+                    String winner = parts[3];
+                    String date = parts[4];
+
+                    records.add(new MatchRecord(playerOne, playerTwo, gameType, winner, date));
                 }
-
-                String playerOne = parts[1];
-                String playerTwo = parts[2];
-                String winner = parts[3];
-                String date = parts[4];
-
-                records.add(new MatchRecord(playerOne, playerTwo, gameType, winner, date));
             }
+            if (response.equals("0")) {
+                return null;
+            }
+            return records;
+        } finally {
+            socketListenTimeout();
         }
-        if (response.equals("0")) {
-            return null;
-        }
-
-        return records;
     }
 
     // CHAT
@@ -715,8 +745,8 @@ public class Network extends Thread {
         ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
     }
 
-    /** If we receive 6 as a description byte, this method is ran
-     *
+    /**
+     * Chat message received
      * @throws Exception
      */
     public void receiveMessage() throws Exception {
@@ -769,6 +799,15 @@ public class Network extends Thread {
         return decrypt(readResponse());
     }
 
+    private void socketRequestTimeout() throws Exception {
+        // 30 seconds for requests
+        socket.setSoTimeout(30000);
+    }
+
+    private void socketListenTimeout() throws Exception {
+        // 3 seconds for passive listening
+        socket.setSoTimeout(3000);
+    }
 
     // CRYPTO
 
