@@ -27,13 +27,6 @@ public class C4gameController {
     public TextField messageInput;
     public GridPane c4grid;
 
-//    public Button c00;
-//    public Button c01;
-//    public Button c02;
-//    public Button c03;
-//    public Button c04;
-//    public Button c05;
-//    public Button c06;
 
     Button[][] grid = new Button[6][7];
 
