@@ -248,6 +248,7 @@ public class mainController {
             Scene scene = new Scene(root, 800, 600);
             stage.setScene(scene);
             stage.setTitle(title);
+            stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
             errorField.setText("Error loading page: " + fxmlPath);
@@ -270,6 +271,7 @@ public class mainController {
             Scene loginScene = new Scene(loginRoot, 600, 400);
             stage.setScene(loginScene);
             stage.setTitle("Login Screen"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {
