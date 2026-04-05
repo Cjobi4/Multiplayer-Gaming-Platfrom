@@ -1,18 +1,21 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.client.components.LeaderBoardMock;
+import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import javax.swing.*;
@@ -26,45 +29,82 @@ public class mainController {
     public Button gameSelectButton;
     public Button logOutButton;
     public Button MatchMakeButton;
-    public RadioButton connect4Select;
-    public RadioButton TicTacToeSelect;
     public Label errorField;
     public Label gameTitleLabel;
     public Label gameDescriptionLabel;
     public Label gameIdLabel;
     public Label gameTagsLabel;
     public TextField searchField;
+    public VBox leaderboardBox;
+    public VBox gameOptions;
 
-    private final List<Game> games = new ArrayList<>();
+    private GameRegistry games = GameRegistry.getInstance();
+    ToggleGroup group = new ToggleGroup();
 
     @FXML
     public void initialize() {
-        sampleData();
+
+        if (games.ListAll().isEmpty()) {
+            sampleData();
+        }
+
+        loadCombinedLeaderboard();
+        DisplayGameList();
     }
 
+    private void loadCombinedLeaderboard(){
+       List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
+       renderLeaderboard(rows);// New functionality for later use
+    }
+
+    public void renderLeaderboard(List<LeaderBoardRows> rows){
+        leaderboardBox.getChildren().clear();
+
+        for (LeaderBoardRows row : rows){
+            leaderboardBox.getChildren().add(showLeaderboardRow(row));
+        }
+
+    }
+
+    public HBox showLeaderboardRow(LeaderBoardRows row){
+        Label rankLabel = new Label("#" + row.getRank());
+        Label nameLabel = new Label(row.getPlayerName());
+        Label winsLabel = new Label(row.getWins() + " W");
+        Label matchesLabel = new Label(row.getMatches() + " M");
+
+        rankLabel.setMinWidth(45);
+        nameLabel.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(nameLabel, Priority.ALWAYS);
+
+        HBox rowBox = new HBox(15);
+        rowBox.setAlignment(Pos.CENTER_LEFT);
+        rowBox.getChildren().addAll(rankLabel, nameLabel, winsLabel, matchesLabel);
+
+        rowBox.setStyle("""
+            -fx-background-color: #f3c1cf;
+            -fx-background-radius: 10;
+            -fx-padding: 10;
+        """);
+
+        rankLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+        nameLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+        winsLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+        matchesLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+
+        return rowBox;
+    }
+
+
+
+
+
+
+/// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void sampleData(){
         List<Tag> Connect4Tag = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
         List<Tag> TicTacToeTag = Arrays.asList(new Tag("Two Player", "purple"), new Tag("Classic", "Green"));
-        games.add(new Game("101", "Connect 4", "A two-player game where the first to connect four discs in a row wins.", Connect4Tag, null )); // have leaderboard as null for now
-        games.add(new Game("102", "TicTacToe", "A two-player game where the first to get three marks in a row wins.", TicTacToeTag, null )); // have leaderboard as null for now
-    }
-
-    public Game findById(String id)
-    {
-        for (Game g : games)
-        {
-            if(g.getId().equalsIgnoreCase(id) || g.getTitle().toLowerCase().contains(id.toLowerCase())){
-                return g;
-            }
-
-            for (Tag tag : g.getTags()){
-                if(tag.matches(id)){
-                    return g;
-                }
-            }
-        }
-
-        return null;
+        games.register(new Game("101", "Connect 4", "A two-player game where the first to connect four discs in a row wins.", Connect4Tag, "C4")); // have leaderboard as null for now
+        games.register(new Game("102", "TicTacToe", "A two-player game where the first to get three marks in a row wins.", TicTacToeTag, "TTT"));
     }
 
     @FXML
@@ -77,7 +117,7 @@ public class mainController {
             return;
         }
 
-        Game game = findById(input);
+        Game game = games.findByName(input);
 
         if(game != null){
             displayGame(game); // This will be the function that connects to the labels allowing to display on labels
@@ -119,7 +159,7 @@ public class mainController {
 
 
 
-
+/// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @FXML
     protected void onSelectButtonSelected(ActionEvent event) {
         errorField.setText("");
@@ -128,26 +168,32 @@ public class mainController {
 
     @FXML
     protected void onGameSelectButtonClick(ActionEvent event) {
-        if (connect4Select.isSelected()) {
-            switchScene(event, "/fxml/C4OpponentSelectPage.fxml", "Connect 4 - Select Opponent");
+
+        RadioButton selected = (RadioButton) group.getSelectedToggle();
+
+        if (selected != null)
+        {
+            switchScene(event, "/fxml/" + games.findByName(selected.getText()).getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
             errorField.setText("");
-        } else if (TicTacToeSelect.isSelected()) {
-            switchScene(event, "/fxml/TTTOpponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
-            errorField.setText("");
-        } else {
+        }
+        else
+        {
             errorField.setText("Please select a game first!");
         }
     }
 
     @FXML
     protected void onMatchMakeButtonClick(ActionEvent event) {
-        if (connect4Select.isSelected()) {
-            switchScene(event, "/fxml/C4OpponentSelectPage.fxml", "Connect 4 - Select Opponent");
+
+        RadioButton selected = (RadioButton) group.getSelectedToggle();
+
+        if (selected != null)
+        {
+            switchScene(event, "/fxml/" + games.findByName(selected.getText()).getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
             errorField.setText("");
-        } else if (TicTacToeSelect.isSelected()) {
-            switchScene(event, "/fxml/TTTOpponentSelectPage.fxml", "Tic-Tac-Toe - Select Opponent");
-            errorField.setText("");
-        } else {
+        }
+        else
+        {
             errorField.setText("Please select a game first!");
         }
     }
@@ -192,18 +238,16 @@ public class mainController {
 
 
     @FXML
-    protected void DisplayGameList(ActionEvent event)
+    protected void DisplayGameList()
     {
        List<Game> GameList = GameRegistry.getInstance().ListAll();
+       gameOptions.getChildren().clear();
 
        for (Game game : GameList)
        {
-            // TODO: Create some sort of JavaFX list view (or if you have on already use it here)
-
-           // Examples for how to pull data (see game constructor for all available info)
-
-           String title = game.getTitle();
-           String description = game.getDescription();
+           RadioButton rb = new RadioButton(game.getTitle());
+           rb.setToggleGroup(group);
+           gameOptions.getChildren().add(rb);
 
        }
 

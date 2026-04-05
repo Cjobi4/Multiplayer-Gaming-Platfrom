@@ -28,7 +28,7 @@ public class GameRegistryTest {
     void testRegisterGameAddsSingleGame() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
         LeaderBoard leaderBoard = null;
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
         String expectedID = "game1";
 
         gameRegistry.register(game1);
@@ -46,7 +46,7 @@ public class GameRegistryTest {
     void testFindByIdReturnsCorrectGameID() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
         LeaderBoard leaderBoard = null;
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
         gameRegistry.register(game1);
         String expectedID = "game1";
 
@@ -68,9 +68,9 @@ public class GameRegistryTest {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
         LeaderBoard leaderBoard = null;
 
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
-        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, leaderBoard);
-        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags);
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags);
 
         gameRegistry.register(game1);
         gameRegistry.register(game2);
@@ -93,15 +93,15 @@ public class GameRegistryTest {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
         LeaderBoard leaderBoard = null;
 
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, leaderBoard);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
         gameRegistry.register(game1);
         String game1Expected = game1.getId();
 
-        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, leaderBoard);
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags);
         gameRegistry.register(game2);
         String game2Expected = game2.getId();
 
-        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, leaderBoard);
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags);
         gameRegistry.register(game3);
         String game3Expected = game3.getId();
 

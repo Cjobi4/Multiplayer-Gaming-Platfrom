@@ -28,4 +28,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [v0.2.0] - 2026-03-30
 
 ### Added
-- **Quality & Testing (MR !40):** Create partially testing fuctions for `GameRegistry`, `Network` in Core and run successfully. 
+- **Quality & Testing (MR !40):** Created partially testing fuctions for `GameRegistry`, `Network` in Core and run successfully. 
+- **Platform Core (MR !41)**: Created SQL tables for leaderboard and match record data storage. Password length requirement validation in `registerAccount()`
+- **Client-UI (MR !38)**: Team logo and project name on welcome page; matchmaking button (currently mirrors "Choose Opponent", full implementation next week); split "Choose Opponent" and game pages into dedicated FXML + controller files per game type (Connect 4 and Tic Tac Toe) to reduce future merge conflicts
+- **Rules & Validation(MR !30)**: Created connectFour game 
+
+### Changed
+- **Platform Core(MR !41)**: `processRequest()` updated to support concurrent client requests with a narrowed synchronized block to minimize blocking; client UI controllers connected to game registry; login and register account handling now notifies client of operation outcome
+- **Client UI(MR !38)**: Login and Create Account pages are now visually 
