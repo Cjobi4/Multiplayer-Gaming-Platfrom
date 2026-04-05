@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 public class C4opponentSelectController implements Initializable {
     public Button opponentSelectedButton;
     public Button backButton;
+    public Button byPassButton;
 
 
     @FXML
@@ -80,14 +81,11 @@ public class C4opponentSelectController implements Initializable {
     @FXML
     protected void onBackButtonClick(ActionEvent event) {
         try {
-            //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mainPage.fxml"));
             Parent MainRoot = loader.load();
 
-            //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            //Create new scene and set it on the stage
             Scene MainScene = new Scene(MainRoot, 800, 600);
             stage.setScene(MainScene);
             stage.setTitle("Main Page"); //Change stage title to reflect current scene
@@ -166,6 +164,25 @@ public class C4opponentSelectController implements Initializable {
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
+    }
+
+    @FXML
+    protected void onByPassButtonClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/C4gamePage.fxml"));
+            Parent MainRoot = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene MainScene = new Scene(MainRoot, 800, 600);
+            stage.setScene(MainScene);
+            stage.setTitle("Connect 4"); //Change stage title to reflect current scene
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load C4GamePage.fxml. Check file path!");
+        }
+
     }
 
     private boolean PlayerOnline(String username) {
