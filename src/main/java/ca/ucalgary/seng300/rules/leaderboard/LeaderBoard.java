@@ -1,10 +1,9 @@
 package ca.ucalgary.seng300.rules.leaderboard;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import javafx.css.Match;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Manages leaderboard scoring, submission, and queries.
@@ -19,44 +18,86 @@ import java.util.Collections;
  */
 public class LeaderBoard {
     // TODO: Implement leaderboard — placeholder for Rules & Validation
-
-    /**
-     * update the personal record (as in total wins & matches or just total matches)
-     * @param playerID
-     */
-    public static void updatePersonalRecord (int playerID){
-        // update wins and matches for the user
-
-    }
-
     /**
      * get the leaderboard based on ranking (like the top 10 players)
-     * @param rank
      */
-    public static void getLeaderboard (int rank){
+    public static List<LeaderboardEntry> getLeaderboard (GameType gameType){
         // get the leaderboard based on rank
+        try {
+            List<List<LeaderboardEntry>> leaderboard = (List<List<LeaderboardEntry>>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, null).get();
+            if (gameType == GameType.TICTACTOE) {
+                List<LeaderboardEntry> leaderboardTTT = leaderboard.getFirst();
+                leaderboardTTT.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
+                return leaderboardTTT;
+            }
+            else if (gameType == GameType.CONNECT4) {
+                List<LeaderboardEntry> leaderboardC4 = leaderboard.get(1);
+                leaderboardC4.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
+                return leaderboardC4;
+            }
+            else {
+                List<LeaderboardEntry> leaderboardCombined = leaderboard.get(2);
+                leaderboardCombined.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
+                return leaderboardCombined;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     *
+     * @param username
+     * @return User Record (username, TTT wins, TTT matches, C4 wins, C4 matches, total wins, total matches)
+     */
+    public static UserRecord getUserRecord (String username){
+        try {
+            List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{username}).get();
+            int winsTTT = 0;
+            int winsC4 = 0;
+            int matchesTTT = 0;
+            int matchesC4 = 0;
+
+            for (MatchRecord record : records){
+                if (record.getGameType() == GameType.TICTACTOE){
+                    matchesTTT++;
+                    if (record.isWinner(username)){
+                        winsTTT++;
+                    }
+                }
+                else if (record.getGameType() == GameType.CONNECT4){
+                    matchesC4++;
+                    if (record.isWinner(username)){
+                        winsC4++;
+                    }
+                }
+            }
+            return new UserRecord(username, winsTTT, matchesTTT, winsC4, matchesC4);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
     /**
-     * get a player personal record (including total wins + matches)
-     * @param playerID
+     *
+     * @param username
+     * @return the Match Records from newest to oldest order
      */
-    public static void getPersonalRecord (int playerID){
-        // get the personal record of the player (using their playerID)
+    public static List<MatchRecord> getUserMatchRecords (String username){
+        try {
+
+            List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{username}).get();
+            records.sort(Comparator.comparing(MatchRecord::getDate).reversed());
+
+            return records;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
-    public static ArrayList<MatchRecord> getUserMatchRecords (int playerID, int fromRange, int toRange){
-        LeaderboardDatabase.loadUserMatchRecords(playerID);
-        return LeaderboardDatabase.userMatchRecords;
-
-    }
-
-    /**
-     * use after finish a match (for tracking game history)
-     */
-    public static void createMatchRecord (int playerOneID, int PlayerTwoID, int winnerID, GameType gameType){
-        MatchRecord matchRecord = null;
-    }
 }

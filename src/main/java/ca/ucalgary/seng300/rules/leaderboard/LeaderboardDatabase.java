@@ -14,7 +14,6 @@ public class LeaderboardDatabase {
     public static void saveMatchRecordToUser(MatchRecord matchRecord){
         // connect the match record under a player
         // playerID and matchRecord
-        int matchID = matchRecord.getMatchID();
 
         if (matchRecord.getGameType() == GameType.TICTACTOE){
             // match under tictactoe
@@ -35,6 +34,7 @@ public class LeaderboardDatabase {
     // load Leaderboards
     public static void loadLeaderboard(GameType gameType){
         // retrieve leaderboard from the database based on the game type
+        ArrayList<String> leaderBoardString;
 
     }
 
@@ -47,5 +47,8 @@ public class LeaderboardDatabase {
         else return leaderboardCOMBINED.get(rank);
     }
 
-
+    public static void updateLeaderboard(){
+        // when the user record is changed -> update leaderboard in local + database
+        //
+    }
 }
