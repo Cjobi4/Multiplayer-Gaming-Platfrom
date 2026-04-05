@@ -1,11 +1,15 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.GameType;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Player;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -106,7 +110,66 @@ public class C4opponentSelectController implements Initializable {
         opponentList.setItems(observableData);
         opponentList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        // loadConnect4Leaderboard(false);
+        loadConnect4Leaderboard(false);
+    }
+
+    private void loadConnect4Leaderboard(boolean onlineOnly) {
+        observableData.clear();
+        opponentSelectedButton.setDisable(true);
+
+        Task<List<LeaderboardEntry>> task = new Task<>() {
+            @Override
+            protected List<LeaderboardEntry> call() throws Exception {
+                List<LeaderboardEntry> leaderboard = LeaderBoard.getLeaderboard(GameType.CONNECT4);
+
+                if (leaderboard == null) {
+                    return new ArrayList<>();
+                }
+
+                if (!onlineOnly) {
+                    return leaderboard;
+                }
+
+                Network.getInstance().queueRequest(Network.GET_ONLINE_PLAYERS, null).get();
+
+                List<LeaderboardEntry> filteredLeaderboard = new ArrayList<>();
+
+                for (LeaderboardEntry entry : leaderboard) {
+                    if (PlayerOnline(entry.getUsername())) {
+                        filteredLeaderboard.add(entry);
+                    }
+                }
+
+                return filteredLeaderboard;
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            observableData.setAll(task.getValue());
+            opponentSelectedButton.setDisable(false);
+        });
+
+        task.setOnFailed(e -> {
+            opponentSelectedButton.setDisable(false);
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Leaderboard Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Could not load the Connect 4 leaderboard.");
+            alert.showAndWait();
+
+            if (task.getException() != null) {
+                task.getException().printStackTrace();
+            }
+        });
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private boolean PlayerOnline(String username) {
+        return PlayerRegistry.getInstance().findByName(username) != null;
     }
 
 }
