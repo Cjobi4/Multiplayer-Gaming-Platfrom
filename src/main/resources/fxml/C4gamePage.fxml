@@ -99,7 +99,7 @@
                               <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" />
                               <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" />
                               <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="5" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+                              <Button fx:id="c4grid" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="5" />
                               <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="5" />
                               <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" />
                            </children>
