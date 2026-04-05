@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Player;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -28,9 +30,18 @@ public class C4opponentSelectController implements Initializable {
 
 
     @FXML
-    public TableView<Player> opponentList;
+    public TableView<LeaderboardEntry> opponentList;
+
     @FXML
-    public TableColumn<Player, String> playerColumn;
+    public TableColumn<LeaderboardEntry, String> playerColumn;
+
+    @FXML
+    public TableColumn<LeaderboardEntry, String> winsColumn;
+
+    @FXML
+    public TableColumn<LeaderboardEntry, String> matchesColumn;
+
+
 
     List<Player> playerList = PlayerRegistry.getInstance().listAll();
 
@@ -38,6 +49,18 @@ public class C4opponentSelectController implements Initializable {
 
     @FXML
     protected void onOpponentSelectedButtonClick(ActionEvent event) {
+        LeaderboardEntry selectedOpponent = opponentList.getSelectionModel().getSelectedItem();
+
+        if(selectedOpponent == null){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No opponent selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a opponent to play");
+            alert.showAndWait();
+            return;
+        }
+
+
         try {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/C4gamePage.fxml"));
