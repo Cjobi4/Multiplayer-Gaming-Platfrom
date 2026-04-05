@@ -41,7 +41,7 @@ public class GameRegistryTest {
     @Test
     void testRegisterGameAddsSingleGame() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
         String expectedID = "game1";
 
         gameRegistry.register(game1);
@@ -64,7 +64,7 @@ public class GameRegistryTest {
     @Test
     void testFindByIdReturnsCorrectGameID() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
         gameRegistry.register(game1);
         Game expectedGame = game1;
 
@@ -96,9 +96,9 @@ public class GameRegistryTest {
     void testAddMultipleGameReturnsCorrectRegistrySize() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
 
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
-        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags);
-        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, "testing.fxml.Path");
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, "testing.fxml.Path");
 
         gameRegistry.register(game1);
         gameRegistry.register(game2);
@@ -130,15 +130,15 @@ public class GameRegistryTest {
     void testListAllReturnsAllGamesByIndex() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
 
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
         gameRegistry.register(game1);
         String game1Expected = game1.getId();
 
-        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags);
+        Game game2 = new Game("game2", "TICTACTOE", "some_description", tags, "testing.fxml.Path");
         gameRegistry.register(game2);
         String game2Expected = game2.getId();
 
-        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags);
+        Game game3 = new Game("game3", "UNKNOWN", "some_description", tags, "testing.fxml.Path");
         gameRegistry.register(game3);
         String game3Expected = game3.getId();
 
@@ -162,7 +162,7 @@ public class GameRegistryTest {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
 
         // create game and add it to the registry
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
         gameRegistry.register(game1);
 
         String expectedLabel = "two-player";
@@ -190,7 +190,7 @@ public class GameRegistryTest {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
 
         // create game and add it to the registry
-        Game game1 = new Game("game1", "CONNECT4", "some_description", tags);
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
         gameRegistry.register(game1);
 
         String expectedDescription = game1.getDescription();
