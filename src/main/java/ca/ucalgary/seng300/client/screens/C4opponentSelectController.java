@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.client.screens;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Player;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,10 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -41,11 +39,7 @@ public class C4opponentSelectController implements Initializable {
     @FXML
     public TableColumn<LeaderboardEntry, String> matchesColumn;
 
-
-
-    List<Player> playerList = PlayerRegistry.getInstance().listAll();
-
-    ObservableList<Player> observableData = FXCollections.observableList(playerList);
+    private final ObservableList<LeaderboardEntry> observableData = FXCollections.observableArrayList();
 
     @FXML
     protected void onOpponentSelectedButtonClick(ActionEvent event) {
@@ -59,7 +53,6 @@ public class C4opponentSelectController implements Initializable {
             alert.showAndWait();
             return;
         }
-
 
         try {
             //Load fxml file
@@ -104,9 +97,16 @@ public class C4opponentSelectController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println("test");
-        playerColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        playerColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
+
+        winsColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getWins())));
+
+        matchesColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getMatches())));
+
         opponentList.setItems(observableData);
+        opponentList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        // loadConnect4Leaderboard(false);
     }
 
 }
