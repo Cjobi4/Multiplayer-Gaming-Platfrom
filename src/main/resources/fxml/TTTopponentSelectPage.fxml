@@ -39,6 +39,7 @@
                     </children>
                 </HBox>
                 <Button fx:id="backButton" layoutX="14.0" layoutY="560.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" styleClass="basic-button" text="Back" />
+            <Button fx:id="byPassButton" layoutX="442.0" layoutY="468.0" mnemonicParsing="false" onAction="#onByPassButtonClick" prefHeight="25.0" prefWidth="138.0" text="BYPASS" />
             </children>
         </AnchorPane>
     </children>

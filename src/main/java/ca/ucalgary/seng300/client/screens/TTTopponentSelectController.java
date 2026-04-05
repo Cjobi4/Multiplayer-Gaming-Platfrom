@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 public class TTTopponentSelectController implements Initializable {
     public Button opponentSelectedButton;
     public Button backButton;
+    public Button byPassButton;
 
     @FXML
     public TableView<LeaderboardEntry> opponentList;
@@ -166,6 +167,25 @@ public class TTTopponentSelectController implements Initializable {
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
+    }
+
+    @FXML
+    protected void onByPassButtonClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TTTgamePage.fxml"));
+            Parent MainRoot = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            Scene MainScene = new Scene(MainRoot, 800, 600);
+            stage.setScene(MainScene);
+            stage.setTitle("Play Tic-Tac-Toe!"); //Change stage title to reflect current scene
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load TTTGamePage.fxml. Check file path!");
+        }
+
     }
 
     private boolean playerOnline(String username){
