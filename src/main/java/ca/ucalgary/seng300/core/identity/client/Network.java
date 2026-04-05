@@ -54,9 +54,14 @@ public class Network extends Thread {
     public static final byte JOIN_C4_QUEUE = 9;
     public static final byte LEAVE_C4_QUEUE = 10;
     public static final byte GET_ONLINE_PLAYERS = 11;
-    public static final byte SEND_MOVE_TTT = 12;
+    public static final byte MATCH_FOUND = 12;
+    public static final byte KICKED_FROM_QUEUE = 13;
+    public static final byte MATCH_ACCEPTED = 14;
+    public static final byte MATCH_REJECTED = 15;
+    public static final byte RESPOND_QUEUE = 16;
 
     // to be added/modified later
+    public static final byte SEND_MOVE_TTT = 125;
     public static final byte send_chat = 126;
     public static final byte receive_chat = 127;
 
@@ -75,13 +80,18 @@ public class Network extends Thread {
         Here are some examples on how you can request from the server:
 
         -- CREATE ACCOUNT --
-                boolean success = (Boolean) Network.getInstance().queueRequest(Network.CREATE_ACCOUNT, new String[]{"username", "password"}).get();
+
+                Returns: 0 = username taken, 1 = success, 2 = invalid input, 3 = other failure
+                int result = (Integer) Network.getInstance().queueRequest(Network.CREATE_ACCOUNT, new String[]{"username", "password"}).get();
 
         -- LOGIN --
-                boolean loggedIn = (Boolean) Network.getInstance().queueRequest(Network.LOGIN, new String[]{"username", "password"}).get();
+
+                Returns: 1 = success, 0 = failure
+                int result = (Integer) Network.getInstance().queueRequest(Network.LOGIN, new String[]{"username", "password"}).get();
 
         -- LOGOUT --
-                boolean loggedOut = (Boolean) Network.getInstance().queueRequest(Network.LOGOUT, null).get();
+
+                Network.getInstance().queueRequest(Network.LOGOUT, null);
 
         -- GET GAME LIST - has no return value, just populates GameRegistry --
 
@@ -101,6 +111,7 @@ public class Network extends Thread {
                 Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"total"});
 
         -- GET ONLINE PLAYERS — no return value, populates PlayerRegistry --
+
                 Network.getInstance().queueRequest(Network.GET_ONLINE_PLAYERS, null).get();
 
         -- SEND TTT MOVE --
@@ -121,9 +132,15 @@ public class Network extends Thread {
           Join C4 Queue:
                 boolean joinedC4  = (Boolean) Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get();
 
-        -- LEAVING QUEUE --
-                boolean leftTTT = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_TTT_QUEUE, null).get();
-                boolean leftC4  = (Boolean) Network.getInstance().queueRequest(Network.LEAVE_C4_QUEUE, null).get();
+        -- RESPONDING TO QUEUE --
+
+          Accept Queue
+                int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"1"}).get();
+
+          Decline Queue
+                int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"0"}).get();
+
+
     */
 
     /** Constructor
@@ -267,7 +284,8 @@ public class Network extends Thread {
                 break;
 
             case LOGOUT:
-                req.future.complete(logout());
+                logout();
+                req.future.complete(null);
                 break;
 
             case GET_GAME_LIST:
@@ -288,16 +306,20 @@ public class Network extends Thread {
                 req.future.complete(joinQueue(GameType.TICTACTOE));
                 break;
 
-            case LEAVE_TTT_QUEUE:
+            /*case LEAVE_TTT_QUEUE:
                 req.future.complete(leaveQueue(GameType.TICTACTOE));
-                break;
+                break;*/
 
             case JOIN_C4_QUEUE:
                 req.future.complete(joinQueue(GameType.CONNECT4));
                 break;
 
-            case LEAVE_C4_QUEUE:
+            /*case LEAVE_C4_QUEUE:
                 req.future.complete(leaveQueue(GameType.CONNECT4));
+                break;*/
+            case RESPOND_QUEUE:
+                boolean accept = parameters[0].equals("1");
+                req.future.complete(respondQueue(accept));
                 break;
 
             case GET_ONLINE_PLAYERS:
@@ -321,60 +343,75 @@ public class Network extends Thread {
 
     // LOGIN
 
-    /** sends login request to the server
-     *  returns True if successful login
+    /**
+     *  Request for logging in
+     *
+     *  If registration was successful, return 1
+     *  If registration fails due (invalid input or credentials) return 0
      *
      * @param username
      * @param pwd
      * @return
      * @throws Exception
      */
-    public boolean login(String username, String pwd) throws Exception {
+    public int login(String username, String pwd) throws Exception {
+        // giving 30s for response
+        socketRequestTimeout();
+        try {
+            // send description byte
+            socket.getOutputStream().write(LOGIN);
 
-        // send description byte
-        socket.getOutputStream().write(LOGIN);
+            // send parameters
+            sendRequestParameter(username);
+            sendRequestParameter(pwd);
 
-        // send parameters
-        sendRequestParameter(username);
-        sendRequestParameter(pwd);
-
-        // interpret whether the login attempt was successful or not
-        return readResponseString().equals("1");
-    }
-
-    public boolean logout() throws Exception {
-        socket.getOutputStream().write(LOGOUT);
-
-        return readResponseString().equals("1");
-    }
-
-    public boolean registerAccount(String username, String password) throws Exception {
-
-        // checking if password meets minimum length requirements
-        if (password.length() < 6 || password.length() > 18) {
-            return false;
+            // interpret whether the login attempt was successful or not
+            return socket.getInputStream().read();
+        } finally {
+            socketListenTimeout();
         }
-
-        // send description byte
-        socket.getOutputStream().write(CREATE_ACCOUNT);
-
-        // send parameters
-        sendRequestParameter(username);
-        sendRequestParameter(password);
-
-        // interpret whether registration was successful or not
-        return readResponseString().equals("1");
     }
 
-    // GAMES
-
-    /** Sends game_list description byte to server
+    /**
+     * Tells server to log out, no return value
      *
      * @throws Exception
      */
-    public void requestGamesList() throws Exception {
-        socket.getOutputStream().write(GET_GAME_LIST);
+    public void logout() throws Exception {
+        socket.getOutputStream().write(LOGOUT);
     }
+
+    /**
+     * Request for registering an account
+     *
+     * If username is already taken, return 0
+     * If registration was successful, return 1
+     * If registration fails due to incorrect credentials (invalid pass length or username contains ` or ^) return 2
+     * If other (server failure) return 3
+     *
+     * @param username
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    public int registerAccount(String username, String password) throws Exception {
+        socketRequestTimeout();
+        try {
+            // send description byte
+            socket.getOutputStream().write(CREATE_ACCOUNT);
+
+            // send parameters
+            sendRequestParameter(username);
+            sendRequestParameter(password);
+
+            // interpret whether registration was successful or not
+            return socket.getInputStream().read();
+        } finally {
+            socketListenTimeout();
+        }
+    }
+
+    // GAMES
 
     /** Parsing of game data to be used to construct game objects
      *
@@ -385,53 +422,59 @@ public class Network extends Thread {
      * @throws Exception
      */
     public void getGames() throws Exception {
+        socketRequestTimeout();
+        try {
+            // send description byte
+            socket.getOutputStream().write(GET_GAME_LIST);
 
-        // send game list request
-        requestGamesList();
+            // reading two responses (one for each game) and storing in an array of strings
+            String[] responses = {
+                    readResponseString(), readResponseString()
+            };
 
-        // reading two responses (one for each game) and storing in an array of strings
-        String[] responses = {
-                readResponseString(), readResponseString()
-        };
+            // either 0 or 1 sent after transmission
+            int terminator = socket.getInputStream().read();
 
-        // either 0 or 1 sent after transmission
-        String terminator = readResponseString();
-
-        if (terminator.equals("0")) {
-            // server error
-            return;
-        }
-
-        // iterating through each array entry (corresponding to a different game) and splitting by ^
-        for (String gameInfo : responses) {
-
-            String[] gameFields = gameInfo.split("\\^");
-
-            // parsing the string
-            String id = gameFields[0];
-            String title = gameFields[1];
-            String description = gameFields[2];
-            String[] tagComponents = gameFields[3].split("`");
-            String fxmlPath = gameFields[4];
-
-            // building tag objects
-            List<Tag> tags = new ArrayList<>();
-
-            for (int i = 0; i < tagComponents.length - 1; i += 2) {
-                tags.add(new Tag(tagComponents[i], tagComponents[i+1]));
+            if (terminator == 0) {
+                // server error
+                return;
             }
 
-            GameRegistry.getInstance().register(new Game(id, title, description, tags,  fxmlPath));
+            // iterating through each array entry (corresponding to a different game) and splitting by ^
+            for (String gameInfo : responses) {
+
+                String[] gameFields = gameInfo.split("\\^");
+
+                // parsing the string
+                String id = gameFields[0];
+                String title = gameFields[1];
+                String description = gameFields[2];
+                String[] tagComponents = gameFields[3].split("`");
+                String fxmlPath = gameFields[4];
+
+                // building tag objects
+                List<Tag> tags = new ArrayList<>();
+
+                for (int i = 0; i < tagComponents.length - 1; i += 2) {
+                    tags.add(new Tag(tagComponents[i], tagComponents[i + 1]));
+                }
+
+                GameRegistry.getInstance().register(new Game(id, title, description, tags, fxmlPath));
+            }
+        } finally {
+            socketListenTimeout();
         }
     }
 
-    /** Request for joining the queue
+    /**
+     * Request for joining the queue
+     * Returns the username of the opponent if queue is successful
      *
      * @param game pass in game type
      * @return
      * @throws Exception
      */
-    public boolean joinQueue(GameType game) throws Exception {
+    public String joinQueue(GameType game) throws Exception {
         if (game == GameType.TICTACTOE) {
             socket.getOutputStream().write(JOIN_TTT_QUEUE);
         }
@@ -439,43 +482,119 @@ public class Network extends Thread {
             socket.getOutputStream().write(JOIN_C4_QUEUE);
         }
 
-        return readResponseString().equals("1");
+        // send 1 if queue is joined, 0 if not
+        int joinedQueue = socket.getInputStream().read();
+        if (joinedQueue == 0) {
+            return null;
+        }
+
+        // wait 90s to receive a match
+        socket.setSoTimeout(90000);
+        try {
+            // receive 12 if match found
+            int desc = socket.getInputStream().read();
+            if (desc == MATCH_FOUND) {
+                // received receive username
+                return readResponseString();
+            }
+        } catch (SocketTimeoutException e) {
+            // 90 sec passed, no queue pop. tell server to leave queue
+            leaveQueue(game);
+            return null;
+        } finally {
+            // reset socket timeout for run loop
+            socket.setSoTimeout(3000);
+        }
+        return null;
     }
 
-    /** Request for leaving queue
+    /**
+     * Request for leaving queue
+     * @param game
+     * @throws Exception
+     */
+    public void leaveQueue(GameType game) throws Exception {
+        socketRequestTimeout();
+        try {
+            if (game == GameType.TICTACTOE) {
+                socket.getOutputStream().write(LEAVE_TTT_QUEUE);
+            } else if (game == GameType.CONNECT4) {
+                socket.getOutputStream().write(LEAVE_C4_QUEUE);
+            }
+            int leaveSuccessful = socket.getInputStream().read();
+        } finally {
+            socketListenTimeout();
+        }
+    }
+
+    /**
+     * To respond to a queue pop
+     * Pass in true to accept, false to decline
+     * Returns
+     *      13 = kicked from queue (player declined queue)
+     *      14 = match accepted
+     *      15 = match rejected (opponent declined queue)
+     *      -1 default
      *
-     * @param game pass in game type
+     * @param response
      * @return
      * @throws Exception
      */
-    public boolean leaveQueue(GameType game) throws Exception {
-        if (game == GameType.TICTACTOE) {
-            socket.getOutputStream().write(LEAVE_TTT_QUEUE);
-        }
-        else if (game == GameType.CONNECT4) {
-            socket.getOutputStream().write(LEAVE_C4_QUEUE);
-        }
+    public int respondQueue(boolean response) throws Exception {
+        socketRequestTimeout();
+        try {
+            if (response) {
+                // tell server match accepted
+                socket.getOutputStream().write(1);
 
-        return readResponseString().equals("1");
+                // read server response
+                int desc = socket.getInputStream().read();
+                System.out.print("Server returned: " + desc);
+
+                // other player accepts, return 14
+                if (desc == MATCH_ACCEPTED) {
+                    return MATCH_ACCEPTED;
+                }
+                // other player declined match 15
+                else if (desc == MATCH_REJECTED) {
+                    return MATCH_REJECTED;
+                }
+            } else {
+                socket.getOutputStream().write(0);
+                // receive 13 if player declines and is removed from queue
+                int exitQueue = socket.getInputStream().read();
+
+                if (exitQueue == KICKED_FROM_QUEUE) {
+                    return KICKED_FROM_QUEUE;
+                }
+            }
+            return -1;
+        } finally {
+            socketListenTimeout();
+        }
     }
 
     public void getOnlinePlayers() throws Exception {
+        socketRequestTimeout();
+        try {
+            // send description byte
+            socket.getOutputStream().write(GET_ONLINE_PLAYERS);
 
-        // send description byte
-        socket.getOutputStream().write(GET_ONLINE_PLAYERS);
+            String response = readResponseString();
 
-        String response = readResponseString();
+            if (response.equals("0")) {
+                return;
+            }
 
-        if (response.equals("0")) {
-            return;
-        }
+            PlayerRegistry.getInstance().clear();
 
-        PlayerRegistry.getInstance().clear();
+            String[] activePlayers = response.split("\\^");
 
-        String[] activePlayers = response.split("\\^");
-
-        for (String player : activePlayers) {
-            PlayerRegistry.getInstance().register(new Player(player));
+            for (String player : activePlayers) {
+                PlayerRegistry.getInstance().register(new Player(player));
+            }
+        } finally {
+            socketListenTimeout();
         }
     }
 
@@ -502,44 +621,46 @@ public class Network extends Thread {
      * @throws Exception
      */
     public List<LeaderboardEntry> getLeaderboard(String leaderboardType) throws Exception {
+        socketRequestTimeout();
+        try {
+            //send description byte
+            socket.getOutputStream().write(GET_LEADERBOARD);
 
-        //send description byte
-        socket.getOutputStream().write(GET_LEADERBOARD);
+            sendRequestParameter(leaderboardType);
 
-        sendRequestParameter(leaderboardType);
+            List<LeaderboardEntry> entries = new ArrayList<>();
 
-        List<LeaderboardEntry> entries = new ArrayList<>();
+            String response = "";
+            boolean receiving = true;
 
-        String response = "";
-        boolean receiving = true;
+            while (receiving) {
 
-        while (receiving) {
+                // receive username as first response, or "0"/"1" if end of entries
+                response = readResponseString();
 
-            // receive username as first response, or "0"/"1" if end of entries
-            response = readResponseString();
+                if (response.equals("0") || response.equals("1")) {
+                    receiving = false;
+                } else {
+                    String username = response;
 
-            if (response.equals("0") || response.equals("1")) {
-                receiving = false;
+                    // data sent as: wins^matches
+                    String[] parts = readResponseString().split("\\^");
+
+                    int wins = Integer.parseInt(parts[0]);
+                    int matches = Integer.parseInt(parts[1]);
+
+                    // parse string and add to individual lists
+                    entries.add(new LeaderboardEntry(username, wins, matches));
+                }
             }
-
-            else {
-                String username = response;
-
-                // data sent as: wins^matches
-                String[] parts = readResponseString().split("\\^");
-
-                int wins = Integer.parseInt(parts[0]);
-                int matches = Integer.parseInt(parts[1]);
-
-                // parse string and add to individual lists
-                entries.add(new LeaderboardEntry(username, wins, matches));
+            // error from server side
+            if (response.equals("0")) {
+                return null;
             }
+            return entries;
+        } finally {
+            socketListenTimeout();
         }
-        // error from server side
-        if (response.equals("0")) {
-            return null;
-        }
-        return entries;
     }
 
     // MATCH RECORD
@@ -552,50 +673,53 @@ public class Network extends Thread {
      * @throws Exception
      */
     public List<MatchRecord> getMatchRecords(String username) throws Exception {
+        socketRequestTimeout();
+        try {
+            //send description byte
+            socket.getOutputStream().write(GET_MATCH_RECORD);
 
-        //send description byte
-        socket.getOutputStream().write(GET_MATCH_RECORD);
+            // send username
+            sendRequestParameter(username);
 
-        // send username
-        sendRequestParameter(username);
+            List<MatchRecord> records = new ArrayList<>();
+            String response = "";
+            boolean receiving = true;
 
-        List<MatchRecord> records = new ArrayList<>();
-        String response = "";
-        boolean receiving = true;
+            while (receiving) {
 
-        while (receiving) {
+                response = readResponseString();
 
-            response = readResponseString();
-
-            if (response.equals("0") || response.equals("1")) {
-                receiving = false;
-            } else {
-
-                // data received as gametype^p1Username^p2Username^winnerName^date
-
-                String[] parts = response.split("\\^");
-
-                GameType gameType;
-
-                if (parts[0].equals("ttt")) {
-                    gameType = GameType.TICTACTOE;
+                if (response.equals("0") || response.equals("1")) {
+                    receiving = false;
                 } else {
-                    gameType = GameType.CONNECT4;
+
+                    // data received as gametype^p1Username^p2Username^winnerName^date
+
+                    String[] parts = response.split("\\^");
+
+                    GameType gameType;
+
+                    if (parts[0].equals("ttt")) {
+                        gameType = GameType.TICTACTOE;
+                    } else {
+                        gameType = GameType.CONNECT4;
+                    }
+
+                    String playerOne = parts[1];
+                    String playerTwo = parts[2];
+                    String winner = parts[3];
+                    String date = parts[4];
+
+                    records.add(new MatchRecord(playerOne, playerTwo, gameType, winner, date));
                 }
-
-                String playerOne = parts[1];
-                String playerTwo = parts[2];
-                String winner = parts[3];
-                String date = parts[4];
-
-                records.add(new MatchRecord(playerOne, playerTwo, gameType, winner, date));
             }
+            if (response.equals("0")) {
+                return null;
+            }
+            return records;
+        } finally {
+            socketListenTimeout();
         }
-        if (response.equals("0")) {
-            return null;
-        }
-
-        return records;
     }
 
     // CHAT
@@ -621,8 +745,8 @@ public class Network extends Thread {
         ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
     }
 
-    /** If we receive 6 as a description byte, this method is ran
-     *
+    /**
+     * Chat message received
      * @throws Exception
      */
     public void receiveMessage() throws Exception {
@@ -675,6 +799,15 @@ public class Network extends Thread {
         return decrypt(readResponse());
     }
 
+    private void socketRequestTimeout() throws Exception {
+        // 30 seconds for requests
+        socket.setSoTimeout(30000);
+    }
+
+    private void socketListenTimeout() throws Exception {
+        // 3 seconds for passive listening
+        socket.setSoTimeout(3000);
+    }
 
     // CRYPTO
 
