@@ -39,6 +39,7 @@ public class Database
             //if unable to connect to database, should just shut down the server
             System.out.println(e.getMessage());
             System.out.println("shut down.");
+            System.exit(0);
         }
     }
 
