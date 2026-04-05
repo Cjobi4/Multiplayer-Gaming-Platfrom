@@ -72,6 +72,7 @@ public class TTTopponentSelectController implements Initializable {
             Scene gameScene = new Scene(gameRoot, 800, 600);
             stage.setScene(gameScene);
             stage.setTitle("Tic-Tac-Toe - Game"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {
@@ -93,6 +94,7 @@ public class TTTopponentSelectController implements Initializable {
             Scene MainScene = new Scene(MainRoot, 800, 600);
             stage.setScene(MainScene);
             stage.setTitle("Main Page"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {
@@ -180,6 +182,7 @@ public class TTTopponentSelectController implements Initializable {
             Scene MainScene = new Scene(MainRoot, 800, 600);
             stage.setScene(MainScene);
             stage.setTitle("Play Tic-Tac-Toe!"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {
