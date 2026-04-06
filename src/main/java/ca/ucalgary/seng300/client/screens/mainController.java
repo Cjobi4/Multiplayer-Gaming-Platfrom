@@ -4,9 +4,12 @@ import ca.ucalgary.seng300.client.components.LeaderBoardMock;
 import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -56,16 +59,26 @@ public class mainController {
     }
 
     private void loadCombinedLeaderboard(){
-       List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
-       renderLeaderboard(rows);// New functionality for later use
-    }
-
-    public void renderLeaderboard(List<LeaderBoardRows> rows){
         leaderboardBox.getChildren().clear();
 
-        for (LeaderBoardRows row : rows){
-            leaderboardBox.getChildren().add(showLeaderboardRow(row));
-        }
+        Task<List<LeaderboardEntry>> task = new Task<>() {
+            @Override
+            protected List<LeaderboardEntry> call() {
+                return LeaderBoard.getLeaderboard(null);
+            }
+        };
+
+        task.setOnSucceeded(event -> renderLeaderboard(task.getValue()));
+       //List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
+       //renderLeaderboard(rows);// New functionality for later use
+    }
+
+    public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
+//        leaderboardBox.getChildren().clear();
+//
+//        for (LeaderBoardRows row : rows){
+//            leaderboardBox.getChildren().add(showLeaderboardRow(row));
+//        }
 
     }
 
