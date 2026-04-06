@@ -1,8 +1,6 @@
-package ca.ucalgary.seng300.games;
+package ca.ucalgary.seng300.Games;
 
-import ca.ucalgary.seng300.games.GameState;
-
-import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
+import ca.ucalgary.seng300.Session;
 
 //this class represents the server-side tic tac toe game session (extending thread)
 public class TTTServerSession extends Thread{
