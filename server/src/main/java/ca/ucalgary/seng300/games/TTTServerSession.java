@@ -6,6 +6,7 @@ import ca.ucalgary.seng300.Session;
 import static ca.ucalgary.seng300.Database.addMatchResult;
 
 //import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
+import ca.ucalgary.seng300.Session;
 
 //this class represents the server-side tic tac toe game session (extending thread)
 public class TTTServerSession extends Thread{
@@ -148,6 +149,7 @@ public class TTTServerSession extends Thread{
         sendGameState();
     }
 
+    //this is my function for handling the situation when the game is over
     public void gameOverHandler() throws Exception {
 
         //send the game results to the player when the game is over
