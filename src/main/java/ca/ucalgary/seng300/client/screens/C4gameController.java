@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -50,7 +51,7 @@ public class C4gameController {
     protected void onSendMessage() {
         String text = messageInput.getText();
         if (text != null && !text.isEmpty()) {
-            Message newMessage = new Message(text, "Player 1");
+            Message newMessage = new Message(text, ActivePlayer.getInstance().getUsername());
 
             ChatRegistry.getInstance().addMessage(newMessage);
             messageInput.clear();
