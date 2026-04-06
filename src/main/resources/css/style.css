@@ -69,15 +69,3 @@
     -fx-background-color: #FFC7CE;
     -fx-translate-y: 2;
 }
-
-.pane .header-panel .label {
-    -fx-font-family: "Dubai Medium";
-    -fx-font-size: 18px;
-    -fx-text-fill: #866B59;
-}
-
-.pane .content.label {
-    -fx-font-family: "Dubai Medium";
-    -fx-font-size: 14px;
-    -fx-text-fill: #866B59;
-}
