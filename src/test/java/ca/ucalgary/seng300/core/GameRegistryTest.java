@@ -1,7 +1,6 @@
 package ca.ucalgary.seng300.core;
 
 import ca.ucalgary.seng300.core.registry.GameRegistry;
-import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.shared.models.Game;
 
 import ca.ucalgary.seng300.shared.models.Tag;
