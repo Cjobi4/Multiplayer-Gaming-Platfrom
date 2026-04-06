@@ -83,6 +83,9 @@ public class mainController {
         });
 
 
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
