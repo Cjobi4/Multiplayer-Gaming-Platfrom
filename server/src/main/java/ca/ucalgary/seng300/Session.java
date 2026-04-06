@@ -158,41 +158,6 @@ public class Session extends Thread
     }
 
     /**
-     * If something goes wrong with the Session thread and an uncaught expection is thrown, shut down the Session. Log
-     * out and leave any matchmaking queues before doing closing.
-     * @param eh Unused UncaughtExceptionHandler
-     */
-    @Override
-    public void setUncaughtExceptionHandler(UncaughtExceptionHandler eh)
-    {
-        //if something goes wrong, log out
-        if (loggedIn)
-        {
-            Database.logOut(username);
-        }
-
-        //if in any matchmaking queues, exit
-        if (inTttQueue)
-        {
-            Database.getTttMatchmaker().leaveMQueue(this);
-        }else if (inC4Queue)
-        {
-            Database.getC4Matchmaker().leaveMQueue(this);
-        }
-
-        //close the thread and connection
-        try
-        {
-            client.close();
-        } catch (Exception e)
-        {
-            //socket connection couldn't be closed, nothing to be done, just close the connection anyway
-            System.out.println("Connection couldn't be closed.");
-        }
-        Thread.currentThread().interrupt();
-    }
-
-    /**
      * Getter for the Session's username.
      * @return The Session's username.
      */

@@ -349,7 +349,7 @@ public class Database
         try
         {
             //collect all the leaderboard entries with matching usernames
-            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE username = ?;");
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE username = ? LIMIT 10;");
             pstmt.setString(1, String.valueOf(username));
             ResultSet rs = pstmt.executeQuery();
 
