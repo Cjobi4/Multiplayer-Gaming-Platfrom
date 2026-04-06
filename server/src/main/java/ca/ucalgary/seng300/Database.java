@@ -257,6 +257,7 @@ public class Database
             {
                 //add it to the list of logged-in users
                 loggedInUsers.put(username, session);
+                System.out.println("Username logged in: " + username);
 
                 return 1;
             }else   //if no match is found, notify of failure
