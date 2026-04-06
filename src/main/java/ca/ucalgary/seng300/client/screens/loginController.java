@@ -114,4 +114,10 @@ public class loginController {
         }
     }
 
+    @FXML
+    protected void onByPassButtonClick(ActionEvent event) {
+        switchSceneLargerScreen(event, "/fxml/mainPage.fxml", "Main");
+    }
+
+
 }
