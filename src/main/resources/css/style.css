@@ -47,3 +47,12 @@
     -fx-background-radius: 100;
     -fx-background-color: #F9EDE1;
 }
+
+.round-button {
+    -fx-background-radius: 500;
+    -fx-min-width: 35px;
+    -fx-min-height: 35px;
+    -fx-max-width: 35px;
+    -fx-max-height: 35px;
+    -fx-padding: 0;
+}
