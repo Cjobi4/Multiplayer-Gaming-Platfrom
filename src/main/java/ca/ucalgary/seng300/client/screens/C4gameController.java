@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
+import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.shared.models.Message;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ca.ucalgary.seng300.games.connectfour.ConnectFourGame;
 import ca.ucalgary.seng300.games.connectfour.ConnectFourBoard;
@@ -27,6 +29,8 @@ public class C4gameController {
     public VBox chatContainer;
     public TextField messageInput;
     public GridPane c4grid;
+    public Text turnDisplayc4;
+
 
     ConnectFourGame current = new ConnectFourGame();
     Button[][] grid = new Button[6][7];
@@ -92,6 +96,33 @@ public class C4gameController {
                     grid[i][j].setStyle( "-fx-text-fill: #f0a1a1;"); //red
                 }
             }
+        }
+    }
+
+    protected void gameOver(){ //copy of the button version
+        try {
+            //Load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
+            Parent gameOverRoot = loader.load();
+            Stage stage = (Stage) grid[0][0].getScene().getWindow();
+            Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
+            stage.setScene(gameOverScene);
+            stage.setTitle("Game Over"); //Change stage title to reflect current scene
+            stage.setResizable(false);
+            stage.show();
+
+            // Create Match Record (Not sure where to get player info, will be needed to make a match record)
+
+            // MatchRecord matchRecord = new MatchRecord();
+
+            // Update Leaderboard
+
+            // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
+
+            ChatRegistry.getInstance().clearChat();
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
         }
     }
 
@@ -172,5 +203,35 @@ public class C4gameController {
 
         alert.showAndWait();
 
+    }
+
+    @FXML
+    protected void onGridButtonClick(ActionEvent event) {
+        char player = current.getCurrentPlayer(); //gets whose turn it is
+        Button clicked = (Button) event.getSource(); //gets what button was clicked
+        int i = 4; //four, so if not intialized, the turn shouldn't count
+        int j = 4;
+
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 7; col++) {
+                if (clicked == grid[row][col]){
+                    i = row;
+                    j = col;
+                }
+            }
+        }
+        if (current.makeMove(i,player)) { //updates if the move was valid
+            turnDisplayc4.setText("Yippee!");
+            if (current.getGameState() == GameState.PLAYER_WIN){
+                gameOver(); //ends game if someone wins
+            } else if (current.getGameState() == GameState.PLAYER_DRAW) {
+                gameOver(); //ends game if draw
+            }
+//            current.switchTurn();
+        }else{
+            turnDisplayc4.setText("Please make a valid move");
+        }
+
+        updateBoard();
     }
 }
