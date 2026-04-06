@@ -21,8 +21,8 @@
                   <Font name="Dubai Bold" size="14.0" />
                </font>
             </Label>
-            <ListView layoutX="342.0" layoutY="150.0" prefHeight="260.0" prefWidth="240.0" style="-fx-background-color: #FCE0D2;" />
-            <Label layoutX="345.0" layoutY="100.0" prefHeight="17.0" prefWidth="109.0" text="User123452006" textFill="#866b59">
+            <ListView fx:id="rankingListView" layoutX="342.0" layoutY="150.0" prefHeight="260.0" prefWidth="240.0" style="-fx-background-color: #FCE0D2;" />
+            <Label fx:id="usernameValueLabel" layoutX="345.0" layoutY="100.0" prefHeight="17.0" prefWidth="109.0" text="User123452006" textFill="#866b59">
                <font>
                   <Font name="Dubai Regular" size="14.0" />
                </font>
@@ -32,7 +32,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="314.0" layoutY="125.0" prefHeight="17.0" prefWidth="109.0" text="100pts" textFill="#866b59">
+            <Label fx:id="scoreValueLabel" layoutX="314.0" layoutY="125.0" prefHeight="17.0" prefWidth="109.0" text="100pts" textFill="#866b59">
                <font>
                   <Font name="Dubai Regular" size="14.0" />
                </font>

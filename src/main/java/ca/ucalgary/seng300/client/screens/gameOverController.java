@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.rules.leaderboard.GameType;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,6 +9,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -14,6 +18,24 @@ import java.io.IOException;
 public class gameOverController {
 
     public Button returnToMainButton;
+
+    @FXML
+    private Label usernameLabel;
+
+    @FXML
+    private Label scoreValueLabel;
+
+    @FXML
+    private ListView<String> rankingListView;
+
+    private GameType currentGameType;
+
+    @FXML
+    public void initialize() {
+        usernameLabel.setText(ActivePlayer.getInstance().getUsername());
+        scoreValueLabel.setText("");
+        rankingListView.getItems().clear();
+    }
 
     @FXML
     protected void onReturnToMainButtonClick(ActionEvent event) {
