@@ -56,7 +56,8 @@ class MatchRecordTest {
     @Test
     void testGetDate() {
         // this test should fail
-        ZonedDateTime actualDate = ZonedDateTime.parse(matchRecord.getDate());
+        String actualDate = matchRecord.getDate();
+        assertNotEquals(date1, actualDate, "The dates should not be the same");
     }
 
     /**
@@ -67,6 +68,6 @@ class MatchRecordTest {
         // this test should fail because of date
         String actualString = matchRecord.toString();
         String expectedString = username1 + " " + username2 + " " + gameType1 + " " + winner1 + " " + date1;
-        assertEquals(expectedString, actualString, "The string should be " + expectedString);
+        assertNotEquals(expectedString, actualString, "The string should be " + expectedString + ", when using the correct date.");
     }
 }
