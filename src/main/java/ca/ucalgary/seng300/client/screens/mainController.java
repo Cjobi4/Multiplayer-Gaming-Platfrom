@@ -89,11 +89,7 @@ public class mainController {
     }
 
     public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
-//        leaderboardBox.getChildren().clear();
-//
-//        for (LeaderBoardRows row : rows){
-//            leaderboardBox.getChildren().add(showLeaderboardRow(row));
-//        }
+        leaderboardBox.getChildren().clear();
 
     }
 
