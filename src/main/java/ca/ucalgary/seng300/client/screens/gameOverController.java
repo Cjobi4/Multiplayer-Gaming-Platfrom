@@ -29,6 +29,7 @@ public class gameOverController {
             Scene MainScene = new Scene(MainRoot, 800, 600);
             stage.setScene(MainScene);
             stage.setTitle("Main Page"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
         } catch (IOException e) {

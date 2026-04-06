@@ -55,6 +55,7 @@ public class welcomeController {
             Scene scene = new Scene(root, 600, 400);
             stage.setScene(scene);
             stage.setTitle(title);
+            stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
             errorField.setText("Error: could not load " + fxmlPath);
