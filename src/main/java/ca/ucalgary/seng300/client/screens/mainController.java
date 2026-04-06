@@ -1,7 +1,5 @@
 package ca.ucalgary.seng300.client.screens;
 
-import ca.ucalgary.seng300.client.components.LeaderBoardMock;
-import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
@@ -11,6 +9,7 @@ import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -23,13 +22,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import javax.swing.*;
-import javax.swing.text.Element;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -220,6 +215,8 @@ public class mainController {
 
         if (game.getId() == "102"){
             setThumbnailTTT();
+        } else if (game.getId() == "101"){
+            setThumbnailC4();
         }
     }
 
@@ -237,6 +234,11 @@ public class mainController {
 
     private void setThumbnailTTT() {
         Image image = new Image(getClass().getResource("/images/TTTthumbnail.jpg").toExternalForm());
+        thumbnail.setImage(image);
+    }
+
+    private void setThumbnailC4() {
+        Image image = new Image(getClass().getResource("/images/C4thumbnail.jpg").toExternalForm());
         thumbnail.setImage(image);
     }
 
@@ -291,6 +293,16 @@ public class mainController {
         else
         {
             errorField.setText("Please select a game first!");
+        }
+    }
+
+    @FXML
+    public void updateInfo(ActionEvent event) { //updates the Radio Buttons
+        RadioButton selected = (RadioButton) group.getSelectedToggle();
+
+        if (selected != null) {
+            Game selectedGame = findGame(selected.getText());
+            displayGame(selectedGame);
         }
     }
 
@@ -362,6 +374,7 @@ public class mainController {
            RadioButton rb = new RadioButton(game.getTitle());
            rb.setToggleGroup(group);
            gameOptions.getChildren().add(rb);
+           rb.setOnAction(this::updateInfo); //updates the info
 
        }
 
