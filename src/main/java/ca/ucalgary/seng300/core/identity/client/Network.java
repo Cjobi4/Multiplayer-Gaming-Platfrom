@@ -385,8 +385,8 @@ public class Network extends Thread {
 
             // interpret whether the login attempt was successful or not
             return socket.getInputStream().read();
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return -1;
         }
     }
 
@@ -424,8 +424,8 @@ public class Network extends Thread {
 
             // interpret whether registration was successful or not
             return socket.getInputStream().read();
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return -1;
         }
     }
 
@@ -479,8 +479,8 @@ public class Network extends Thread {
 
                 GameRegistry.getInstance().register(new Game(id, title, description, tags, fxmlPath));
             }
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return;
         }
     }
 
@@ -536,6 +536,7 @@ public class Network extends Thread {
             } else if (game == GameType.CONNECT4) {
                 socket.getOutputStream().write(LEAVE_C4_QUEUE);
             }
+            // 1 if left successfully, otherwise 0
             int leaveSuccessful = socket.getInputStream().read();
             return leaveSuccessful;
         } catch (Exception e){
@@ -585,8 +586,8 @@ public class Network extends Thread {
                 }
             }
             return -1;
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return -1;
         }
     }
 
@@ -635,8 +636,8 @@ public class Network extends Thread {
             for (String player : activePlayers) {
                 PlayerRegistry.getInstance().register(new Player(player));
             }
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return;
         }
     }
 
@@ -768,8 +769,8 @@ public class Network extends Thread {
                 return null;
             }
             return records;
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return null;
         }
     }
 
