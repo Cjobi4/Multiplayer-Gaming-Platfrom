@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.core.identity.client;
 
-public class Session {
+import com.sun.net.httpserver.Request;
+
+public abstract class Session {
 
     private int currentUserID;
     private String username;
@@ -21,5 +23,4 @@ public class Session {
     public int getUserID() {
         return 0;
     }
-
 }

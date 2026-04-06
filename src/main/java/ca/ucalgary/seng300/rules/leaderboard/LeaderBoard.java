@@ -24,19 +24,18 @@ public class LeaderBoard {
     public static List<LeaderboardEntry> getLeaderboard (GameType gameType){
         // get the leaderboard based on rank
         try {
-            List<List<LeaderboardEntry>> leaderboard = (List<List<LeaderboardEntry>>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, null).get();
             if (gameType == GameType.TICTACTOE) {
-                List<LeaderboardEntry> leaderboardTTT = leaderboard.getFirst();
+                List<LeaderboardEntry> leaderboardTTT = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"});;
                 leaderboardTTT.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardTTT;
             }
             else if (gameType == GameType.CONNECT4) {
-                List<LeaderboardEntry> leaderboardC4 = leaderboard.get(1);
+                List<LeaderboardEntry> leaderboardC4 = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"c4"});
                 leaderboardC4.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardC4;
             }
             else {
-                List<LeaderboardEntry> leaderboardCombined = leaderboard.get(2);
+                List<LeaderboardEntry> leaderboardCombined = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"total"});
                 leaderboardCombined.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardCombined;
             }
