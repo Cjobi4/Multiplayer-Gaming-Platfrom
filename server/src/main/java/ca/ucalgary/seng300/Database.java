@@ -387,6 +387,16 @@ public class Database
     }
 
     /**
+     * Gets a user's Session with their username.
+     * @param username The username of the Session to be found.
+     * @return The user's Session, or null if they don't have one.
+     */
+    public static Session getSession(String username)
+    {
+        return loggedInUsers.get(username);
+    }
+
+    /**
      * Given the results of a match, update the leaderboard entries and add it to the list of match records.
      * @param playerOne The username of the first player from the game in String format.
      * @param playerTwo The username of the second player from the game in String format.

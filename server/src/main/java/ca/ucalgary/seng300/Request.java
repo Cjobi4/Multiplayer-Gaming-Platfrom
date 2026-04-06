@@ -36,5 +36,12 @@ public class Request
         return future.get();
     }
 
-
+    /**
+     * Set the result of the future
+     * @param res The result to be set
+     */
+    public void setFuture(String res)
+    {
+        future.complete(res);
+    }
 }
