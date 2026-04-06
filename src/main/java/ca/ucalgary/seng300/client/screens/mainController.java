@@ -243,10 +243,6 @@ public class mainController {
         gameTagsLabel.setText("");
     }
 
-//    private void setThumbnailTTT(){
-//        Image image = new Image("src/main/resources/images/TTTthumbnail.jpg");
-//        thumbnail = new ImageView((Element) image);
-//    }
 
     private void setThumbnailTTT() {
         Image image = new Image(getClass().getResource("/images/TTTthumbnail.jpg").toExternalForm());
