@@ -13,11 +13,9 @@ import java.util.*;
  * the PersistenceService from the shared contracts layer. Display
  * is handled by the Client/UI leaderboard dashboard.</p>
  *
- * <p>TODO: Implement score submission, ranking, and query operations
  * using the shared LeaderboardEntry model.</p>
  */
 public class LeaderBoard {
-    // TODO: Implement leaderboard — placeholder for Rules & Validation
     /**
      * get the leaderboard based on ranking (like the top 10 players)
      */
