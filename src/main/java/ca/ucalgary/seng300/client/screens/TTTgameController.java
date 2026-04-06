@@ -9,10 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -125,6 +122,28 @@ public class TTTgameController {
         } catch (IOException e) {
             System.err.println("Error: Could not load TTTopponentSelectPage.fxml. Check file path!");
         }
+    }
+
+    @FXML
+    protected void onQuestionButtonClick(ActionEvent event) {
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("How to Play Tic-Tac-Toe");
+        alert.setHeaderText("Game Instructions");
+
+        String instructions = "1. The game is played on a 3x3 grid.\n\n"
+                + "2. If you are X, your opponent is O. If you are O, your opponent is X. Players take turns putting their marks in empty squares.\n\n"
+                + "3. The first player to get 3 of their marks in a row (up, down, across, or diagonally) is the winner.\n\n"
+                + "4. When all 9 squares are full, the game is over. If no player has 3 marks in a row, the game ends in a tie.\n";
+
+        alert.setContentText(instructions);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+
+        alert.showAndWait();
+
     }
 
     //Everytime this is called, the board is updated

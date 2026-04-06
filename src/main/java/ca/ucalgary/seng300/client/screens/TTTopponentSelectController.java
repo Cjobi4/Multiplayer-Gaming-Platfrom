@@ -187,6 +187,7 @@ public class TTTopponentSelectController implements Initializable {
 
         } catch (IOException e) {
             System.err.println("Error: Could not load TTTgamePage.fxml. Check file path!");
+            e.printStackTrace();
         }
 
     }
