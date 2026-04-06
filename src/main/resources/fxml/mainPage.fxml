@@ -114,12 +114,12 @@
               <menus>
                 <Menu mnemonicParsing="false" text="| View Player Stats |">
                      <items>
-                        <MenuItem mnemonicParsing="false" text="View Player Stats" />
+                        <MenuItem fx:id="viewPlayerStats" mnemonicParsing="false" text="View Player Stats" />
                      </items></Menu>
                 <Menu mnemonicParsing="false" text="| Developper Info |">
                      <items>
-                        <MenuItem mnemonicParsing="false" text="View Developer Credits" />
-                        <MenuItem mnemonicParsing="false" text="View Application Information" />
+                        <MenuItem fx:id="viewDeveloperInfo" mnemonicParsing="false" text="View Developer Credits" />
+                        <MenuItem fx:id="viewApplicationInfo" mnemonicParsing="false" text="View Application Information" />
                      </items>
                 </Menu>
               </menus>

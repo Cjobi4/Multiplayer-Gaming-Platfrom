@@ -45,6 +45,9 @@ public class mainController {
     public TextField searchField;
     public VBox leaderboardBox;
     public VBox gameOptions;
+    public MenuItem viewPlayerStats;
+    public MenuItem viewDeveloperInfo;
+    public MenuItem viewApplicationInfo;
 
     private GameRegistry games = GameRegistry.getInstance();
     ToggleGroup group = new ToggleGroup();
