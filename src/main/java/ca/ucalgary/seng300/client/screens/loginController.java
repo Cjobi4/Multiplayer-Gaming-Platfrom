@@ -32,12 +32,12 @@ public class loginController {
         String password = passwordField.getText() == null ? "" : passwordField.getText().trim();
 
         if (username.isEmpty()) {
-            errorField.setText("Please enter your username Address to login!");
+            errorField.setText("Please enter your username to login!");
             return;
         }
 
         if (password.isEmpty()) {
-            errorField.setText("Please enter your password Address to login!");
+            errorField.setText("Please enter your password to login!");
             return;
         }
 

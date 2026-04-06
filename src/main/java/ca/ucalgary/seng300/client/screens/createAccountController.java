@@ -65,7 +65,7 @@ public class createAccountController {
                         }
 
                         if (!Boolean.TRUE.equals(result)) {
-                            errorField.setText("Failed to create account. Username may already exist.");
+                            errorField.setText("Failed to create account.");
                             return;
                         }
 
