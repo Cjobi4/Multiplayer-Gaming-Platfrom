@@ -46,6 +46,7 @@ class LeaderBoardTest {
 
         List <LeaderboardEntry> result = LeaderBoard.getLeaderboard(GameType.CONNECT4);
 
+        // should be organized in descending order
         assertEquals(data, result, "The input list should be the same as the output.");
         assertEquals("neocity", result.get(0).getUsername(), "First place on leaderboard should be: neocity");
         assertEquals("john doe", result.get(1).getUsername(),  "Second place on leaderboard should be: john doe");
@@ -58,5 +59,13 @@ class LeaderBoardTest {
 
     @Test
     void testGetUserMatchRecords() {
+    }
+
+    @Test
+    void testWhenUserRecordDoesNotExist() {
+    }
+
+    @Test
+    void testWhenMatchRecordDoesNotExist() {
     }
 }
