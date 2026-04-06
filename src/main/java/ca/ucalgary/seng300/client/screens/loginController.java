@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.identity.client.Network;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,9 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class loginController {
 
@@ -25,16 +26,46 @@ public class loginController {
     public TextField passwordField;
 
     @FXML
-    protected void onLoginButtonClick(ActionEvent event) throws Exception {
-        //Check if the field is empty or contains only whitespace
-        if(userNameField.getText() == null || userNameField.getText().trim().isEmpty()) {
+    protected void onLoginButtonClick(ActionEvent event) {
+        String username = userNameField.getText() == null ? "" : userNameField.getText().trim();
+        String password = passwordField.getText() == null ? "" : passwordField.getText().trim();
+
+        if (username.isEmpty()) {
             errorField.setText("Please enter your username Address to login!");
-        } else if (passwordField.getText() == null || passwordField.getText().trim().isEmpty()) {
+            return;
+        }
+
+        if (password.isEmpty()) {
             errorField.setText("Please enter your password Address to login!");
-        } else {
-            Network.getInstance().queueRequest(2, new String[] {userNameField.getText(), passwordField.getText()});
-            errorField.setText("");
-            switchSceneLargerScreen(event, "/fxml/mainPage.fxml", "Login Screen");
+            return;
+        }
+
+        try {
+            loginButton.setDisable(true);
+            errorField.setText("Logging in...");
+
+            Network.getInstance()
+                    .queueRequest(Network.LOGIN, new String[] {username, password})
+                    .orTimeout(10, TimeUnit.SECONDS)
+                    .whenComplete((result, throwable) -> Platform.runLater(() -> {
+                        loginButton.setDisable(false);
+
+                        if (throwable != null) {
+                            errorField.setText("Error: Could not log in.");
+                            return;
+                        }
+
+                        if (!Boolean.TRUE.equals(result)) {
+                            errorField.setText("Invalid username or password.");
+                            return;
+                        }
+
+                        errorField.setText("");
+                        switchSceneLargerScreen(event, "/fxml/mainPage.fxml", "Main Page");
+                    }));
+        } catch (Exception e) {
+            loginButton.setDisable(false);
+            errorField.setText("Error: Could not log in.");
         }
     }
 

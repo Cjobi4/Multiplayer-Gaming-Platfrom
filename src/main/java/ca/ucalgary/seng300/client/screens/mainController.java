@@ -2,9 +2,11 @@ package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.client.components.LeaderBoardMock;
 import ca.ucalgary.seng300.client.components.LeaderBoardRows;
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class mainController {
 
@@ -259,24 +262,40 @@ public class mainController {
 
     @FXML
     protected void handleLogout(ActionEvent event) {
+        logOutButton.setDisable(true);
+        errorField.setText("Logging out...");
+
         try {
-            //Load fxml file
+            Network.getInstance()
+                    .queueRequest(Network.LOGOUT, null)
+                    .orTimeout(5, TimeUnit.SECONDS)
+                    .whenComplete((result, throwable) -> Platform.runLater(() -> {
+                        if (throwable != null || !Boolean.TRUE.equals(result)) {
+                            System.err.println("Warning: server logout was not confirmed.");
+                        }
+
+                        switchToLoginScene(event);
+                    }));
+        } catch (Exception e) {
+            switchToLoginScene(event);
+        }
+    }
+
+    private void switchToLoginScene(ActionEvent event) {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/loginPage.fxml"));
             Parent loginRoot = loader.load();
 
-            //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            //Create new scene and set it on the stage
             Scene loginScene = new Scene(loginRoot, 600, 400);
             stage.setScene(loginScene);
-            stage.setTitle("Login Screen"); //Change stage title to reflect current scene
+            stage.setTitle("Login Screen");
             stage.setResizable(false);
             stage.show();
-
         } catch (IOException e) {
-            System.err.println("Error: Could not load loginPage.fxml. Check file path!");
-
+            errorField.setText("Error loading page: /fxml/loginPage.fxml");
+            logOutButton.setDisable(false);
         }
     }
 
