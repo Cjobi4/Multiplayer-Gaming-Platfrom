@@ -2,6 +2,7 @@ package ca.ucalgary.seng300;
 
 import javax.crypto.SecretKey;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.sql.ResultSet;
@@ -105,6 +106,13 @@ public class Session extends Thread
                     //see what type of request it is
                     requestType = client.getInputStream().read();
 
+                    if (requestType == -1)
+                    {
+                        throw new RuntimeException();
+                    }
+
+                    System.out.println("requestType: " + requestType + " from " + username);
+
                     //int messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     //byte[] message = client.getInputStream().readNBytes(messageLength);
 
@@ -126,7 +134,35 @@ public class Session extends Thread
 
         } catch (Exception e) //if an exception happens, it will kill the thread automatically
         {
-            throw new RuntimeException(e);
+            System.out.println("session closed");
+
+            //if something goes wrong, log out
+            if (loggedIn)
+            {
+                Database.logOut(username);
+            }
+
+            //if in any matchmaking queues, exit
+            if (inTttQueue)
+            {
+                Database.getTttMatchmaker().leaveMQueue(this);
+            }else if (inC4Queue)
+            {
+                Database.getC4Matchmaker().leaveMQueue(this);
+            }
+
+            //close the thread and connection
+            try
+            {
+                client.close();
+            } catch (Exception ex)
+            {
+                //socket connection couldn't be closed, nothing to be done, just close the connection anyway
+                System.out.println("Connection couldn't be closed.");
+            }
+            Thread.currentThread().interrupt();
+
+            System.out.println(e);
         }
     }
 
@@ -153,7 +189,15 @@ public class Session extends Thread
             Database.getC4Matchmaker().leaveMQueue(this);
         }
 
-        //close the thread
+        //close the thread and connection
+        try
+        {
+            client.close();
+        } catch (Exception e)
+        {
+            //socket connection couldn't be closed, nothing to be done, just close the connection anyway
+            System.out.println("Connection couldn't be closed.");
+        }
         Thread.currentThread().interrupt();
     }
 
