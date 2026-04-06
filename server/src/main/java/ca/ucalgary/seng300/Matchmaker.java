@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.games.TTTServerSession;
+import ca.ucalgary.seng300.games.ConnectFourGameSession;
 
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -285,10 +286,23 @@ public class Matchmaker extends Thread
                 return 2;
             }
 
+            if (gameName.equals("ttt")) {
+                TTTServerSession gameSession = new TTTServerSession(p1, p2);
+                gameSession.start();
+            } else if (gameName.equals("c4")) {
+                ConnectFourGameSession gameSession = new ConnectFourGameSession(p1, p2);
+                gameSession.start();
+            }
+            else
+            {
+                return 4;
+            }
+
             //if no one rejected it (both players accepted), create a new match for them
             /// make game
-            TTTServerSession gameSession = new TTTServerSession(p1, p2);
-            gameSession.start();
+//            TTTServerSession gameSession = new TTTServerSession(p1, p2);
+//            gameSession.start();
+
 
 
 

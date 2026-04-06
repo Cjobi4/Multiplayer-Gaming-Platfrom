@@ -168,7 +168,7 @@ public class TTTServerSession extends Thread{
         String date = java.time.LocalDate.now().toString();
 
         //specific gametype name for tic tac toe is TicTacToe
-        String gameType = "TicTacToe";
+        String gameName = "ttt";
 
         //loop for winning
         if (game.getGameState() == GameState.PLAYER_WIN) {
@@ -188,7 +188,7 @@ public class TTTServerSession extends Thread{
         }
 
         //call the add match result with all the previous work
-        addMatchResult(player1Username, player2Username, winnerUserName, date, gameType);
+        addMatchResult(player1Username, player2Username, winnerUserName, date, gameName);
 
         //set the active session to false
         activeSession = false;
@@ -296,7 +296,6 @@ public class TTTServerSession extends Thread{
         //ask the active player for their move and wait for the result
         Request req = new Request(REQUEST_MOVE_PROMPT, new String[]{"Your Turn", String.valueOf(game.getCurrentPlayer())});
         String moveString = req.getResult();
-        //String moveString = activePlayerSession.addRequestAndWait(REQUEST_MOVE_PROMPT, new String[]{"Your Turn", String.valueOf(game.getCurrentPlayer())});
 
         //if no move came back, do nothing this loop
         if (moveString == null || moveString.isBlank()) {
