@@ -4,6 +4,8 @@ import ca.ucalgary.seng300.client.components.LeaderBoardMock;
 import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.games.connectfour.ConnectFourGame;
+import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Game;
@@ -255,15 +257,13 @@ public class mainController {
 
     @FXML
     protected void onMatchMakeButtonClick(ActionEvent event) {
-
         RadioButton selected = (RadioButton) group.getSelectedToggle();
-
         if (selected != null)
         {
             Game selectedGame = findGame(selected.getText());
-
             if (selectedGame != null) {
-                switchScene(event, "/fxml/" + selectedGame.getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
+//                switchScene(event, "/fxml/" + selectedGame.getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
+                showMatchFoundPopup("Garry", selectedGame, event);
                 errorField.setText("");
             } else {
                 errorField.setText("Could not find the selected game.");
@@ -273,6 +273,27 @@ public class mainController {
         {
             errorField.setText("Please select a game first!");
         }
+    }
+
+    //Popoup that appears when the user is matched with another opponenet.
+    private void showMatchFoundPopup(String opponentName, Game game, ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Match Found!");
+        alert.setHeaderText("Opponent found: " + opponentName);
+        alert.setContentText("Do you want to accept this match for " + game.getTitle() + "?");
+
+        ButtonType acceptButton = new ButtonType("Accept");
+        ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(acceptButton, declineButton);
+
+        alert.showAndWait().ifPresent(type -> {
+            if (type == acceptButton) {
+                String fxmlFile = "/fxml/" + game.getFxmlPath() + "opponentSelectPage.fxml";
+                switchScene(event, fxmlFile, "Playing " + game.getTitle());
+            } else {
+                errorField.setText("Match declined.");
+            }
+        });
     }
 
     private void switchScene(ActionEvent event, String fxmlPath, String title) {
