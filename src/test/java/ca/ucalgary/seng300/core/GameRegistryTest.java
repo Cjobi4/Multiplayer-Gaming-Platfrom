@@ -207,7 +207,7 @@ public class GameRegistryTest {
      * Actual Output: the list of tags retrieved by getTags()
      */
     @Test
-    void testGameGetTagsReturnsCorrectTagValues() {
+    void testGameGetTagsReturnsCorrectTagValuesList() {
         List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
 
         // create game and add it to the registry
