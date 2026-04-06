@@ -18,12 +18,16 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import javax.swing.*;
+import javax.swing.text.Element;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +47,7 @@ public class mainController {
     public TextField searchField;
     public VBox leaderboardBox;
     public VBox gameOptions;
+    public ImageView thumbnail;
 
     private GameRegistry games = GameRegistry.getInstance();
     ToggleGroup group = new ToggleGroup();
@@ -212,6 +217,10 @@ public class mainController {
         gameDescriptionLabel.setText("Description: " + game.getDescription());
         gameIdLabel.setText("Game ID: " + game.getId());
         gameTagsLabel.setText("Game Tag: " + formatTags(game.getTags()));
+
+        if (game.getId() == "102"){
+            setThumbnailTTT();
+        }
     }
 
     private void clearDisplay(){
@@ -219,6 +228,16 @@ public class mainController {
         gameDescriptionLabel.setText("");
         gameIdLabel.setText("");
         gameTagsLabel.setText("");
+    }
+
+//    private void setThumbnailTTT(){
+//        Image image = new Image("src/main/resources/images/TTTthumbnail.jpg");
+//        thumbnail = new ImageView((Element) image);
+//    }
+
+    private void setThumbnailTTT() {
+        Image image = new Image(getClass().getResource("/images/TTTthumbnail.jpg").toExternalForm());
+        thumbnail.setImage(image);
     }
 
 
