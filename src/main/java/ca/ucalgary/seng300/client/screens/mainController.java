@@ -278,7 +278,6 @@ public class mainController {
         }
     }
 
-    //Popoup that appears when the user is matched with another opponenet.
     private void showMatchFoundPopup(String opponentName, Game game, ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Match Found!");
@@ -313,6 +312,7 @@ public class mainController {
             }
         });
     }
+
 
     private void switchScene(ActionEvent event, String fxmlPath, String title) {
         try {
@@ -384,6 +384,11 @@ public class mainController {
            gameOptions.getChildren().add(rb);
 
        }
+
+    }
+
+    @FXML
+    protected void setViewDeveloperInfo(ActionEvent event) {
 
     }
 }
