@@ -63,16 +63,25 @@ public class Session extends Thread
         requestQueue.put(req);
     }
 
-    /**
-     * Adds a request to the queue for the Session to execute. This should be used when a result IS needed. The Request
-     * object MUST be created before being passed into the function for result retrieval.
-     * @param req The Request object to be added into the queue.
-     * @throws Exception NullPointerException if the request is null, or InterruptedException if is interrupted while
-     * waiting
-     */
-    public void addRequest(Request req) throws Exception
-    {
+    //this function adds a request to the session queue AND waits for a response from the client
+    //we need this because addRequest() only sends data, but does NOT wait for a reply
+    //this function allows the server (game session) to ask the client for something (like a move)
+    //and then pause until the client responds with a result
+    public String addRequestAndWait(int type, String[] parameters) throws Exception {
+
+        //create a new request object with a specific type and parameters
+        Request req = new Request(type, parameters);
+
+        //initialize a future object so we can wait for the client's response later
+        //this is what allows getResult() to "block" until a result is returned
+        req.future = new CompletableFuture<>();
+
+        //add the request to the request queue so it gets sent to the client
         requestQueue.put(req);
+
+        //wait for the client to respond and return the result
+        //this will pause execution here until the client sends back a response
+        return req.getResult();
     }
 
     @Override
