@@ -2,12 +2,11 @@ package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.client.components.LeaderBoardMock;
 import ca.ucalgary.seng300.client.components.LeaderBoardRows;
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
-import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
-import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
-import javafx.concurrent.Task;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class mainController {
 
@@ -56,57 +56,30 @@ public class mainController {
     }
 
     private void loadCombinedLeaderboard(){
+       List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
+       renderLeaderboard(rows);// New functionality for later use
+    }
+
+    public void renderLeaderboard(List<LeaderBoardRows> rows){
         leaderboardBox.getChildren().clear();
 
-        Task<List<LeaderboardEntry>> task = new Task<>() { // Found the element Task which allows the database queries to run in the background rather than freezing up the UI
-            @Override
-            protected List<LeaderboardEntry> call() {
-                return LeaderBoard.getLeaderboard(null); // using null because that is the only way to be able to get the else statement to run in the LeaderBoard class
-            }
-        };
-
-        task.setOnSucceeded(e -> renderLeaderboard(task.getValue()));
-        task.setOnFailed(e -> {
-            leaderboardBox.getChildren().clear();
-
-            Label errorLabel = new Label("Failed to load leaderboard");
-            errorLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: red;");
-            leaderboardBox.getChildren().add(errorLabel);
-
-            if (task.getException() != null) {
-                task.getException().printStackTrace();
-            }
-        });
-
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
+        for (LeaderBoardRows row : rows){
+            leaderboardBox.getChildren().add(showLeaderboardRow(row));
+        }
 
     }
 
-    public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
-          leaderboardBox.getChildren().clear();
+    public HBox showLeaderboardRow(LeaderBoardRows row){
+        Label rankLabel = new Label("#" + row.getRank());
+        Label nameLabel = new Label(row.getPlayerName());
+        Label winsLabel = new Label(row.getWins() + " W");
+        Label matchesLabel = new Label(row.getMatches() + " M");
 
-          for(int i = 0; i < leaderboard.size(); i++){
-              LeaderboardEntry entry = leaderboard.get(1);
-              leaderboardBox.getChildren().add(showLeaderboardRow(i+1, entry));
-          }
-    }
-
-    public HBox showLeaderboardRow(int rank,LeaderboardEntry entry){
-        Label rankLabel = new Label("#" + rank);
-        Label nameLabel = new Label(entry.getUsername());
-        Label winsLabel = new Label(entry.getWins() + " W");
-        Label matchesLabel = new Label(entry.getMatches() + " M");
-
-        rankLabel.setMinWidth(30);
-        winsLabel.setMinWidth(40);
-        matchesLabel.setMinWidth(40);
-
+        rankLabel.setMinWidth(45);
         nameLabel.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
-        HBox rowBox = new HBox(5);
+        HBox rowBox = new HBox(15);
         rowBox.setAlignment(Pos.CENTER_LEFT);
         rowBox.getChildren().addAll(rankLabel, nameLabel, winsLabel, matchesLabel);
 
@@ -123,6 +96,9 @@ public class mainController {
 
         return rowBox;
     }
+
+
+
 
 
 
@@ -275,6 +251,7 @@ public class mainController {
             Scene scene = new Scene(root, 800, 600);
             stage.setScene(scene);
             stage.setTitle(title);
+            stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
             errorField.setText("Error loading page: " + fxmlPath);
@@ -285,23 +262,40 @@ public class mainController {
 
     @FXML
     protected void handleLogout(ActionEvent event) {
+        logOutButton.setDisable(true);
+        errorField.setText("Logging out...");
+
         try {
-            //Load fxml file
+            Network.getInstance()
+                    .queueRequest(Network.LOGOUT, null)
+                    .orTimeout(5, TimeUnit.SECONDS)
+                    .whenComplete((result, throwable) -> Platform.runLater(() -> {
+                        if (throwable != null || !Boolean.TRUE.equals(result)) {
+                            System.err.println("Warning: server logout was not confirmed.");
+                        }
+
+                        switchToLoginScene(event);
+                    }));
+        } catch (Exception e) {
+            switchToLoginScene(event);
+        }
+    }
+
+    private void switchToLoginScene(ActionEvent event) {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/loginPage.fxml"));
             Parent loginRoot = loader.load();
 
-            //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            //Create new scene and set it on the stage
             Scene loginScene = new Scene(loginRoot, 600, 400);
             stage.setScene(loginScene);
-            stage.setTitle("Login Screen"); //Change stage title to reflect current scene
+            stage.setTitle("Login Screen");
+            stage.setResizable(false);
             stage.show();
-
         } catch (IOException e) {
-            System.err.println("Error: Could not load loginPage.fxml. Check file path!");
-
+            errorField.setText("Error loading page: /fxml/loginPage.fxml");
+            logOutButton.setDisable(false);
         }
     }
 
