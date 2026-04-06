@@ -74,7 +74,7 @@ public class Database
                     + "totalMatchesPlayed INTEGER NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS matchRecord ("
-                    + "gametype TEXT PRIMARY KEY,"
+                    + "gameType TEXT PRIMARY KEY,"
                     + "p1Username TEXT NOT NULL,"
                     + "p2Username TEXT NOT NULL,"
                     + "winnerName TEXT NOT NULL,"
@@ -106,10 +106,10 @@ public class Database
                 pstmt.executeUpdate();
 
                 //add in a sample gameInfo
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^TTT^YES)");
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^C4^YES)");
-                stmt.execute("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(admin, 999, 999, 999, 999, 999, 999)");
-                stmt.execute("INSERT INTO matchRecord(gameid, p1Username, p2Username, gametype, winnerName, date) VALUES(gameid, admin, test, Tic-Tac-Toe, admin, date)");
+                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(0, \"Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^TTT^YES\")");
+                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(1, \"Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^C4^YES\")");
+                stmt.executeUpdate("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(\"admin\", 999, 999, 999, 999, 999, 999)");
+                stmt.executeUpdate("INSERT INTO matchRecord(gameType, p1Username, p2Username, winnerName, date) VALUES(\"gameType\", \"admin\", \"test\", \"Tic-Tac-Toe\", \"date\")");
             }
         } catch (SQLException e)
         {
@@ -335,6 +335,7 @@ public class Database
             return stmt.executeQuery("SELECT * FROM leaderboard ORDER BY " + game + "Wins DESC;");
         } catch (SQLException e)
         {
+            System.out.println("Leaderboard query failed");
             return null;
         }
     }
