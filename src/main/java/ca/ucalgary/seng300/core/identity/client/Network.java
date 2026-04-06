@@ -35,6 +35,7 @@ public class Network extends Thread {
     private static SecretKey AESKey;
     private static SecureRandom sRan;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
+    public CompletableFuture<String[]> incomingChallenge = new CompletableFuture<>();
 
     // private static final String serverIP ="10.2.1.179";
     // private static final int serverPort = 501;
@@ -58,7 +59,11 @@ public class Network extends Thread {
     public static final byte KICKED_FROM_QUEUE = 13;
     public static final byte MATCH_ACCEPTED = 14;
     public static final byte MATCH_REJECTED = 15;
-    public static final byte RESPOND_QUEUE = 16;
+    //??
+
+    public static final byte RESPOND_QUEUE = 35;
+    public static final byte SEND_CHALLENGE = 16;
+    public static final byte RECEIVE_CHALLENGE = 17;
 
     // to be added/modified later
     public static final byte SEND_MOVE_TTT = 125;
@@ -140,6 +145,10 @@ public class Network extends Thread {
           Decline Queue
                 int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"0"}).get();
 
+           -- CHALLENGE PLAYER --
+
+           pass in the username and gametype as a string
+           int result = (Integer) Network.getInstance().queueRequest(Network.SEND_CHALLENGE, new String[]{"username", "gameType"}).get();
 
     */
 
@@ -228,6 +237,9 @@ public class Network extends Thread {
                     // chats are the only unprompted requests currently...add matchmaking later
                     if (descriptionByte == receive_chat) {
                         receiveMessage();
+                    }
+                    else if (descriptionByte == RECEIVE_CHALLENGE) {
+                        receiveChallenge();
                     }
                 }
 
@@ -319,6 +331,7 @@ public class Network extends Thread {
             /*case LEAVE_C4_QUEUE:
                 req.future.complete(leaveQueue(GameType.CONNECT4));
                 break;*/
+
             case RESPOND_QUEUE:
                 boolean accept = parameters[0].equals("1");
                 req.future.complete(respondQueue(accept));
@@ -339,8 +352,11 @@ public class Network extends Thread {
                 req.future.complete(null);
                 break;
 
+            case SEND_CHALLENGE:
+                req.future.complete(sendChallenge(parameters[0], parameters[1]));
+                System.out.println("send challenge");
+                break;
         }
-
     }
 
     // LOGIN
@@ -503,9 +519,6 @@ public class Network extends Thread {
             // 90 sec passed, no queue pop. tell server to leave queue
             leaveQueue(game);
             return null;
-        } finally {
-            // reset socket timeout for run loop
-            socket.setSoTimeout(3000);
         }
         return null;
     }
@@ -515,7 +528,7 @@ public class Network extends Thread {
      * @param game
      * @throws Exception
      */
-    public void leaveQueue(GameType game) throws Exception {
+    public int leaveQueue(GameType game) throws Exception {
         socketRequestTimeout();
         try {
             if (game == GameType.TICTACTOE) {
@@ -524,8 +537,9 @@ public class Network extends Thread {
                 socket.getOutputStream().write(LEAVE_C4_QUEUE);
             }
             int leaveSuccessful = socket.getInputStream().read();
-        } finally {
-            socketListenTimeout();
+            return leaveSuccessful;
+        } catch (Exception e){
+            return -1;
         }
     }
 
@@ -574,6 +588,32 @@ public class Network extends Thread {
         } finally {
             socketListenTimeout();
         }
+    }
+
+
+    public int sendChallenge(String username, String gameType) throws Exception {
+        socketRequestTimeout();
+        try {
+            socket.getOutputStream().write(SEND_CHALLENGE);
+
+            sendRequestParameter(username);
+            sendRequestParameter(gameType);
+
+            // either 14 if accepted or 15 if rejected
+            int response = socket.getInputStream().read();
+
+            return response;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    // 14 if accept, 15 if reject
+    public void receiveChallenge() throws Exception {
+        String username = readResponseString();
+        String gameType = readResponseString();
+
+        incomingChallenge.complete(new String[]{username, gameType});
     }
 
     public void getOnlinePlayers() throws Exception {
