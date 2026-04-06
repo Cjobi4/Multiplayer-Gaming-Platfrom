@@ -37,6 +37,11 @@ public class gameOverController {
         rankingListView.getItems().clear();
     }
 
+    public void setGameType(GameType gameType){
+        this.currentGameType = gameType;
+        //loadGameOverData();
+    }
+
     @FXML
     protected void onReturnToMainButtonClick(ActionEvent event) {
         try {
