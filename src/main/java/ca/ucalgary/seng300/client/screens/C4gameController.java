@@ -91,9 +91,9 @@ public class C4gameController {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 7; j++) {
                 if (board.getCell(i, j) == 'X'){ //if its not empty
-                    grid[i][j].setStyle( "-fx-text-fill: #f0e8a1;"); //yellow
+                    grid[i][j].setStyle( "-fx-background-color: #f0e8a1;"); //yellow
                 } else if (board.getCell(i, j) == 'O') {
-                    grid[i][j].setStyle( "-fx-text-fill: #f0a1a1;"); //red
+                    grid[i][j].setStyle( "-fx-background-color: #f0a1a1;"); //red
                 }
             }
         }
@@ -209,14 +209,12 @@ public class C4gameController {
     protected void onGridButtonClick(ActionEvent event) {
         char player = current.getCurrentPlayer(); //gets whose turn it is
         Button clicked = (Button) event.getSource(); //gets what button was clicked
-        int i = 4; //four, so if not intialized, the turn shouldn't count
-        int j = 4;
-
+        int i = 8; //four, so if not intialized, the turn shouldn't count
+        int j = 8;
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 7; col++) {
                 if (clicked == grid[row][col]){
-                    i = row;
-                    j = col;
+                    i = col;
                 }
             }
         }
