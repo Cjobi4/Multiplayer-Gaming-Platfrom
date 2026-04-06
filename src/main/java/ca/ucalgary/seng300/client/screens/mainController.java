@@ -4,9 +4,12 @@ import ca.ucalgary.seng300.client.components.LeaderBoardMock;
 import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -56,26 +59,55 @@ public class mainController {
     }
 
     private void loadCombinedLeaderboard(){
-       List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
-       renderLeaderboard(rows);// New functionality for later use
-    }
-
-    public void renderLeaderboard(List<LeaderBoardRows> rows){
         leaderboardBox.getChildren().clear();
 
-        for (LeaderBoardRows row : rows){
-            leaderboardBox.getChildren().add(showLeaderboardRow(row));
+        Task<List<LeaderboardEntry>> task = new Task<>() {
+            @Override
+            protected List<LeaderboardEntry> call() {
+                return LeaderBoard.getLeaderboard(null);
+            }
+        };
+
+        task.setOnSucceeded(e -> renderLeaderboard(task.getValue()));
+
+        task.setOnFailed(e -> {
+            leaderboardBox.getChildren().clear();
+
+            Label errorLabel = new Label("Failed to load leaderboard");
+            errorLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: red;");
+            leaderboardBox.getChildren().add(errorLabel);
+
+            if (task.getException() != null) {
+                task.getException().printStackTrace();
+            }
+        });
+
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
+        leaderboardBox.getChildren().clear();
+
+        for (int i = 0; i < leaderboard.size(); i++) {
+            LeaderboardEntry entry = leaderboard.get(i);
+            leaderboardBox.getChildren().add(showLeaderboardRow(i+1, entry));
         }
 
     }
 
-    public HBox showLeaderboardRow(LeaderBoardRows row){
-        Label rankLabel = new Label("#" + row.getRank());
-        Label nameLabel = new Label(row.getPlayerName());
-        Label winsLabel = new Label(row.getWins() + " W");
-        Label matchesLabel = new Label(row.getMatches() + " M");
+    public HBox showLeaderboardRow(int rank, LeaderboardEntry entry){
+        Label rankLabel = new Label("#" + rank);
+        Label nameLabel = new Label(entry.getUsername());
+        Label winsLabel = new Label(entry.getWins() + " W");
+        Label matchesLabel = new Label(entry.getMatches() + " M");
 
-        rankLabel.setMinWidth(45);
+        rankLabel.setMinWidth(30);
+        winsLabel.setMinWidth(40);
+        matchesLabel.setMinWidth(40);
+
         nameLabel.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
