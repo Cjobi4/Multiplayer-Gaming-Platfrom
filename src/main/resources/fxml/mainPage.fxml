@@ -7,10 +7,8 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -19,7 +17,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #f2f2ff;" styleClass="pane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.mainController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: #f2f2ff;" styleClass="pane" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.ucalgary.seng300.client.screens.mainController">
    <center>
       <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #F9EDE1;" BorderPane.alignment="CENTER">
          <children>
@@ -50,22 +48,7 @@
                               <Font name="Dubai Medium" size="18.0" />
                            </font>
                         </Label>
-                        <VBox spacing="5.0">
-                           <children>
-                              <RadioButton fx:id="connect4Select" mnemonicParsing="false" onAction="#onSelectButtonSelected" text="Connect 4" textFill="#866b59">
-                                 <font>
-                                    <Font name="Dubai Medium" size="14.0" />
-                                 </font>
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="gameToggleGroup" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton fx:id="TicTacToeSelect" mnemonicParsing="false" onAction="#onSelectButtonSelected" text="Tic-Tac-Toe" textFill="#866b59" toggleGroup="$gameToggleGroup">
-                                 <font>
-                                    <Font name="Dubai Medium" size="14.0" />
-                                 </font>
-                              </RadioButton>
-                           </children>
+                        <VBox fx:id="gameOptions" prefHeight="247.0" prefWidth="233.0" spacing="5.0">
                            <padding>
                               <Insets left="10.0" />
                            </padding>

@@ -226,4 +226,17 @@ public class TicTacToeGame {
         return false;
     }
 
+    /*
+    Method to help with testing, allows you to manually set the board
+     */
+    public void setBoard(TicTacToeBoard newBoard){
+        this.board = newBoard;
+    }
+
+    /*
+    Testing function, to manipulate game state
+     */
+    public void setGameState(GameState newState){
+        this.gameState = newState;
+    }
 }
