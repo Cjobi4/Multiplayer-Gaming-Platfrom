@@ -290,6 +290,17 @@ public class mainController {
         dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         dialogPane.getStyleClass().add("pane");
 
+        Button accBtn = (Button) dialogPane.lookupButton(acceptButton);
+        Button decBtn = (Button) dialogPane.lookupButton(declineButton);
+
+        if(accBtn != null) {
+            accBtn.getStyleClass().add("basic-button");
+        }
+
+        if (decBtn != null) {
+            decBtn.getStyleClass().add("basic-button");
+        }
+
         alert.showAndWait().ifPresent(type -> {
             if (type == acceptButton) {
                 String fxmlFile = "/fxml/" + game.getFxmlPath() + "opponentSelectPage.fxml";
