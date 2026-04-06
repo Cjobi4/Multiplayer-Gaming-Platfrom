@@ -303,7 +303,7 @@ public class mainController {
 
         alert.showAndWait().ifPresent(type -> {
             if (type == acceptButton) {
-                String fxmlFile = "/fxml/" + game.getFxmlPath() + "opponentSelectPage.fxml";
+                String fxmlFile = "/fxml/" + game.getFxmlPath() + "GamePage.fxml";
                 switchScene(event, fxmlFile, "Playing " + game.getTitle());
             } else {
                 errorField.setText("Match declined.");
