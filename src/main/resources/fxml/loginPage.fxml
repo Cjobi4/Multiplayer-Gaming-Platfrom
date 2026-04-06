@@ -39,6 +39,7 @@
                   <Font name="Dubai Medium" size="17.0" />
                </font>
             </Label>
+            <Button fx:id="bypassButton" layoutX="105.0" layoutY="362.0" mnemonicParsing="false" onAction="#onByPassButtonClick" prefHeight="25.0" prefWidth="103.0" text="BYPASS LOGIN" />
          </children>
       </AnchorPane>
    </children>

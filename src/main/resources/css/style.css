@@ -24,7 +24,6 @@
     -fx-border-color: #F9EDE1;
     -fx-border-width: 4px;
     -fx-background-radius: 25;
-    -fx-font: "Dubai Medium";
     -fx-font-size: 47;
     -fx-text-fill: #866B59;
     -fx-font-weight: bold;
@@ -42,4 +41,31 @@
 
 .scroll-pane .viewport {
     -fx-background-color: transparent;
+}
+
+.connect4-Button{
+    -fx-background-radius: 100;
+    -fx-background-color: #F9EDE1;
+}
+
+.round-button {
+    -fx-background-radius: 500;
+    -fx-min-width: 35px;
+    -fx-min-height: 35px;
+    -fx-max-width: 35px;
+    -fx-max-height: 35px;
+    -fx-padding: 0;
+    -fx-background-color: #FFB2C5;
+    -fx-font-family: "Dubai Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: #866B59;
+}
+
+.round-button:hover {
+    -fx-background-color: #FFC0D0;
+}
+
+.round-button:pressed {
+    -fx-background-color: #FFC7CE;
+    -fx-translate-y: 2;
 }
