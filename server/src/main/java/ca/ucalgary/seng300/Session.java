@@ -167,41 +167,6 @@ public class Session extends Thread
     }
 
     /**
-     * If something goes wrong with the Session thread and an uncaught expection is thrown, shut down the Session. Log
-     * out and leave any matchmaking queues before doing closing.
-     * @param eh Unused UncaughtExceptionHandler
-     */
-    @Override
-    public void setUncaughtExceptionHandler(UncaughtExceptionHandler eh)
-    {
-        //if something goes wrong, log out
-        if (loggedIn)
-        {
-            Database.logOut(username);
-        }
-
-        //if in any matchmaking queues, exit
-        if (inTttQueue)
-        {
-            Database.getTttMatchmaker().leaveMQueue(this);
-        }else if (inC4Queue)
-        {
-            Database.getC4Matchmaker().leaveMQueue(this);
-        }
-
-        //close the thread and connection
-        try
-        {
-            client.close();
-        } catch (Exception e)
-        {
-            //socket connection couldn't be closed, nothing to be done, just close the connection anyway
-            System.out.println("Connection couldn't be closed.");
-        }
-        Thread.currentThread().interrupt();
-    }
-
-    /**
      * Getter for the Session's username.
      * @return The Session's username.
      */
@@ -307,6 +272,7 @@ public class Session extends Thread
 
                     //notify the client of success
                     client.getOutputStream().write(1);
+                    System.out.println("Logged in: " +  loggedIn);
                 } else //otherwise notify of failure
                 {
                     client.getOutputStream().write(0);
@@ -317,6 +283,7 @@ public class Session extends Thread
         //these requests require the user to be logged in
         if (loggedIn)
         {
+            System.out.println("reached.");
             switch (requestType)
             {
                 case 3:     //if it was a logout request
@@ -356,14 +323,16 @@ public class Session extends Thread
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
+                    System.out.println("message: " + message);
 
                     //collect the leaderboard entries from the database for that game
                     rs = Database.getAllLeaderboardEntries(message);
 
                     //go through the results
-                    if (rs != null && rs.next())
+                    if (rs.next())
                     {
                         sbuild = new StringBuilder();
+                        System.out.println("sbuild made");
 
                         //go through each entry...
                         do
@@ -373,10 +342,14 @@ public class Session extends Thread
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
 
+                            System.out.println("Username sent: " + rs.getString(1));
+
                             //then turn the wins/losses into a single string
                             sbuild.append(rs.getString(message + "Wins"));
                             sbuild.append("^");
                             sbuild.append(rs.getString(message + "MatchesPlayed"));
+
+                            System.out.println("matchs sent: " + sbuild.toString());
 
                             //send the formatted leaderboard entry to the client
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);

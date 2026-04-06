@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Session;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.shared.models.Message;
@@ -46,7 +47,7 @@ public class TTTgameController {
     protected void onSendMessage() {
         String text = messageInput.getText();
         if (text != null && !text.isEmpty()) {
-            Message newMessage = new Message(text, "Player 1");
+            Message newMessage = new Message(text, "");
 
             ChatRegistry.getInstance().addMessage(newMessage);
             messageInput.clear();
