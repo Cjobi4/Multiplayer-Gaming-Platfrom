@@ -218,4 +218,36 @@ public class GameRegistryTest {
 
         assertEquals(tags, actualTags, "Tags should be equal to expected tags, which is: " + tags);
     }
+
+    @Test
+    void testGameGetFxmlPathReturnsCorrectFxmlPathForTTT() {
+        //RENAME THE PATH STRING TO THE ACTUAL PATHS
+
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+
+        // create game and add it to the registry
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
+        gameRegistry.register(game1);
+
+        String expectedFxmlPath = "testing.fxml.Path";
+        String actualFxmlPath = game1.getFxmlPath();
+
+        assertEquals(expectedFxmlPath, actualFxmlPath, "Actual Fxml path should be equal to expected Fxml Path, which is: " + expectedFxmlPath);
+    }
+
+    @Test
+    void testGameGetFxmlPathReturnsCorrectFxmlPathForC4() {
+        //RENAME THE PATH STRING TO THE ACTUAL PATHS
+
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+
+        // create game and add it to the registry
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
+        gameRegistry.register(game1);
+
+        String expectedFxmlPath = "testing.fxml.Path";
+        String actualFxmlPath = game1.getFxmlPath();
+
+        assertEquals(expectedFxmlPath, actualFxmlPath, "Actual Fxml path should be equal to expected Fxml Path, which is: " + expectedFxmlPath);
+    }
 }
