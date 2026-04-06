@@ -1,14 +1,13 @@
 package ca.ucalgary.seng300.rules;
 
 import ca.ucalgary.seng300.core.identity.client.Network;
-import ca.ucalgary.seng300.rules.leaderboard.GameType;
-import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
-import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
+import ca.ucalgary.seng300.rules.leaderboard.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,18 +53,81 @@ class LeaderBoardTest {
     }
 
     @Test
+    void testGetLeaderboardWhenWinsAreEqual() {
+        List<LeaderboardEntry> data = new ArrayList<>();
+
+        // setting up the entries first and then adding them
+        LeaderboardEntry leaderboardEntry1 = new LeaderboardEntry("jane doe", 1, 1);
+        LeaderboardEntry leaderboardEntry2 = new LeaderboardEntry("neocity", 1, 8);
+        LeaderboardEntry leaderboardEntry3 = new LeaderboardEntry("john doe", 1, 20);
+        data.add(leaderboardEntry1);
+        data.add(leaderboardEntry2);
+        data.add(leaderboardEntry3);
+
+        stubNetwork.setResponse(data);
+
+        List <LeaderboardEntry> result = LeaderBoard.getLeaderboard(GameType.CONNECT4);
+
+        // should be organized in descending order
+        assertEquals(data, result, "The input list should be the same as the output.");
+        assertEquals("jane doe", result.get(0).getUsername(), "First place on leaderboard should be: jane doe");
+        assertEquals("neocity", result.get(1).getUsername(),  "Second place on leaderboard should be: neocity");
+        assertEquals("john doe", result.get(2).getUsername(), "Last place on leaderboard should be: john doe");
+    }
+
+    @Test
     void testGetUserRecord() {
+        String username1 = "jane doe";
+        String username2 = "john doe";
+
+        // populating the match record
+        MatchRecord test1 = new MatchRecord(username1, username2, GameType.CONNECT4, username1);
+        MatchRecord test2 = new MatchRecord(username1, username2, GameType.CONNECT4, username2);
+        MatchRecord test3 = new MatchRecord(username1, username2, GameType.TICTACTOE, username1);
+        List<MatchRecord> records = List.of(test1, test2, test3);
+
+        stubNetwork.setResponse(records);
+
+        UserRecord result = LeaderBoard.getUserRecord(username1);
+
+        assertEquals(1, result.getWinsTTT());
+        assertEquals(1, result.getWinsC4());
+        assertEquals(3, result.getTotalMatches());
+        assertEquals(2, result.getTotalWins());
     }
 
     @Test
     void testGetUserMatchRecords() {
+        String username1 = "jane doe";
+        String username2 = "john doe";
+
+        // populating the match record
+        MatchRecord test1 = new MatchRecord(username1, username2, GameType.CONNECT4, username1, "2026-04-01 10:00:00");
+        MatchRecord test2 = new MatchRecord(username1, username2, GameType.CONNECT4, username2, "2026-04-01 10:05:00");
+        MatchRecord test3 = new MatchRecord(username1, username2, GameType.CONNECT4, username1, "2026-04-01 10:10:00");
+        List<MatchRecord> records = new ArrayList<>(List.of(test1, test2, test3));
+
+        stubNetwork.setResponse(records);
+        List<MatchRecord> result = LeaderBoard.getUserMatchRecords(username1);
+
+        // most recent date should be first
+        assertEquals("2026-04-01 10:10:00", result.get(0).getDate());
+        assertEquals("2026-04-01 10:05:00", result.get(1).getDate());
+        assertEquals("2026-04-01 10:00:00", result.get(2).getDate());
     }
 
     @Test
     void testWhenUserRecordDoesNotExist() {
+        stubNetwork.setResponse(new ArrayList<UserRecord>()); // empty !
+        List<UserRecord> result = Collections.singletonList(LeaderBoard.getUserRecord("jane doe"));
+
+        assertTrue(result.isEmpty(), "There should be no user record for this user.");
     }
 
     @Test
     void testWhenMatchRecordDoesNotExist() {
+        stubNetwork.setResponse(new ArrayList<MatchRecord>());
+        List<MatchRecord> result = LeaderBoard.getUserMatchRecords("testUser");
+        assertTrue(result.isEmpty(), "There should be no match record for this user.");
     }
 }
