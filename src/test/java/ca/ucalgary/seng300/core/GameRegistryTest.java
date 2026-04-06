@@ -1,7 +1,6 @@
 package ca.ucalgary.seng300.core;
 
 import ca.ucalgary.seng300.core.registry.GameRegistry;
-import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.shared.models.Game;
 
 import ca.ucalgary.seng300.shared.models.Tag;
@@ -199,5 +198,56 @@ public class GameRegistryTest {
         String actualDescription = gameFound.getDescription();
 
         assertEquals(expectedDescription, actualDescription, "Description should be equal to expected description which is: " + expectedDescription);
+    }
+
+    /**
+     * Testing the getTags method from Game
+     * Input: NA
+     * Expected Output: Equal list to that of when game1 was set
+     * Actual Output: the list of tags retrieved by getTags()
+     */
+    @Test
+    void testGameGetTagsReturnsCorrectTagValuesList() {
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+
+        // create game and add it to the registry
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
+        gameRegistry.register(game1);
+
+        List<Tag> actualTags = game1.getTags();
+
+        assertEquals(tags, actualTags, "Tags should be equal to expected tags, which is: " + tags);
+    }
+
+    @Test
+    void testGameGetFxmlPathReturnsCorrectFxmlPathForTTT() {
+        //RENAME THE PATH STRING TO THE ACTUAL PATHS
+
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+
+        // create game and add it to the registry
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
+        gameRegistry.register(game1);
+
+        String expectedFxmlPath = "testing.fxml.Path";
+        String actualFxmlPath = game1.getFxmlPath();
+
+        assertEquals(expectedFxmlPath, actualFxmlPath, "Actual Fxml path should be equal to expected Fxml Path, which is: " + expectedFxmlPath);
+    }
+
+    @Test
+    void testGameGetFxmlPathReturnsCorrectFxmlPathForC4() {
+        //RENAME THE PATH STRING TO THE ACTUAL PATHS
+
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+
+        // create game and add it to the registry
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
+        gameRegistry.register(game1);
+
+        String expectedFxmlPath = "testing.fxml.Path";
+        String actualFxmlPath = game1.getFxmlPath();
+
+        assertEquals(expectedFxmlPath, actualFxmlPath, "Actual Fxml path should be equal to expected Fxml Path, which is: " + expectedFxmlPath);
     }
 }
