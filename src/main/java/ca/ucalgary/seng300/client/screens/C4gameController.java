@@ -83,11 +83,13 @@ public class C4gameController {
     }
 
     private void updateBoard(){
-        ConnectFourBoard board = current.getBoard();
+        ConnectFourBoard board = current.getBoard(); //loops through the board
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 7; j++) {
-                if (board.getCell(i, j) != '.'){
-                    grid[i][j].setText(String.valueOf(board.getCell(i,j)));
+                if (board.getCell(i, j) == 'X'){ //if its not empty
+                    grid[i][j].setStyle( "-fx-text-fill: #f0e8a1;"); //yellow
+                } else if (board.getCell(i, j) == 'O') {
+                    grid[i][j].setStyle( "-fx-text-fill: #f0a1a1;"); //red
                 }
             }
         }
