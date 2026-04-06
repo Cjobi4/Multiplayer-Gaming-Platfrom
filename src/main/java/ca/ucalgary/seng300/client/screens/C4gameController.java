@@ -1,6 +1,8 @@
 package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
+import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
+import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.shared.models.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +14,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import ca.ucalgary.seng300.games.connectfour.ConnectFourGame;
+import ca.ucalgary.seng300.games.connectfour.ConnectFourBoard;
 
 import java.io.IOException;
 
@@ -24,7 +28,7 @@ public class C4gameController {
     public TextField messageInput;
     public GridPane c4grid;
 
-
+    ConnectFourGame current = new ConnectFourGame();
     Button[][] grid = new Button[6][7];
 
     public void initialize() {
@@ -76,6 +80,17 @@ public class C4gameController {
             chatContainer.getChildren().add(msgLable);
         }
         chatScrollPane.setVvalue(1.0);
+    }
+
+    private void updateBoard(){
+        ConnectFourBoard board = current.getBoard();
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 7; j++) {
+                if (board.getCell(i, j) != '.'){
+                    grid[i][j].setText(String.valueOf(board.getCell(i,j)));
+                }
+            }
+        }
     }
 
     @FXML
