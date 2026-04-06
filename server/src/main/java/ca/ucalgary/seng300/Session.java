@@ -459,6 +459,36 @@ public class Session extends Thread
                     //check if user accepted/declined
                     req.setFuture(Integer.toString(client.getInputStream().read()));
                     break;
+                case 13:    //if has been kicked from queue...
+                    //let client know
+                    client.getOutputStream().write(13);
+
+                    //reset queue booleans
+                    if (inTttQueue)
+                    {
+                        inTttQueue = false;
+                    } else if (inC4Queue)
+                    {
+                       inC4Queue = false;
+                    }
+                    break;
+                case 14:    //if match has been accepted...
+                    //let client know
+                    client.getOutputStream().write(14);
+
+                    //reset queue booleans
+                    if (inTttQueue)
+                    {
+                        inTttQueue = false;
+                    } else if (inC4Queue)
+                    {
+                        inC4Queue = false;
+                    }
+                    break;
+                case 15:    //if has been declined...
+                    //let client know
+                    client.getOutputStream().write(15);
+                    break;
                 case 16:    //if it was a direct challenge...
                     //collect the username of the opp to be challenged
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();

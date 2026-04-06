@@ -413,7 +413,7 @@ public class Database
      * @param date The date the match occurred in String format.
      * @param game The game type that was played in String format. "ttt" for Tic-tac-toe, "c4" for Connect 4.
      */
-    public static void addMatchResult(String playerOne, String playerTwo, String winner, String date, String game)
+    public static synchronized void addMatchResult(String playerOne, String playerTwo, String winner, String date, String game)
     {
         //if there was no winner don't count the match
         if (winner != null)
