@@ -199,4 +199,23 @@ public class GameRegistryTest {
 
         assertEquals(expectedDescription, actualDescription, "Description should be equal to expected description which is: " + expectedDescription);
     }
+
+    /**
+     * Testing the getTags method from Game
+     * Input: NA
+     * Expected Output: Equal list to that of when game1 was set
+     * Actual Output: the list of tags retrieved by getTags()
+     */
+    @Test
+    void testGameGetTagsReturnsCorrectTagValues() {
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+
+        // create game and add it to the registry
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
+        gameRegistry.register(game1);
+
+        List<Tag> actualTags = game1.getTags();
+
+        assertEquals(tags, actualTags, "Tags should be equal to expected tags, which is: " + tags);
+    }
 }
