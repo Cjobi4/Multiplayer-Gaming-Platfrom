@@ -68,9 +68,21 @@ public class mainController {
             }
         };
 
-        task.setOnSucceeded(event -> renderLeaderboard(task.getValue()));
-       //List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
-       //renderLeaderboard(rows);// New functionality for later use
+        task.setOnSucceeded(e -> renderLeaderboard(task.getValue()));
+
+        task.setOnFailed(e -> {
+            leaderboardBox.getChildren().clear();
+
+            Label errorLabel = new Label("Failed to load leaderboard");
+            errorLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: red;");
+            leaderboardBox.getChildren().add(errorLabel);
+
+            if (task.getException() != null) {
+                task.getException().printStackTrace();
+            }
+        });
+
+
     }
 
     public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
