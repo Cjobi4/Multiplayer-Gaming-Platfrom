@@ -91,10 +91,15 @@ public class mainController {
     public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
         leaderboardBox.getChildren().clear();
 
+        for (int i = 0; i < leaderboard.size(); i++) {
+            LeaderboardEntry entry = leaderboard.get(i);
+            leaderboardBox.getChildren().add(showLeaderboardRow(i+1, entry));
+        }
+
     }
 
-    public HBox showLeaderboardRow(LeaderBoardRows row){
-        Label rankLabel = new Label("#" + row.getRank());
+    public HBox showLeaderboardRow(int rank, LeaderboardEntry leaderboardEntry){
+        Label rankLabel = new Label("#" + rank);
         Label nameLabel = new Label(row.getPlayerName());
         Label winsLabel = new Label(row.getWins() + " W");
         Label matchesLabel = new Label(row.getMatches() + " M");
