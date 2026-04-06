@@ -98,13 +98,16 @@ public class mainController {
 
     }
 
-    public HBox showLeaderboardRow(int rank, LeaderboardEntry leaderboardEntry){
+    public HBox showLeaderboardRow(int rank, LeaderboardEntry entry){
         Label rankLabel = new Label("#" + rank);
-        Label nameLabel = new Label(row.getPlayerName());
-        Label winsLabel = new Label(row.getWins() + " W");
-        Label matchesLabel = new Label(row.getMatches() + " M");
+        Label nameLabel = new Label(entry.getUsername());
+        Label winsLabel = new Label(entry.getWins() + " W");
+        Label matchesLabel = new Label(entry.getMatches() + " M");
 
-        rankLabel.setMinWidth(45);
+        rankLabel.setMinWidth(30);
+        winsLabel.setMinWidth(40);
+        matchesLabel.setMinWidth(40);
+
         nameLabel.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
