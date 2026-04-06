@@ -205,6 +205,8 @@ public class Database
             ResultSet rs = pstmt.executeQuery();
             rs.next();
 
+            System.out.println("name is unique");
+
             //if it wasn't notify user
             if (rs.getInt(1) != 0)
             {
@@ -216,10 +218,18 @@ public class Database
             String hashedPassword = hash(password, username);
 
             //then add it to the database
-            pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(username, password) VALUES(?, ?)");
-            pstmt.setString(2, username);
-            pstmt.setString(3, hashedPassword);
+            pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(username, password) VALUES(?, ?);");
+            pstmt.setString(1, username);
+            pstmt.setString(2, hashedPassword);
             pstmt.executeUpdate();
+
+            //add a leaderboard entry for the user
+            //then add it to the database
+            pstmt = conn.prepareStatement("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(?, 0, 0, 0, 0, 0, 0)");
+            pstmt.setString(1, username);
+            pstmt.executeUpdate();
+
+            System.out.println("added");
 
             //update list of logged-in users
             loggedInUsers.put(username, session);
@@ -227,6 +237,7 @@ public class Database
             return 1;
         } catch (Exception e) //if something goes wrong, assume invalid input and reject acount creation
         {
+            System.out.println(e);
             return -1;
         }
     }

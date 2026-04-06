@@ -185,6 +185,8 @@ public class Session extends Thread
 
                 break;
             case 1:     //if it was a register account request...
+                System.out.println("Account register request ");
+
                 //collect the username
                 messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                 messageBytes = client.getInputStream().readNBytes(messageLength);
@@ -205,9 +207,11 @@ public class Session extends Thread
                 }
 
                 //only one Session can run this block at a time
-                synchronized (Session.class) {
+                synchronized (Session.class)
+                {
                     //check if it was successful
                     result = Database.createAccount(newUsername, newPassword, this);
+                    System.out.println("Register result: " + result);
                 }
 
                 //if it was, save the username for the session
