@@ -446,6 +446,19 @@ public class Session extends Thread
                     client.getOutputStream().write(messageBytes);
                     System.out.println("player list sent");  //for debug
                     break;
+                case 12:    //if a match has been found...
+                    //notify client
+                    client.getOutputStream().write(12);
+
+                    //send username of opp
+                    messageBytes = Network.encrypt(req.getParameters()[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("opp username sent");
+
+                    //check if user accepted/declined
+                    req.setFuture(Integer.toString(client.getInputStream().read()));
+                    break;
                 case 16:    //if it was a direct challenge...
                     //collect the username of the opp to be challenged
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
