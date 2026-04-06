@@ -17,13 +17,18 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -209,9 +214,20 @@ public class mainController {
 
     private void displayGame(Game game){
         gameTitleLabel.setText("Game: " + game.getTitle());
+        gameTitleLabel.setFont(new Font("Dubai Medium", 20));
+        gameTitleLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
+
         gameDescriptionLabel.setText("Description: " + game.getDescription());
+        gameDescriptionLabel.setFont(new Font("Dubai Medium", 13));
+        gameDescriptionLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
+
         gameIdLabel.setText("Game ID: " + game.getId());
+        gameIdLabel.setFont(new Font("Dubai Medium", 15));
+        gameIdLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
+
         gameTagsLabel.setText("Game Tag: " + formatTags(game.getTags()));
+        gameTagsLabel.setFont(new Font("Dubai Medium", 15));
+        gameTagsLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
 
         if (game.getId() == "102"){
             setThumbnailTTT();

@@ -89,7 +89,6 @@
                   <StackPane prefHeight="200.0" prefWidth="200.0">
                      <children>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffc7ce" height="150.0" stroke="#ffc7ce" width="200.0" />
-                        <Label text="Thumbnail" />
                         <ImageView fx:id="thumbnail" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </StackPane>
@@ -100,6 +99,9 @@
                         <Label fx:id="gameIdLabel" />
                         <Label fx:id="gameTagsLabel" />
                      </children>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
                   </VBox>
                </children>
                <HBox.margin>
