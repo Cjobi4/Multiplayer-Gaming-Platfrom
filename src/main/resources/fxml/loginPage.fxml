@@ -23,7 +23,7 @@
                </font></Button>
             <Button fx:id="backButton" layoutX="14.0" layoutY="360.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" styleClass="basic-button" text="Back" />
             <TextField fx:id="userNameField" layoutX="230.0" layoutY="130.0" prefHeight="25.0" prefWidth="245.0" style="-fx-background-color: #F7C5AD;" />
-            <TextField fx:id="passwordField" layoutX="230.0" layoutY="168.0" prefHeight="25.0" prefWidth="245.0" style="-fx-background-color: #F7C5AD;" />
+            <TextField fx:id="passwordField" accessibleRole="PASSWORD_FIELD" layoutX="230.0" layoutY="168.0" prefHeight="25.0" prefWidth="245.0" style="-fx-background-color: #F7C5AD;" />
             <Label layoutX="120.0" layoutY="133.0" text="Enter Username: " textFill="#866b59">
                <font>
                   <Font name="Dubai Bold" size="14.0" />
