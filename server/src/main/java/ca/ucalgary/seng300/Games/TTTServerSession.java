@@ -5,7 +5,7 @@ import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 
 //this class represents the server-side tic tac toe game session (extending thread)
-public class TicTacToeGameSession extends Thread{
+public class TTTServerSession extends Thread{
 
     //request type constants (temporary until confirmed with platform core)
     //TEMPORARY TILL HELP
