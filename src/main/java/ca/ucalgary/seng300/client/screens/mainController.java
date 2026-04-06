@@ -292,15 +292,12 @@ public class mainController {
 
     @FXML
     protected void onMatchMakeButtonClick(ActionEvent event) {
-
         RadioButton selected = (RadioButton) group.getSelectedToggle();
-
         if (selected != null)
         {
             Game selectedGame = findGame(selected.getText());
-
             if (selectedGame != null) {
-                switchScene(event, "/fxml/" + selectedGame.getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
+                showMatchFoundPopup("Garry", selectedGame, event);
                 errorField.setText("");
             } else {
                 errorField.setText("Could not find the selected game.");
@@ -311,6 +308,49 @@ public class mainController {
             errorField.setText("Please select a game first!");
         }
     }
+
+    //Popoup that appears when the user is matched with another opponenet.
+    private void showMatchFoundPopup(String opponentName, Game game, ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Match Found!");
+        alert.setHeaderText("Opponent found: " + opponentName);
+        alert.setContentText("Do you want to accept this match for " + game.getTitle() + "?");
+
+
+        ButtonType acceptButton = new ButtonType("Accept");
+        ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(acceptButton, declineButton);
+
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+
+
+        Button accBtn = (Button) dialogPane.lookupButton(acceptButton);
+        Button decBtn = (Button) dialogPane.lookupButton(declineButton);
+
+
+        if(accBtn != null) {
+            accBtn.getStyleClass().add("basic-button");
+        }
+
+
+        if (decBtn != null) {
+            decBtn.getStyleClass().add("basic-button");
+        }
+
+
+        alert.showAndWait().ifPresent(type -> {
+            if (type == acceptButton) {
+                String fxmlFile = "/fxml/" + game.getFxmlPath() + "GamePage.fxml";
+                switchScene(event, fxmlFile, "Playing " + game.getTitle());
+            } else {
+                errorField.setText("Match declined.");
+            }
+        });
+    }
+
 
     @FXML
     public void updateInfo(ActionEvent event) { //updates the Radio Buttons
