@@ -37,7 +37,7 @@
                   <AnchorPane prefHeight="395.0" prefWidth="800.0" style="-fx-background-color: #F9EDE1;">
                      <children>
                         <Button fx:id="gameOverButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onGameOverButtonClick" prefHeight="63.0" prefWidth="80.0" text="Swap to Game Over Screen (Placeholder button)" />
-                        <Text fill="#866b59" layoutX="599.0" layoutY="198.0" rotate="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Click to Begin!!!!">
+                        <Text fx:id="turnDisplayc4" fill="#866b59" layoutX="599.0" layoutY="198.0" rotate="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Click to Begin!!!!">
                            <font>
                               <Font name="Dubai Medium" size="18.0" />
                            </font>
@@ -61,48 +61,48 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="1" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="2" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="3" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="5" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="4" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="4" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="5" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="4" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="4" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="4" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="3" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="3" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="2" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="2" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="1" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="5" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="5" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="5" />
-                              <Button mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="1" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="3" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.rowIndex="4" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="4" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="3" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="6" GridPane.rowIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+                              <Button mnemonicParsing="false" onAction="#onGridButtonClick" prefHeight="60.0" prefWidth="60.0" styleClass="connect4-Button" />
                            </children>
                         </GridPane>
                      </children>
