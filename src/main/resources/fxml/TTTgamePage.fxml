@@ -25,6 +25,7 @@
                                     </font>
                                 </Text>
                                 <Button fx:id="backButton" layoutX="14.0" layoutY="10.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefWidth="65.0" styleClass="basic-button" text="Back" />
+                        <Button fx:id="questionButton" layoutX="88.0" layoutY="8.0" mnemonicParsing="false" onAction="#onQuestionButtonClick" prefWidth="65.0" styleClass="round-button" text="?" />
                             </children>
                         </AnchorPane>
                     </children>
