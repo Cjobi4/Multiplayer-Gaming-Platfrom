@@ -463,8 +463,14 @@ public class Session extends Thread
                     //if accepted make game
                     if (result == 14)
                     {
+                        if (gameType.equals("ttt"))
+                        {
+                            Database.getTttMatchmaker().createMatch(this, Database.getSession(name));
+                        }else
+                        {
+                            Database.getC4Matchmaker().createMatch(this, Database.getSession(name));
+                        }
                         client.getOutputStream().write(14);
-                        /// MAKE GAME
                     }else
                     {
                         client.getOutputStream().write(15);
@@ -477,11 +483,6 @@ public class Session extends Thread
                     result = client.getInputStream().read();
                     req.setFuture(Integer.toString(result));
 
-                    //if accepted, open game ui
-                    if (result == 14)
-                    {
-
-                    }
                     break;
             }
         }

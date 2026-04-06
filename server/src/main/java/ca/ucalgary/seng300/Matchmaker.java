@@ -259,7 +259,7 @@ public class Matchmaker extends Thread
      * @return Returns 0 if both players decline, 1 if only p1 declines, 2 if only p2 declines, 3 if it succeeds, and 4
      * if an exception is thrown.
      */
-    private int createMatch(Session p1, Session p2)
+    public int createMatch(Session p1, Session p2)
     {
         try
         {
