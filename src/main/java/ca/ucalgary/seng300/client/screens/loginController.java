@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.identity.client.Network;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

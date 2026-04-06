@@ -219,10 +219,10 @@ public class Network extends Thread {
     public void run() {
         try {
             System.out.print("attempting to start server");
-            socket.setSoTimeout(3000);
 
             while (true) {
                 try {
+                    socket.setSoTimeout(3000);
 
                     int descriptionByte = socket.getInputStream().read();
                     // chats are the only unprompted requests currently...add matchmaking later
@@ -272,6 +272,7 @@ public class Network extends Thread {
      * @throws Exception
      */
     private void processRequest(Request req) throws Exception {
+        socketRequestTimeout();
         String[] parameters = req.getParameters();
         switch (req.getType()) {
 
@@ -296,6 +297,7 @@ public class Network extends Thread {
 
             case GET_LEADERBOARD:
                 req.future.complete(getLeaderboard(parameters[0]));
+                System.out.print("getLeaderboard returrned");
                 break;
 
             case GET_MATCH_RECORD:
@@ -636,30 +638,39 @@ public class Network extends Thread {
             while (receiving) {
 
                 // receive username as first response, or "0"/"1" if end of entries
+                System.out.println("listening for response");
                 response = readResponseString();
+                System.out.print("Reponse: " + response);
 
                 if (response.equals("0") || response.equals("1")) {
                     receiving = false;
                 } else {
                     String username = response;
 
+                    System.out.println("username: " + username);
                     // data sent as: wins^matches
                     String[] parts = readResponseString().split("\\^");
 
                     int wins = Integer.parseInt(parts[0]);
                     int matches = Integer.parseInt(parts[1]);
 
+                    System.out.println("Wins: " + wins + " matches: " + matches);
                     // parse string and add to individual lists
                     entries.add(new LeaderboardEntry(username, wins, matches));
+                    System.out.print("reached");
+                    System.out.println(entries);
                 }
             }
+
             // error from server side
             if (response.equals("0")) {
                 return null;
             }
+            System.out.println("entry returned");
             return entries;
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            System.out.println("exceptioned: " + e);
+            return null;
         }
     }
 
