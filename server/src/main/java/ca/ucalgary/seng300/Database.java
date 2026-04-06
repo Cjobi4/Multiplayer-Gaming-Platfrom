@@ -74,7 +74,7 @@ public class Database
                     + "totalMatchesPlayed INTEGER NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS matchRecord ("
-                    + "gametype TEXT PRIMARY KEY,"
+                    + "gameType TEXT PRIMARY KEY,"
                     + "p1Username TEXT NOT NULL,"
                     + "p2Username TEXT NOT NULL,"
                     + "winnerName TEXT NOT NULL,"
@@ -106,10 +106,11 @@ public class Database
                 pstmt.executeUpdate();
 
                 //add in a sample gameInfo
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^TTT^YES)");
-                stmt.execute("INSERT INTO gameInfo(gameid, gameData) VALUES(0, Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^C4^YES)");
-                stmt.execute("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(admin, 999, 999, 999, 999, 999, 999)");
-                stmt.execute("INSERT INTO matchRecord(gameid, p1Username, p2Username, gametype, winnerName, date) VALUES(gameid, admin, test, Tic-Tac-Toe, admin, date)");
+                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(0, \"Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^TTT^YES\")");
+                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(1, \"Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^C4^YES\")");
+                stmt.executeUpdate("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(\"admin\", 999, 999, 999, 999, 999, 999)");
+                stmt.executeUpdate("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(\"test\", 0, 0, 0, 0, 0, 0)");
+                stmt.executeUpdate("INSERT INTO matchRecord(gameType, p1Username, p2Username, winnerName, date) VALUES(\"gameType\", \"admin\", \"test\", \"Tic-Tac-Toe\", \"date\")");
             }
         } catch (SQLException e)
         {
@@ -257,6 +258,7 @@ public class Database
             {
                 //add it to the list of logged-in users
                 loggedInUsers.put(username, session);
+                System.out.println("Username logged in: " + username);
 
                 return 1;
             }else   //if no match is found, notify of failure
@@ -334,6 +336,7 @@ public class Database
             return stmt.executeQuery("SELECT * FROM leaderboard ORDER BY " + game + "Wins DESC;");
         } catch (SQLException e)
         {
+            System.out.println("Leaderboard query failed");
             return null;
         }
     }
@@ -347,7 +350,7 @@ public class Database
         try
         {
             //collect all the leaderboard entries with matching usernames
-            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE username = ?;");
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE username = ? LIMIT 10;");
             pstmt.setString(1, String.valueOf(username));
             ResultSet rs = pstmt.executeQuery();
 
@@ -386,11 +389,6 @@ public class Database
         return sbuild.toString();
     }
 
-    /**
-     * Gets a user's Session with their username.
-     * @param username The username of the Session to be found.
-     * @return The user's Session, or null if they don't have one.
-     */
     public static Session getSession(String username)
     {
         return loggedInUsers.get(username);
