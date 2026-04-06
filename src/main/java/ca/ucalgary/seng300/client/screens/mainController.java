@@ -286,6 +286,10 @@ public class mainController {
         ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(acceptButton, declineButton);
 
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+
         alert.showAndWait().ifPresent(type -> {
             if (type == acceptButton) {
                 String fxmlFile = "/fxml/" + game.getFxmlPath() + "opponentSelectPage.fxml";
