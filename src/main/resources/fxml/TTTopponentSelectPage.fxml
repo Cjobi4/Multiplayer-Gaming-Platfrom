@@ -19,11 +19,11 @@
                         <Font name="Dubai Bold" size="24.0" />
                     </font>
                 </Label>
-                <TableView layoutX="75.0" layoutY="95.0" prefHeight="360.0" prefWidth="650.0" style="-fx-background-color: #FCE0D2;" styleClass="pane">
+                <TableView fx:id="opponentList" layoutX="75.0" layoutY="95.0" prefHeight="360.0" prefWidth="650.0" style="-fx-background-color: #FCE0D2;" styleClass="pane">
                     <columns>
-                        <TableColumn prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Player Name" />
-                        <TableColumn minWidth="0.0" prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Lowest Score" />
-                        <TableColumn prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Highest Score" />
+                        <TableColumn fx:id="playerColumn" prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Player Name" />
+                        <TableColumn fx:id="winsColumn" minWidth="0.0" prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Wins" />
+                        <TableColumn fx:id="matchesColumn" prefWidth="216.6666666" style="-fx-background-color: #F7C5AD;" text="Matches Played" />
                     </columns>
                 </TableView>
                 <HBox layoutX="550.0" layoutY="486.0" prefHeight="100.0" prefWidth="200.0">
@@ -39,6 +39,7 @@
                     </children>
                 </HBox>
                 <Button fx:id="backButton" layoutX="14.0" layoutY="560.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" styleClass="basic-button" text="Back" />
+            <Button fx:id="byPassButton" layoutX="442.0" layoutY="468.0" mnemonicParsing="false" onAction="#onByPassButtonClick" prefHeight="25.0" prefWidth="138.0" text="BYPASS" />
             </children>
         </AnchorPane>
     </children>

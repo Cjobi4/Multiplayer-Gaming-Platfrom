@@ -10,24 +10,24 @@ import java.time.format.DateTimeFormatter;
  * Or when need to get data from the database (easier when we have getters)
  */
 public class MatchRecord {
-    private int playerOneID;
-    private int playerTwoID;
+    private String username1;
+    private String username2;
     private GameType gameType;
     private String date;
-    private int winnerID;
+    private String winner;
 
     /**
      *
-     * @param playerOneID int ID of player 1
-     * @param playerTwoID int ID of player 2
+     * @param username1
+     * @param username2
      * @param gameType
-     * @param winnerID int ID of the winner
+     * @param winner
      */
-    public MatchRecord(int playerOneID, int playerTwoID, GameType gameType, int winnerID){
-        this.playerOneID = playerOneID;
-        this.playerTwoID = playerTwoID;
+    public MatchRecord(String username1, String username2, GameType gameType, String winner){
+        this.username1 = username1;
+        this.username2 = username2;
         this.gameType = gameType;
-        this.winnerID = winnerID;
+        this.winner = winner;
 
         ZoneId zoneId = ZoneId.of("Canada/Edmonton");
         ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -38,17 +38,17 @@ public class MatchRecord {
     /**
      * Create Match Record when retrieving database (for easier getting data)
      */
-    public MatchRecord (int playerOneID, int playerTwoID, GameType gameType, int winnerID, String date){
-        this.playerOneID = playerOneID;
-        this.playerTwoID = playerTwoID;
+    public MatchRecord (String username1, String username2, GameType gameType, String winnerID, String date){
+        this.username1 = username1;
+        this.username2 = username2;
         this.gameType = gameType;
-        this.winnerID = winnerID;
+        this.winner = winnerID;
         this.date = date;
 
     }
 
-    public boolean isWinner(int playerID){
-        return playerID == winnerID;
+    public boolean isWinner(String username){
+        return username.equals(winner);
     }
 
 
@@ -65,6 +65,6 @@ public class MatchRecord {
      */
     public String toString(){
         // matchID + playerOneID + playerTwoID + gameType + winnerID + date
-        return playerOneID + " " + playerTwoID + " " + gameType + " " + winnerID + " " + date;
+        return username1 + " " + username2 + " " + gameType + " " + winner + " " + date;
     }
 }
