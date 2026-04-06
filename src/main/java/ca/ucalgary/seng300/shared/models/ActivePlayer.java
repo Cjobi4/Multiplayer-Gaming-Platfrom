@@ -2,17 +2,32 @@ package ca.ucalgary.seng300.shared.models;
 
 public class ActivePlayer {
 
-    private final String name;
+
+    private static ActivePlayer instance;
 
 
-    public ActivePlayer(String name)
-    {
-        this.name = name;
+    private String username;
+
+
+    private ActivePlayer() {
+        this.username = null;
     }
 
-    public String getName()
-    {
-        return name;
+
+    public static ActivePlayer getInstance() {
+        if (instance == null) {
+            instance = new ActivePlayer();
+        }
+        return instance;
+    }
+
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 
 }
