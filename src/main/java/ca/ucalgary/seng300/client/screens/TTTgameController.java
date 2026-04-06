@@ -117,6 +117,7 @@ public class TTTgameController {
             stage.setScene(opponentScene);
             stage.setTitle("Tic-Tac-Toe - Opponent Select"); //Change stage title to reflect current scene
             stage.setResizable(false);
+            ChatRegistry.getInstance().clearChat();
             stage.show();
 
         } catch (IOException e) {

@@ -125,6 +125,7 @@ public class C4gameController {
             stage.setScene(opponentScene);
             stage.setTitle("Connect 4 - Opponent Select"); //Change stage title to reflect current scene
             stage.setResizable(false);
+            ChatRegistry.getInstance().clearChat();
             stage.show();
 
         } catch (IOException e) {
