@@ -64,7 +64,7 @@ public class createAccountController {
                             return;
                         }
 
-                        if (!Boolean.TRUE.equals(result)) {
+                        if (Boolean.TRUE.equals(result)) {
                             errorField.setText("Failed to create account.");
                             return;
                         }
