@@ -112,11 +112,15 @@
          <children>
             <MenuBar maxHeight="35.0" minHeight="35.0" prefHeight="35.0" prefWidth="625.0" style="-fx-background-color: #F7C5AD;">
               <menus>
-                <Menu mnemonicParsing="false" text="| View Player Stats |" />
+                <Menu mnemonicParsing="false" text="| View Player Stats |">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="View Player Stats" />
+                     </items></Menu>
                 <Menu mnemonicParsing="false" text="| Developper Info |">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
-                  </items>
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="View Developer Credits" />
+                        <MenuItem mnemonicParsing="false" text="View Application Information" />
+                     </items>
                 </Menu>
               </menus>
             </MenuBar>
