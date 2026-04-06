@@ -141,6 +141,8 @@ public class TTTgameController {
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(400);
+        dialogPane.setMinWidth(450);
 
         alert.showAndWait();
 
