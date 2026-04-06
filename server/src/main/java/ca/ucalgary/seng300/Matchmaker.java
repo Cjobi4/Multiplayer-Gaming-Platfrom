@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300;
 
+import ca.ucalgary.seng300.games.TTTServerSession;
+
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -8,6 +10,8 @@ public class Matchmaker extends Thread
     private LinkedBlockingQueue<Session> mQueue = new LinkedBlockingQueue<>();      //matchmaking queue
     private LinkedBlockingQueue<Session> quittersQueue = new LinkedBlockingQueue<>();       //list of players trying to leave
     private String gameName;
+
+
 
     //constructor
     Matchmaker(String g)
@@ -138,6 +142,10 @@ public class Matchmaker extends Thread
                                 //notify of outcome
                                 prioPlayer.addRequest(14, null);
                                 checkedPlayers.get(i).addRequest(14, null);
+
+
+                            //
+
                                 break;
                             }
                             //if the match creation failed, treat it like the difference in skill was too great and do nothing
@@ -279,6 +287,10 @@ public class Matchmaker extends Thread
 
             //if no one rejected it (both players accepted), create a new match for them
             /// make game
+            TTTServerSession gameSession = new TTTServerSession(p1, p2);
+            gameSession.start();
+
+
 
             return 3;
         } catch (Exception e)   //if something went wrong, notify Matchmaker

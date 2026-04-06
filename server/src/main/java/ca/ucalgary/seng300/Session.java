@@ -9,6 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+
 public class Session extends Thread
 {
     private SecretKey AESKey = null;
@@ -83,6 +84,16 @@ public class Session extends Thread
         //this will pause execution here until the client sends back a response
         return req.getResult();
     }
+
+    /**
+
+     Adds a request to the queue for the Session to execute. This should be used when a result IS needed. The Request
+     object MUST be created before being passed into the function for result retrieval.
+     @param req The Request object to be added into the queue.
+     @throws Exception NullPointerException if the request is null, or InterruptedException if is interrupted while
+     waiting*/
+    public void addRequest(Request req) throws Exception{
+        requestQueue.put(req);}
 
     @Override
     public void run()

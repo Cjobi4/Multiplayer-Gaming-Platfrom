@@ -1,8 +1,11 @@
 package ca.ucalgary.seng300.games;
 
-import ca.ucalgary.seng300.games.GameState;
+import ca.ucalgary.seng300.Request;
+import ca.ucalgary.seng300.Session;
 
-import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
+import static ca.ucalgary.seng300.Database.addMatchResult;
+
+//import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 
 //this class represents the server-side tic tac toe game session (extending thread)
 public class TTTServerSession extends Thread{
@@ -26,7 +29,7 @@ public class TTTServerSession extends Thread{
     private boolean activeSession;
 
     //this constructor will create a new serverside tic tac toe game session
-    public TicTacToeGameSession(Session player1, Session player2){
+    public TTTServerSession(Session player1, Session player2){
 
         //assign the first players session
         playerOneSession = player1;
@@ -145,18 +148,68 @@ public class TTTServerSession extends Thread{
         sendGameState();
     }
 
-    //this is my function for handling the situation when the game is over
     public void gameOverHandler() throws Exception {
 
-        //send the game results out
+        //send the game results to the player when the game is over
         sendGameResult();
+
+        //hold player one's username in a string variable
+        String player1Username = playerOneSession.getUsername();
+
+        //hold player two's username in a string variable
+        String player2Username = playerTwoSession.getUsername();
+
+        //create a null string for the name of the winner
+        String winnerUserName = null;
+
+        //hold the date in a string variable
+        String date = java.time.LocalDate.now().toString();
+
+        //specific gametype name for tic tac toe is TicTacToe
+        String gameType = "TicTacToe";
+
+        //loop for winning
+        if (game.getGameState() == GameState.PLAYER_WIN) {
+
+            //if the winner is X
+            if (game.getWinner() == 'X') {
+
+                //set the winners name to player1 (x)
+                winnerUserName = player1Username;
+
+            //if tge winners name is O
+            } else if (game.getWinner() == 'O') {
+
+                //set the winners name to player2 (o)
+                winnerUserName = player2Username;
+            }
+        }
+
+        //call the add match result with all the previous work
+        addMatchResult(player1Username, player2Username, winnerUserName, date, gameType);
 
         //set the active session to false
         activeSession = false;
 
-        //interrupt the current thread so the game session will end
+        //close the thread
         Thread.currentThread().interrupt();
+
     }
+
+//    //this is my function for handling the situation when the game is over
+//    public void gameOverHandler() throws Exception {
+//
+//        //send the game results out
+//        sendGameResult();
+//
+//        //set the active session to false
+//        activeSession = false;
+//
+//        addMatchResult();
+//
+//        //interrupt the current thread so the game session will end
+//        Thread.currentThread().interrupt();
+//    }
 
     //this function gets the active players session based on whose turn it is
     public Session getActivePlayerSession() {
@@ -169,6 +222,8 @@ public class TTTServerSession extends Thread{
         //otherwise return player two
         return playerTwoSession;
     }
+
+
 
     //this function parses a move string into row and column values
     public int[] parseMove(String moveString) {
@@ -237,7 +292,9 @@ public class TTTServerSession extends Thread{
         Session activePlayerSession = getActivePlayerSession();
 
         //ask the active player for their move and wait for the result
-        String moveString = activePlayerSession.addRequestAndWait(REQUEST_MOVE_PROMPT, new String[]{"Your Turn", String.valueOf(game.getCurrentPlayer())});
+        Request req = new Request(REQUEST_MOVE_PROMPT, new String[]{"Your Turn", String.valueOf(game.getCurrentPlayer())});
+        String moveString = req.getResult();
+        //String moveString = activePlayerSession.addRequestAndWait(REQUEST_MOVE_PROMPT, new String[]{"Your Turn", String.valueOf(game.getCurrentPlayer())});
 
         //if no move came back, do nothing this loop
         if (moveString == null || moveString.isBlank()) {
