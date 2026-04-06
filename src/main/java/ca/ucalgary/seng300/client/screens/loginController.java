@@ -49,21 +49,24 @@ public class loginController {
                     .queueRequest(Network.LOGIN, new String[] {username, password})
                     .orTimeout(10, TimeUnit.SECONDS)
                     .whenComplete((result, throwable) -> Platform.runLater(() -> {
+                        System.out.println("Test 1");
                         loginButton.setDisable(false);
-
                         if (throwable != null) {
+                            System.out.println("Test 2");
                             errorField.setText("Error: Could not log in.");
                             return;
                         }
 
-                        if (!Boolean.TRUE.equals(result)) {
+                        if (Boolean.TRUE.equals(result)) {
+                            System.out.println("Test 3");
                             errorField.setText("Invalid username or password.");
                             return;
                         }
-
+                        System.out.println("Test 4");
                         errorField.setText("");
                         switchSceneLargerScreen(event, "/fxml/mainPage.fxml", "Main Page");
                     }));
+
         } catch (Exception e) {
             loginButton.setDisable(false);
             errorField.setText("Error: Could not log in.");
