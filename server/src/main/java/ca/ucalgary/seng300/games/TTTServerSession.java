@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300;
+package ca.ucalgary.seng300.games;
 
 import ca.ucalgary.seng300.games.GameState;
 
