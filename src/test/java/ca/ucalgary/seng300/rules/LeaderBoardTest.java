@@ -29,6 +29,11 @@ class LeaderBoardTest {
         instanceField.set(null, stubNetwork);
     }
 
+    /**
+     * Testing the getLeaderBoard method
+     * Input: 3 entries
+     * Expected Output: 3 entries in descending order of wins --> neocity, john doe, jane doe
+     */
     @Test
     void testGetLeaderboard() {
         List<LeaderboardEntry> data = new ArrayList<>();
@@ -52,6 +57,11 @@ class LeaderBoardTest {
         assertEquals("jane doe", result.get(2).getUsername(), "Last place on leaderboard should be: jane doe");
     }
 
+    /**
+     * Testing the getLeaderBoard method
+     * Input: 3 entries with all equal wins
+     * Expected Output: 3 entries in order of input --> jane doe, neocity, john doe
+     */
     @Test
     void testGetLeaderboardWhenWinsAreEqual() {
         List<LeaderboardEntry> data = new ArrayList<>();
@@ -75,6 +85,11 @@ class LeaderBoardTest {
         assertEquals("john doe", result.get(2).getUsername(), "Last place on leaderboard should be: john doe");
     }
 
+    /**
+     * Testing the getUserRecord method
+     * Input: username1
+     * Expected Output: user record of username1
+     */
     @Test
     void testGetUserRecord() {
         String username1 = "jane doe";
@@ -96,6 +111,11 @@ class LeaderBoardTest {
         assertEquals(2, result.getTotalWins());
     }
 
+    /**
+     * Testing the getMatchRecord method
+     * Input: username1
+     * Expected Output: match records of username1 in descending order of date
+     */
     @Test
     void testGetUserMatchRecords() {
         String username1 = "jane doe";
@@ -116,14 +136,29 @@ class LeaderBoardTest {
         assertEquals("2026-04-01 10:00:00", result.get(2).getDate());
     }
 
+    /**
+     * Testing getUserRecord when the user doesn't have any records
+     * Input: testUser1
+     * Expected Output: 0 values for TTTWins, C4Wins, Total Matches, and Total Wins
+     *
+     * f a user record doesn't exist, one should be created with values of 0 initialized
+     */
     @Test
     void testWhenUserRecordDoesNotExist() {
-        stubNetwork.setResponse(new ArrayList<UserRecord>()); // empty !
-        List<UserRecord> result = Collections.singletonList(LeaderBoard.getUserRecord("jane doe"));
+        stubNetwork.setResponse(new ArrayList<MatchRecord>()); // empty !
+        UserRecord result = LeaderBoard.getUserRecord("testUser1");
 
-        assertTrue(result.isEmpty(), "There should be no user record for this user.");
+        assertEquals(0, result.getWinsTTT());
+        assertEquals(0, result.getWinsC4());
+        assertEquals(0, result.getTotalMatches());
+        assertEquals(0, result.getTotalWins());
     }
 
+    /**
+     * Testing getMatchRecords when math records for the user don't exist
+     * Input: testUser1
+     * Expected Output: empty match record
+     */
     @Test
     void testWhenMatchRecordDoesNotExist() {
         stubNetwork.setResponse(new ArrayList<MatchRecord>());
