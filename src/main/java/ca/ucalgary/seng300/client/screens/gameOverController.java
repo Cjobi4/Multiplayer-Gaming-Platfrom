@@ -81,6 +81,15 @@ public class gameOverController {
     }
 
     private void renderGameOverData(List<LeaderboardEntry> leaderboard) {
+        rankingListView.getItems().clear();
+
+        String activeUsername = ActivePlayer.getInstance().getUsername();
+        if(activeUsername == null || activeUsername.isEmpty()) {
+            activeUsername = "unknown";
+        }
+
+        usernameLabel.setText(activeUsername);
+
 
     }
 
