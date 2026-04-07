@@ -158,6 +158,14 @@ public class Network extends Thread {
         }
     }
 
+    /** Constructor for testing
+     * Testing shouldn't require a direct connection
+     * @param stubSocket fakes an output from the server
+     */
+    public Network(Socket stubSocket){
+        this.socket = stubSocket;
+    }
+
     /** only called once when user enters the ip and port
      *
      * @param ip
