@@ -92,7 +92,7 @@ public class Session extends Thread
             {
                 try //listen for incoming transmissions
                 {
-                    client.setSoTimeout(3000);  //server pauses checking every 3 seconds
+                    client.setSoTimeout(1000);  //server pauses checking every 1 seconds
 
                     //see what type of request it is
                     requestType = client.getInputStream().read();

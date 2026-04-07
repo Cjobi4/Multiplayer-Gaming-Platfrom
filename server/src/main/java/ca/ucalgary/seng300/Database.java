@@ -255,6 +255,12 @@ public class Database
     {
         try
         {
+            //make sure someone else hasn't already signed in to the same account yet
+            if (loggedInUsers.contains(username))
+            {
+                return -1;
+            }
+
             //hash the password first
             String hashedPassword = hash(password, username);
 
@@ -301,6 +307,11 @@ public class Database
             rs.next();
 
             //return the winrate
+            if (rs.getInt(game + "MatchesPlayed") == 0)
+            {
+                return -1;
+            }
+
             return rs.getInt(game + "Wins") / rs.getInt(game + "MatchesPlayed") * 100;
         } catch (SQLException e)
         {
