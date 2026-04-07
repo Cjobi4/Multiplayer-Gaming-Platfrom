@@ -42,6 +42,15 @@ public class gameOverController {
         //loadGameOverData();
     }
 
+    private void  loadGameOverData(){
+        if(currentGameType == null){
+            rankingListView.getItems().clear();
+            rankingListView.getItems().add("No Type determined");
+            scoreValueLabel.setText("0 Wins");
+            return;
+        }
+    }
+
     @FXML
     protected void onReturnToMainButtonClick(ActionEvent event) {
         try {
