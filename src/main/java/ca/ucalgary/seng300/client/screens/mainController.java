@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
 
 import java.awt.*;
+import java.awt.MenuItem;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +49,9 @@ public class mainController {
     public VBox leaderboardBox;
     public VBox gameOptions;
     public ImageView thumbnail;
+    public MenuItem aboutTheApp;
+    public MenuItem viewDeveloperCredits;
+    public MenuItem viewPlayerStats;
 
     private GameRegistry games = GameRegistry.getInstance();
     ToggleGroup group = new ToggleGroup();
@@ -132,6 +136,67 @@ public class mainController {
         matchesLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
 
         return rowBox;
+    }
+
+    @FXML
+    private void onAboutTheAppButtonClick() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About The Application");
+        alert.setHeaderText("Trainwreck!");
+
+        String information = "This is trainwreck weeeewoooooo";
+
+        alert.setContentText(information);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(400);
+        dialogPane.setMinWidth(450);
+
+        alert.showAndWait();
+
+    }
+
+    @FXML
+    private void onViewPlayerStatsClick() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About The Application");
+        alert.setHeaderText("Trainwreck!");
+
+        String information = "This is trainwreck weeeewoooooo";
+
+        alert.setContentText(information);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(400);
+        dialogPane.setMinWidth(450);
+
+        alert.showAndWait();
+
+
+    }
+
+    @FXML
+    private void onViewDeveloperCreditsClick() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About The Developers");
+        alert.setHeaderText("Trainwreck Developers!");
+
+        String information = "This app was developed by weewoo";
+
+        alert.setContentText(information);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(400);
+        dialogPane.setMinWidth(450);
+
+        alert.showAndWait();
+
     }
 
 
