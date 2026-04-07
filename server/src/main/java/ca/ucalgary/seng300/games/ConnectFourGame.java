@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.games.connectfour;
+package ca.ucalgary.seng300.games.ConnectFourGame;
 
 import ca.ucalgary.seng300.games.ConnectFourBoard;
 import ca.ucalgary.seng300.games.GameState;
