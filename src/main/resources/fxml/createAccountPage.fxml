@@ -35,6 +35,11 @@
                   <Font name="Dubai Medium" size="17.0" />
                </font></Label>
             <Button fx:id="backButton" layoutX="14.0" layoutY="361.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" styleClass="basic-button" text="Back" />
+            <Label fx:id="errorField1" layoutX="120.0" layoutY="205.0" prefHeight="31.0" prefWidth="452.0" textFill="#ff006e">
+               <font>
+                  <Font name="Dubai Regular" size="14.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </children>

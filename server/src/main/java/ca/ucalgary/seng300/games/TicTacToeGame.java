@@ -1,7 +1,6 @@
-package ca.ucalgary.seng300.games.tictactoe;
+package ca.ucalgary.seng300.games;
 
 //import the enums file
-import ca.ucalgary.seng300.games.GameState;
 
 //this is for game/move logic for tic tac toe
 public class TicTacToeGame {
