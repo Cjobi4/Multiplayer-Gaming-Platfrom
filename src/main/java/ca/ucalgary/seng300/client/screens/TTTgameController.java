@@ -1,13 +1,18 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Session;
+import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
+import ca.ucalgary.seng300.shared.models.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
@@ -17,7 +22,6 @@ import ca.ucalgary.seng300.games.GameState;
 import java.io.IOException;
 
 public class TTTgameController {
-    public Button gameOverButton;
     public Button backButton;
     public Button ttt00;
     public Button ttt01;
@@ -29,6 +33,9 @@ public class TTTgameController {
     public Button ttt21;
     public Button ttt22;
     public Text turnDisplay;
+    public ScrollPane chatScrollPane;
+    public VBox chatContainer;
+    public TextField messageInput;
 
     TicTacToeGame current = new TicTacToeGame();
     Button[][] grid;
@@ -38,47 +45,48 @@ public class TTTgameController {
     }
 
     @FXML
-    protected void onGameOverButtonClick(ActionEvent event) {
-        try {
-            //Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
-            Parent gameOverRoot = loader.load();
+    protected void onSendMessage() {
+        String text = messageInput.getText();
+        if (text != null && !text.isEmpty()) {
+            Message newMessage = new Message(text, ActivePlayer.getInstance().getUsername());
 
-            //Get current stage from the button click
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            //Create new scene and set it on the stage
-            Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
-            stage.setScene(gameOverScene);
-            stage.setTitle("Game Over"); //Change stage title to reflect current scene
-            stage.show();
-
-            // Create Match Record (Not sure where to get player info, will be needed to make a match record)
-
-            // MatchRecord matchRecord = new MatchRecord();
-
-            // Update Leaderboard
-
-            // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
-
-        } catch (IOException e) {
-            System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
+            ChatRegistry.getInstance().addMessage(newMessage);
+            messageInput.clear();
+            refreshChatDisplay();
         }
     }
+
+    private void refreshChatDisplay() {
+        chatContainer.getChildren().clear();
+
+        for (Message m : ChatRegistry.getInstance().ListAll()) {
+            Label msgLable = new Label(m.getSender() + ": " + m.getContent());
+
+            msgLable.setWrapText(true);
+            msgLable.setMaxWidth(750);
+            msgLable.setStyle("-fx-background-color:  #F9EDE1;" +
+                    "-fx-padding: 8;" +
+                    "-fx-background-radius: 10;" +
+                    "-fx-font-family: Dubai;" +
+                    "-fx-text-fill: #866b59;" +
+                    "-fx-margin: 5;");
+
+            chatContainer.getChildren().add(msgLable);
+        }
+        chatScrollPane.setVvalue(1.0);
+    }
+
 
     protected void gameOver(){ //copy of the button version
         try {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
-
-            //Get current stage from the button click
             Stage stage = (Stage) ttt00.getScene().getWindow();
-
-            //Create new scene and set it on the stage
             Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
             stage.setScene(gameOverScene);
             stage.setTitle("Game Over"); //Change stage title to reflect current scene
+            stage.setResizable(false);
             stage.show();
 
             // Create Match Record (Not sure where to get player info, will be needed to make a match record)
@@ -88,6 +96,8 @@ public class TTTgameController {
             // Update Leaderboard
 
             // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
+
+            ChatRegistry.getInstance().clearChat();
 
         } catch (IOException e) {
             System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
@@ -108,11 +118,37 @@ public class TTTgameController {
             Scene opponentScene = new Scene(opponentRoot, 800, 600);
             stage.setScene(opponentScene);
             stage.setTitle("Tic-Tac-Toe - Opponent Select"); //Change stage title to reflect current scene
+            stage.setResizable(false);
+            ChatRegistry.getInstance().clearChat();
             stage.show();
 
         } catch (IOException e) {
             System.err.println("Error: Could not load TTTopponentSelectPage.fxml. Check file path!");
         }
+    }
+
+    @FXML
+    protected void onQuestionButtonClick(ActionEvent event) {
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("How to Play Tic-Tac-Toe");
+        alert.setHeaderText("Game Instructions");
+
+        String instructions = "1. The game is played on a 3x3 grid.\n\n"
+                + "2. If you are X, your opponent is O. If you are O, your opponent is X. Players take turns putting their marks in empty squares.\n\n"
+                + "3. The first player to get 3 of their marks in a row (up, down, across, or diagonally) is the winner.\n\n"
+                + "4. When all 9 squares are full, the game is over. If no player has 3 marks in a row, the game ends in a tie.\n";
+
+        alert.setContentText(instructions);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(400);
+        dialogPane.setMinWidth(450);
+
+        alert.showAndWait();
+
     }
 
     //Everytime this is called, the board is updated

@@ -24,19 +24,21 @@ public class LeaderBoard {
     public static List<LeaderboardEntry> getLeaderboard (GameType gameType){
         // get the leaderboard based on rank
         try {
-            List<List<LeaderboardEntry>> leaderboard = (List<List<LeaderboardEntry>>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, null).get();
             if (gameType == GameType.TICTACTOE) {
-                List<LeaderboardEntry> leaderboardTTT = leaderboard.getFirst();
+                // Added .get() before the cast completes
+                List<LeaderboardEntry> leaderboardTTT = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"}).get();
                 leaderboardTTT.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardTTT;
             }
             else if (gameType == GameType.CONNECT4) {
-                List<LeaderboardEntry> leaderboardC4 = leaderboard.get(1);
+                // Added .get() before the cast completes
+                List<LeaderboardEntry> leaderboardC4 = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"c4"}).get();
                 leaderboardC4.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardC4;
             }
             else {
-                List<LeaderboardEntry> leaderboardCombined = leaderboard.get(2);
+                // Added .get() before the cast completes
+                List<LeaderboardEntry> leaderboardCombined = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"total"}).get();
                 leaderboardCombined.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardCombined;
             }

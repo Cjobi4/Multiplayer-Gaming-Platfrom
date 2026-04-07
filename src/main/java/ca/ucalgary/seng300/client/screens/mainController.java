@@ -2,9 +2,14 @@ package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.client.components.LeaderBoardMock;
 import ca.ucalgary.seng300.client.components.LeaderBoardRows;
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class mainController {
 
@@ -53,26 +59,55 @@ public class mainController {
     }
 
     private void loadCombinedLeaderboard(){
-       List<LeaderBoardRows> rows = LeaderBoardMock.getCombinedLeaderboard();
-       renderLeaderboard(rows);// New functionality for later use
-    }
-
-    public void renderLeaderboard(List<LeaderBoardRows> rows){
         leaderboardBox.getChildren().clear();
 
-        for (LeaderBoardRows row : rows){
-            leaderboardBox.getChildren().add(showLeaderboardRow(row));
+        Task<List<LeaderboardEntry>> task = new Task<>() {
+            @Override
+            protected List<LeaderboardEntry> call() {
+                return LeaderBoard.getLeaderboard(null);
+            }
+        };
+
+        task.setOnSucceeded(e -> renderLeaderboard(task.getValue()));
+
+        task.setOnFailed(e -> {
+            leaderboardBox.getChildren().clear();
+
+            Label errorLabel = new Label("Failed to load leaderboard");
+            errorLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: red;");
+            leaderboardBox.getChildren().add(errorLabel);
+
+            if (task.getException() != null) {
+                task.getException().printStackTrace();
+            }
+        });
+
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
+        leaderboardBox.getChildren().clear();
+
+        for (int i = 0; i < leaderboard.size(); i++) {
+            LeaderboardEntry entry = leaderboard.get(i);
+            leaderboardBox.getChildren().add(showLeaderboardRow(i+1, entry));
         }
 
     }
 
-    public HBox showLeaderboardRow(LeaderBoardRows row){
-        Label rankLabel = new Label("#" + row.getRank());
-        Label nameLabel = new Label(row.getPlayerName());
-        Label winsLabel = new Label(row.getWins() + " W");
-        Label matchesLabel = new Label(row.getMatches() + " M");
+    public HBox showLeaderboardRow(int rank, LeaderboardEntry entry){
+        Label rankLabel = new Label("#" + rank);
+        Label nameLabel = new Label(entry.getUsername());
+        Label winsLabel = new Label(entry.getWins() + " W");
+        Label matchesLabel = new Label(entry.getMatches() + " M");
 
-        rankLabel.setMinWidth(45);
+        rankLabel.setMinWidth(30);
+        winsLabel.setMinWidth(40);
+        matchesLabel.setMinWidth(40);
+
         nameLabel.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
@@ -117,7 +152,7 @@ public class mainController {
             return;
         }
 
-        Game game = games.findByName(input);
+        Game game = findGame(input);
 
         if(game != null){
             displayGame(game); // This will be the function that connects to the labels allowing to display on labels
@@ -127,6 +162,36 @@ public class mainController {
             gameTitleLabel.setText("Game not found");
         }
 
+    }
+
+    private Game findGame(String query) {
+        if (query == null) {
+            return null;
+        }
+
+        String normalizedQuery = query.trim().toLowerCase();
+
+        if (normalizedQuery.isEmpty()) {
+            return null;
+        }
+
+        for (Game game : games.ListAll()) {
+            if (game.getTitle() != null && game.getTitle().toLowerCase().contains(normalizedQuery)) {
+                return game;
+            }
+
+            if (game.getId() != null && game.getId().equalsIgnoreCase(normalizedQuery)) {
+                return game;
+            }
+
+            for (Tag tag : game.getTags()) {
+                if (tag.getLabel() != null && tag.getLabel().toLowerCase().contains(normalizedQuery)) {
+                    return game;
+                }
+            }
+        }
+
+        return null;
     }
 
     private String formatTags(List<Tag> tags) {
@@ -173,8 +238,14 @@ public class mainController {
 
         if (selected != null)
         {
-            switchScene(event, "/fxml/" + games.findByName(selected.getText()).getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
-            errorField.setText("");
+            Game selectedGame = findGame(selected.getText());
+
+            if (selectedGame != null) {
+                switchScene(event, "/fxml/" + selectedGame.getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
+                errorField.setText("");
+            } else {
+                errorField.setText("Could not find the selected game.");
+            }
         }
         else
         {
@@ -189,8 +260,14 @@ public class mainController {
 
         if (selected != null)
         {
-            switchScene(event, "/fxml/" + games.findByName(selected.getText()).getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
-            errorField.setText("");
+            Game selectedGame = findGame(selected.getText());
+
+            if (selectedGame != null) {
+                switchScene(event, "/fxml/" + selectedGame.getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
+                errorField.setText("");
+            } else {
+                errorField.setText("Could not find the selected game.");
+            }
         }
         else
         {
@@ -206,6 +283,7 @@ public class mainController {
             Scene scene = new Scene(root, 800, 600);
             stage.setScene(scene);
             stage.setTitle(title);
+            stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
             errorField.setText("Error loading page: " + fxmlPath);
@@ -216,23 +294,40 @@ public class mainController {
 
     @FXML
     protected void handleLogout(ActionEvent event) {
+        logOutButton.setDisable(true);
+        errorField.setText("Logging out...");
+
         try {
-            //Load fxml file
+            Network.getInstance()
+                    .queueRequest(Network.LOGOUT, null)
+                    .orTimeout(5, TimeUnit.SECONDS)
+                    .whenComplete((result, throwable) -> Platform.runLater(() -> {
+                        if (throwable != null || !Boolean.TRUE.equals(result)) {
+                            System.err.println("Warning: server logout was not confirmed.");
+                        }
+
+                        switchToLoginScene(event);
+                    }));
+        } catch (Exception e) {
+            switchToLoginScene(event);
+        }
+    }
+
+    private void switchToLoginScene(ActionEvent event) {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/loginPage.fxml"));
             Parent loginRoot = loader.load();
 
-            //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            //Create new scene and set it on the stage
             Scene loginScene = new Scene(loginRoot, 600, 400);
             stage.setScene(loginScene);
-            stage.setTitle("Login Screen"); //Change stage title to reflect current scene
+            stage.setTitle("Login Screen");
+            stage.setResizable(false);
             stage.show();
-
         } catch (IOException e) {
-            System.err.println("Error: Could not load loginPage.fxml. Check file path!");
-
+            errorField.setText("Error loading page: /fxml/loginPage.fxml");
+            logOutButton.setDisable(false);
         }
     }
 
