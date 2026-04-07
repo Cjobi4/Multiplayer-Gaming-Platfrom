@@ -57,30 +57,42 @@ Compile first to check for errors, then run tests to verify correctness, then la
 
 ## Server Build and Run
 
-> All server commands must be run from the `server/` directory. Start with `cd server` from the project root. When finished, return to the project root with `cd ..`.
+Server commands can be run from either the project root (using `-f server/pom.xml`) or from the `server/` directory.
 
 ### Build Instructions
+
+From project root:
+
+```bash
+./mvnw -f server/pom.xml clean compile
+```
+
+Or from the `server/` directory:
 
 ```bash
 cd server
 ../mvnw clean compile
 ```
 
-To build the executable JAR:
+To package the server JAR:
 
 ```bash
-cd server
-../mvnw clean package
+./mvnw -f server/pom.xml clean package
 ```
 
 ### Test Instructions
 
 ```bash
-cd server
-../mvnw clean test
+./mvnw -f server/pom.xml clean test
 ```
 
 ### Run Instructions
+
+```bash
+./mvnw -f server/pom.xml exec:java
+```
+
+Or from the `server/` directory:
 
 ```bash
 cd server
@@ -133,55 +145,79 @@ The server uses:
 
 ```
 project-root/
-├── docs/                          # Design documents and diagrams
-│   ├── architecture/              # System-wide architecture
-│   ├── platform-core/             # Platform Core designs
-│   ├── client-ui/                 # Client/UI designs
-│   ├── rules-validation/          # Rules & Validation designs
-│   ├── quality-testing/           # Test plans
-│   └── integration-release/       # I&R process docs
-├── server/                        # Server module (separate Maven project)
+├── docs/                              # Design documents and diagrams
+│   ├── architecture/                  # System-wide architecture
+│   ├── platform-core/                 # Platform Core designs
+│   │   ├── identity/                  # Authentication and session
+│   │   ├── game-registry/             # Game registry design
+│   │   ├── rooms-and-matchmaking/     # Matchmaking design
+│   │   ├── turn-engine/               # Turn engine design
+│   │   └── persistence/               # Database and server design
+│   ├── client-ui/                     # Client/UI designs
+│   │   ├── screens/                   # Screen-level designs
+│   │   └── game-rendering/            # Game rendering designs
+│   ├── rules-validation/              # Rules & Validation designs
+│   │   ├── leaderboard/               # Leaderboard design
+│   │   └── move-validation/           # Move validation design
+│   ├── quality-testing/               # Test plans
+│   └── integration-release/           # I&R process docs
+├── server/                            # Server module (separate Maven project)
 │   ├── pom.xml
-│   └── src/main/java/.../
-│       ├── Database.java          # SQLite persistence and user management
-│       ├── Matchmaker.java        # Skill-based matchmaking queue
-│       ├── Network.java           # TCP server socket listener
-│       ├── ServerMain.java        # Server entry point
-│       └── Session.java           # Client session handler with encryption
+│   └── src/
+│       ├── main/java/.../
+│       │   ├── Database.java          # SQLite persistence and user management
+│       │   ├── Matchmaker.java        # Skill-based matchmaking queue
+│       │   ├── Network.java           # TCP server socket listener with encryption
+│       │   ├── Request.java           # Async request DTO with CompletableFuture
+│       │   ├── ServerMain.java        # Server entry point
+│       │   ├── Session.java           # Client session handler (16 request types)
+│       │   └── Games/                 # Server-side game sessions
+│       │       ├── GameState.java
+│       │       ├── TicTacToeGameSession.java
+│       │       ├── tictactoe/         # Server TTT board and game logic
+│       │       └── connectfour/       # Server C4 board, game, and session
+│       └── test/java/.../             # Server unit tests (Matchmaker)
 ├── src/
 │   ├── main/
 │   │   ├── java/ca/ucalgary/seng300/
-│   │   │   ├── app/               # Application entry point (MainApp)
-│   │   │   ├── shared/            # Cross-team contracts and models
+│   │   │   ├── app/                   # Application entry point (MainApp)
+│   │   │   ├── shared/                # Cross-team contracts and models
+│   │   │   │   └── models/            # Game, Tag, Player, Message, ActivePlayer
 │   │   │   ├── core/
-│   │   │   │   ├── identity/      # Client-side auth and networking
-│   │   │   │   ├── registry/      # Game, Chat, and Player registries
-│   │   │   │   ├── matchmaking/
-│   │   │   │   ├── rooms/
-│   │   │   │   └── turnengine/    # Game session management
+│   │   │   │   ├── identity/          # Client-side auth and networking
+│   │   │   │   ├── registry/          # Game, Chat, and Player registries
+│   │   │   │   ├── matchmaking/       # Matchmaking (stub)
+│   │   │   │   ├── rooms/             # Room management (stub)
+│   │   │   │   └── turnengine/        # Game session management
 │   │   │   ├── rules/
-│   │   │   │   ├── leaderboard/   # Scoring models and database
-│   │   │   │   └── validation/
+│   │   │   │   ├── leaderboard/       # Scoring models, queries, and database
+│   │   │   │   └── validation/        # Move validation pipeline (stub)
 │   │   │   ├── client/
-│   │   │   │   ├── screens/       # FXML controllers
-│   │   │   │   ├── components/
-│   │   │   │   └── rendering/
+│   │   │   │   ├── screens/           # FXML controllers (9 screens)
+│   │   │   │   ├── components/        # Leaderboard row model and mock data
+│   │   │   │   └── rendering/         # Board rendering (stub)
 │   │   │   └── games/
-│   │   │       ├── tictactoe/     # Tic-Tac-Toe board and game logic
-│   │   │       └── connectfour/   # Connect Four board and game logic
+│   │   │       ├── tictactoe/         # Tic-Tac-Toe board and game logic
+│   │   │       └── connectfour/       # Connect Four board and game logic
 │   │   └── resources/
-│   │       ├── css/               # Stylesheets
-│   │       ├── fxml/              # Screen layouts
-│   │       └── images/            # Static assets
-│   └── test/                      # JUnit test suite
-├── scripts/                       # Utility scripts
-├── .gitlab-ci.yml                 # CI/CD pipeline configuration
-├── .gitlab/                       # GitLab merge request templates
-├── mvnw / mvnw.cmd                # Maven wrapper (Unix / Windows)
-├── pom.xml                        # Client Maven build config
-├── CHANGELOG.md                   # Version history
-├── CURRENT_STATE.md               # Feature status matrix
-└── team.md                        # Sub-team roster
+│   │       ├── css/                   # Stylesheets
+│   │       ├── fxml/                  # Screen layouts (9 FXML files)
+│   │       └── images/               # Static assets
+│   └── test/                          # JUnit 5 test suite
+│       └── java/.../
+│           ├── client/                # UI controller tests
+│           ├── core/                  # Registry and network tests
+│           ├── games/                 # Game logic tests (TTT and C4)
+│           ├── rules/                 # Leaderboard tests
+│           └── integration/           # Integration tests (stub)
+├── scripts/                           # Utility scripts (placeholder)
+├── .gitlab-ci.yml                     # CI/CD pipeline (build + test, client and server)
+├── .gitlab/                           # GitLab merge request templates
+├── mvnw / mvnw.cmd                    # Maven wrapper (Unix / Windows)
+├── pom.xml                            # Client Maven build config
+├── CHANGELOG.md                       # Version history
+├── CURRENT_STATE.md                   # Feature status and requirements checklist
+└── team.md                            # Sub-team roster
 ```
 
 ## Key Documents
@@ -205,4 +241,4 @@ See [team.md](team.md) for the full sub-team roster, leads, and members.
 
 ---
 
-_Last updated: 2026-04-03_
+_Last updated: 2026-04-06_
