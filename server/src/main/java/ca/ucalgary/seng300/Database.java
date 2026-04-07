@@ -451,11 +451,19 @@ public class Database
                     loser = playerOne;
                 }
 
-                //update the leaderboard entries
-                stmt.execute("UPDATE leaderboard SET " + game + "Wins = " + game + "Wins + 1, " +
-                        game + "MatchesPlayed = " + game + "MatchesPlayed + 1 WHERE username = " + winner + ";");
-                stmt.execute("UPDATE leaderboard SET " + game + "Wins = " + game + "Wins - 1, " +
-                        game + "MatchesPlayed = " + game + "MatchesPlayed + 1 WHERE username = " + loser + ";");
+                // Winner gets a win and both players get a played match.
+                pstmt = conn.prepareStatement("UPDATE leaderboard SET " + game + "Wins = " + game + "Wins + 1, "
+                        + game + "MatchesPlayed = " + game + "MatchesPlayed + 1, "
+                        + "totalWins = totalWins + 1, totalMatchesPlayed = totalMatchesPlayed + 1 "
+                        + "WHERE username = ?");
+                pstmt.setString(1, winner);
+                pstmt.executeUpdate();
+
+                pstmt = conn.prepareStatement("UPDATE leaderboard SET " + game + "MatchesPlayed = " + game + "MatchesPlayed + 1, "
+                        + "totalMatchesPlayed = totalMatchesPlayed + 1 "
+                        + "WHERE username = ?");
+                pstmt.setString(1, loser);
+                pstmt.executeUpdate();
             } catch (Exception e)   //if the match result couldn't be saved...
             {
                 System.out.println("Match results not saved.");
