@@ -36,3 +36,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 - **Platform Core(MR !41)**: `processRequest()` updated to support concurrent client requests with a narrowed synchronized block to minimize blocking; client UI controllers connected to game registry; login and register account handling now notifies client of operation outcome
 - **Client UI(MR !38)**: Login and Create Account pages are now visually 
+
+## [v0.3.0] - 2026-04-06
+
+## Added 
+- **Client UI(MR !62)**: TTT chat is fully implemented in `TTTgameController.java`, login and register function also connected to front-end through `Network.java`, and bypass button on all pages needed for development. Synchronous addRequestAndWait() method in `Session` for server-to-client request/response with `CompletableFuture`. Game session creation path for direct challenges.
+- **Platform Core (MR !61)**: Matches two players with similar win rates, creates a game if both accept, otherwise reports who declined or if an error occurred through `Matchmaker.java`. Class for sending and receiving requests to the client FROM THE SERVER (server initiated transmissions) through `Request.java` (implemented class)
+- **Rules & Validation(MR !60)**: Server-side `TicTacToeGameSession` orchestrating full game loop between two connected players. `ConnectFourGameSession` with board state updates and result recording. Database integration helpers for match result storage.
+
+## Changed 
+- **Platform Core (MR !61)**: Handles uncaught session errors by logging out, leaving matchmaking queues, and shutting down the session in `Session.java`. Handles secure client-server communication, including authentication, matchmaking, game actions, chat, and data retrieval using encrypted requests over a background network thread in `Network.java`
+- **Client/UI (MR !62)**: Menu bar cleaned up and reorganized. Leaderboard display updated on opponent select pages. Aesthetic UI fixes across screens.
+
+## Removed
+- **Platform Core (MR !61)**: Separate class Request out of `Session.java` to new `Request.java` file
