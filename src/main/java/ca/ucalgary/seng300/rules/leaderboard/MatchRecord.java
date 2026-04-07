@@ -29,7 +29,7 @@ public class MatchRecord {
         this.gameType = gameType;
         this.winner = winner;
 
-        ZoneId zoneId = ZoneId.of("Canada/Edmonton");
+        ZoneId zoneId = ZoneId.of("America/Edmonton");
         ZonedDateTime now = ZonedDateTime.now(zoneId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.date = now.format(formatter);

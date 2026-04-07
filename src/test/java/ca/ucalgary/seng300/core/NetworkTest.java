@@ -14,14 +14,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NetworkTest {
 
+    // TODO rewrite tests to reflect updates in main code
     /*
     Most of these test cases can only test the logic of the functions
     This is because I cannot connect to the server itself to verify
      */
-//    @BeforeAll
-//    static void setUpEncryptionKey(){
-//        Network.setupTestEncryption(); // need to initialize encryption keys
-//    }
+    @BeforeAll
+    static void setUpEncryptionKey() throws Exception {
+        Network.setupTestEncryption();
+    }
 
 //    @Test
 //    void testSuccessfulLogin() throws Exception {
