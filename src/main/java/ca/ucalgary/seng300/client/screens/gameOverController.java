@@ -1,7 +1,11 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +18,7 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class gameOverController {
 
@@ -49,6 +54,33 @@ public class gameOverController {
             scoreValueLabel.setText("0 Wins");
             return;
         }
+
+        Task<List<LeaderboardEntry>> task = new Task<>(){
+            @Override
+            protected List<LeaderboardEntry> call() {
+                return LeaderBoard.getLeaderboard(currentGameType);
+            }
+        };
+
+        task.setOnSucceeded(event -> renderGameOverData(task.getValue()));
+
+        task.setOnFailed(event -> {
+            usernameLabel.setText(ActivePlayer.getInstance().getUsername());
+            scoreValueLabel.setText("0 Wins");
+            rankingListView.getItems().clear();
+            rankingListView.getItems().add("Failed to load rankings");
+
+
+            if (task.getException() != null) {
+                task.getException().printStackTrace();
+            }
+        });
+
+
+    }
+
+    private void renderGameOverData(List<LeaderboardEntry> leaderboard) {
+
     }
 
     @FXML
