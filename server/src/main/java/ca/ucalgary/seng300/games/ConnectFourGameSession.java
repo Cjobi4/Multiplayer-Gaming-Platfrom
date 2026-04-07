@@ -4,7 +4,7 @@ import ca.ucalgary.seng300.Request;
 import ca.ucalgary.seng300.Session;
 import ca.ucalgary.seng300.Database;
 import ca.ucalgary.seng300.games.GameState;
-import ca.ucalgary.seng300.games.connectfour.ConnectFourGame;
+import ca.ucalgary.seng300.games.ConnectFourGame;
 
 import java.util.Date;
 
