@@ -170,7 +170,7 @@ project-root/
 │       │   ├── Network.java           # TCP server socket listener with encryption
 │       │   ├── Request.java           # Async request DTO with CompletableFuture
 │       │   ├── ServerMain.java        # Server entry point
-│       │   ├── Session.java           # Client session handler (16 request types)
+│       │   ├── Session.java           # Per-client session handler (12 request types)
 │       │   └── Games/                 # Server-side game sessions
 │       │       ├── GameState.java
 │       │       ├── TicTacToeGameSession.java
@@ -182,12 +182,14 @@ project-root/
 │   │   ├── java/ca/ucalgary/seng300/
 │   │   │   ├── app/                   # Application entry point (MainApp)
 │   │   │   ├── shared/                # Cross-team contracts and models
+│   │   │   │   ├── interfaces/        # Shared interfaces (stub, .gitkeep only)
 │   │   │   │   └── models/            # Game, Tag, Player, Message, ActivePlayer
 │   │   │   ├── core/
 │   │   │   │   ├── identity/          # Client-side auth and networking
 │   │   │   │   ├── registry/          # Game, Chat, and Player registries
-│   │   │   │   ├── matchmaking/       # Matchmaking (stub)
-│   │   │   │   ├── rooms/             # Room management (stub)
+│   │   │   │   ├── matchmaking/       # Matchmaking (stub, .gitkeep only)
+│   │   │   │   ├── persistence/       # Persistence (stub, .gitkeep only)
+│   │   │   │   ├── rooms/             # Room management (stub, .gitkeep only)
 │   │   │   │   └── turnengine/        # Game session management
 │   │   │   ├── rules/
 │   │   │   │   ├── leaderboard/       # Scoring models, queries, and database
@@ -197,8 +199,13 @@ project-root/
 │   │   │   │   ├── components/        # Leaderboard row model and mock data
 │   │   │   │   └── rendering/         # Board rendering (stub)
 │   │   │   └── games/
-│   │   │       ├── tictactoe/         # Tic-Tac-Toe board and game logic
-│   │   │       └── connectfour/       # Connect Four board and game logic
+│   │   │       ├── GameEngine.java    # Game engine interface (commented out)
+│   │   │       ├── GameController.java # Game controller (commented out)
+│   │   │       ├── GameState.java     # Game state enum
+│   │   │       ├── Move.java          # Move placeholder stub
+│   │   │       ├── GeneralStats.java  # Stats placeholder stub
+│   │   │       ├── tictactoe/         # Tic-Tac-Toe board, game, and game session
+│   │   │       └── connectfour/       # Connect Four board, game, and game session
 │   │   └── resources/
 │   │       ├── css/                   # Stylesheets
 │   │       ├── fxml/                  # Screen layouts (9 FXML files)
@@ -210,7 +217,7 @@ project-root/
 │           ├── games/                 # Game logic tests (TTT and C4)
 │           ├── rules/                 # Leaderboard tests
 │           └── integration/           # Integration tests (stub)
-├── scripts/                           # Utility scripts (placeholder)
+├── scripts/                           # Utility scripts
 ├── .gitlab-ci.yml                     # CI/CD pipeline (build + test, client and server)
 ├── .gitlab/                           # GitLab merge request templates
 ├── mvnw / mvnw.cmd                    # Maven wrapper (Unix / Windows)
@@ -241,4 +248,4 @@ See [team.md](team.md) for the full sub-team roster, leads, and members.
 
 ---
 
-_Last updated: 2026-04-06_
+_Last updated: 2026-04-07_
