@@ -90,6 +90,12 @@ public class gameOverController {
 
         usernameLabel.setText(activeUsername);
 
+        if(leaderboard == null || leaderboard.isEmpty()){
+            scoreValueLabel.setText("0 Wins");
+            rankingListView.getItems().add("No leaderboard data");
+            return;
+        }
+
 
     }
 
