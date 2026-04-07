@@ -134,11 +134,6 @@ public class mainController {
         return rowBox;
     }
 
-
-
-
-
-
 /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void sampleData(){
         List<Tag> Connect4Tag = Arrays.asList(new Tag("Two player", "purple"), new Tag("Strategy", "Red"));
@@ -287,12 +282,23 @@ public class mainController {
     }
 
     @FXML
-    protected void onMatchMakeButtonClick(ActionEvent event) {
+    protected void onMatchMakeButtonClick(ActionEvent event) throws Exception {
         RadioButton selected = (RadioButton) group.getSelectedToggle();
         if (selected != null)
         {
             Game selectedGame = findGame(selected.getText());
             if (selectedGame != null) {
+
+                if (selectedGame.getTitle().equals("TicTacToe"))
+                {
+                    boolean joinedTTT = (Boolean) Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get();
+
+                }
+                else
+                {
+                    boolean joinedC4  = (Boolean) Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get();
+                }
+
                 showMatchFoundPopup("Garry", selectedGame, event);
                 errorField.setText("");
             } else {
