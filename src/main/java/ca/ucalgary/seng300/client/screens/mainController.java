@@ -4,6 +4,8 @@ import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
+import ca.ucalgary.seng300.rules.leaderboard.UserRecord;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.application.Platform;
@@ -53,6 +55,7 @@ public class mainController {
 
     private GameRegistry games = GameRegistry.getInstance();
     ToggleGroup group = new ToggleGroup();
+    private String currentPlayer = ActivePlayer.getInstance().getUsername();
 
     @FXML
     public void initialize() {
@@ -163,6 +166,30 @@ public class mainController {
         alert.setHeaderText("Trainwreck!");
 
         String information = "This is trainwreck weeeewoooooo";
+        UserRecord info = LeaderBoard.getUserRecord(currentPlayer);
+
+        if (info == null)
+        {
+            System.out.println("User Record Is Null");
+        }
+
+//        int C4matches = info.getMatchesC4();
+//        int TTTmatches = info.getMatchesTTT();
+//        int totalmatches = info.getTotalMatches();
+//        int C4wins = info.getWinsC4();
+//        int TTTwins = info.getWinsTTT();
+//        int totalwins = info.getTotalWins();
+//
+        StringBuilder message = new StringBuilder();
+//        message.append("Total Matches: " + totalmatches + "\n");
+//        message.append("Tic Tac Toe Matches: " + TTTmatches + "\n");
+//        message.append("Connect 4 Matches: " + C4matches + "\n");
+//        message.append("Total Wins: " + totalwins + "\n");
+//        message.append("Connect 4 Wins: " + C4wins + "\n");
+//        message.append("Tic Tac Toe Matches: " + TTTwins + "\n");
+//
+        message.append("hello!");
+        information = message.toString();
 
         alert.setContentText(information);
 
