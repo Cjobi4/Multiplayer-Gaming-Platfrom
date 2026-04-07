@@ -39,9 +39,19 @@ public class gameOverController {
 
     @FXML
     public void initialize() {
-        usernameLabel.setText(ActivePlayer.getInstance().getUsername());
-        scoreValueLabel.setText("");
+        String activeUsername = ActivePlayer.getInstance().getUsername();
+
+        if (activeUsername == null || activeUsername.isEmpty()) {
+            activeUsername = "Unknown User";
+        }
+
+        usernameLabel.setText(activeUsername);
+        scoreValueLabel.setText("Loading...");
         rankingListView.getItems().clear();
+        rankingListView.getItems().add("Loading rankings...");
+//        usernameLabel.setText(ActivePlayer.getInstance().getUsername());
+//        scoreValueLabel.setText("");
+//        rankingListView.getItems().clear();
     }
 
     public void setGameType(GameType gameType){
@@ -67,15 +77,30 @@ public class gameOverController {
         task.setOnSucceeded(event -> renderGameOverData(task.getValue()));
 
         task.setOnFailed(event -> {
-            usernameLabel.setText(ActivePlayer.getInstance().getUsername());
+            String activeUsername = ActivePlayer.getInstance().getUsername();
+
+            if (activeUsername == null || activeUsername.isEmpty()) {
+                activeUsername = "Unknown User";
+            }
+
+            usernameLabel.setText(activeUsername);
             scoreValueLabel.setText("0 Wins");
             rankingListView.getItems().clear();
             rankingListView.getItems().add("Failed to load rankings");
 
-
             if (task.getException() != null) {
                 task.getException().printStackTrace();
+
             }
+//            usernameLabel.setText(ActivePlayer.getInstance().getUsername());
+//            scoreValueLabel.setText("0 Wins");
+//            rankingListView.getItems().clear();
+//            rankingListView.getItems().add("Failed to load rankings");
+//
+//
+//            if (task.getException() != null) {
+//                task.getException().printStackTrace();
+//            }
         });
         Thread thread = new Thread(task);
         thread.setDaemon(true);

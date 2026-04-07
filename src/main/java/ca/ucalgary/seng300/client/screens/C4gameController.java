@@ -109,6 +109,7 @@ public class C4gameController {
             gameOverController controller = loader.getController();
             controller.setGameType(GameType.CONNECT4);
 
+
             Stage stage = (Stage) grid[0][0].getScene().getWindow();
             Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
             stage.setScene(gameOverScene);
@@ -138,6 +139,10 @@ public class C4gameController {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
+
+
+            gameOverController controller = loader.getController();
+            controller.setGameType(GameType.CONNECT4);
 
             //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
