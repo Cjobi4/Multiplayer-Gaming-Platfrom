@@ -291,15 +291,15 @@ public class mainController {
 
                 if (selectedGame.getTitle().equals("TicTacToe"))
                 {
+                    errorField.setText("Finding a match...");
                     String joinedTTT = Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get().toString();
                     showMatchFoundPopup(joinedTTT, selectedGame, event);
-                    errorField.setText("");
                 }
                 else
                 {
+                    errorField.setText("Finding a match...");
                     String joinedC4  = Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get().toString();
                     showMatchFoundPopup(joinedC4, selectedGame, event);
-                    errorField.setText("");
                 }
 
             } else {
@@ -337,8 +337,6 @@ public class mainController {
         if(accBtn != null) {
             accBtn.getStyleClass().add("basic-button");
         }
-
-
         if (decBtn != null) {
             decBtn.getStyleClass().add("basic-button");
         }
@@ -347,7 +345,9 @@ public class mainController {
         alert.showAndWait().ifPresent(type -> {
             if (type == acceptButton) {
                 try {
+                    System.out.println("Accept button hit");
                     int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"1"}).get();
+                    System.out.println(result);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
