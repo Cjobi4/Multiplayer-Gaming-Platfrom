@@ -27,9 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
-
-import java.awt.*;
-import java.awt.MenuItem;
+import javafx.scene.control.MenuItem;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
