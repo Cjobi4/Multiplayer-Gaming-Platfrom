@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.games.connectfour;
+package ca.ucalgary.seng300.games;
 
 /**
  * Represents the physical 6x7 game board for Connect Four.

@@ -1,7 +1,5 @@
 package ca.ucalgary.seng300.client.screens;
 
-import ca.ucalgary.seng300.client.components.LeaderBoardMock;
-import ca.ucalgary.seng300.client.components.LeaderBoardRows;
 import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
@@ -11,6 +9,7 @@ import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -18,14 +17,18 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
-import javax.swing.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.control.MenuItem;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +46,10 @@ public class mainController {
     public TextField searchField;
     public VBox leaderboardBox;
     public VBox gameOptions;
+    public ImageView thumbnail;
+    public MenuItem aboutTheApp;
+    public MenuItem viewDeveloperCredits;
+    public MenuItem viewPlayerStats;
 
     private GameRegistry games = GameRegistry.getInstance();
     ToggleGroup group = new ToggleGroup();
@@ -121,12 +128,73 @@ public class mainController {
             -fx-padding: 10;
         """);
 
-        rankLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
-        nameLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
-        winsLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
-        matchesLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+        rankLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
+        nameLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
+        winsLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
+        matchesLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
 
         return rowBox;
+    }
+
+    @FXML
+    private void onAboutTheAppButtonClick() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About The Application");
+        alert.setHeaderText("Trainwreck!");
+
+        String information = "This is trainwreck weeeewoooooo";
+
+        alert.setContentText(information);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(400);
+        dialogPane.setMinWidth(450);
+
+        alert.showAndWait();
+
+    }
+
+    @FXML
+    private void onViewPlayerStatsClick() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About The Application");
+        alert.setHeaderText("Trainwreck!");
+
+        String information = "This is trainwreck weeeewoooooo";
+
+        alert.setContentText(information);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(400);
+        dialogPane.setMinWidth(450);
+
+        alert.showAndWait();
+
+
+    }
+
+    @FXML
+    private void onViewDeveloperCreditsClick() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About The Developers");
+        alert.setHeaderText("Trainwreck Developers!");
+
+        String information = "This app was developed by weewoo";
+
+        alert.setContentText(information);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(400);
+        dialogPane.setMinWidth(450);
+
+        alert.showAndWait();
+
     }
 
 
@@ -209,9 +277,26 @@ public class mainController {
 
     private void displayGame(Game game){
         gameTitleLabel.setText("Game: " + game.getTitle());
+        gameTitleLabel.setFont(new Font("Dubai Medium", 20));
+        gameTitleLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
+
         gameDescriptionLabel.setText("Description: " + game.getDescription());
+        gameDescriptionLabel.setFont(new Font("Dubai Medium", 13));
+        gameDescriptionLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
+
         gameIdLabel.setText("Game ID: " + game.getId());
+        gameIdLabel.setFont(new Font("Dubai Medium", 15));
+        gameIdLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
+
         gameTagsLabel.setText("Game Tag: " + formatTags(game.getTags()));
+        gameTagsLabel.setFont(new Font("Dubai Medium", 15));
+        gameTagsLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
+
+        if (game.getId() == "102"){
+            setThumbnailTTT();
+        } else if (game.getId() == "101"){
+            setThumbnailC4();
+        }
     }
 
     private void clearDisplay(){
@@ -219,6 +304,17 @@ public class mainController {
         gameDescriptionLabel.setText("");
         gameIdLabel.setText("");
         gameTagsLabel.setText("");
+    }
+
+
+    private void setThumbnailTTT() {
+        Image image = new Image(getClass().getResource("/images/TTTthumbnail.jpg").toExternalForm());
+        thumbnail.setImage(image);
+    }
+
+    private void setThumbnailC4() {
+        Image image = new Image(getClass().getResource("/images/C4thumbnail.jpg").toExternalForm());
+        thumbnail.setImage(image);
     }
 
 
@@ -254,17 +350,26 @@ public class mainController {
     }
 
     @FXML
-    protected void onMatchMakeButtonClick(ActionEvent event) {
-
+    protected void onMatchMakeButtonClick(ActionEvent event) throws Exception {
         RadioButton selected = (RadioButton) group.getSelectedToggle();
-
         if (selected != null)
         {
             Game selectedGame = findGame(selected.getText());
-
             if (selectedGame != null) {
-                switchScene(event, "/fxml/" + selectedGame.getFxmlPath() + "opponentSelectPage.fxml", selected.getText() + " - Select Opponent");
-                errorField.setText("");
+
+                if (selectedGame.getTitle().equals("TicTacToe"))
+                {
+                    errorField.setText("Finding a match...");
+                    String joinedTTT = Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get().toString();
+                    showMatchFoundPopup(joinedTTT, selectedGame, event);
+                }
+                else
+                {
+                    errorField.setText("Finding a match...");
+                    String joinedC4  = Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get().toString();
+                    showMatchFoundPopup(joinedC4, selectedGame, event);
+                }
+
             } else {
                 errorField.setText("Could not find the selected game.");
             }
@@ -272,6 +377,69 @@ public class mainController {
         else
         {
             errorField.setText("Please select a game first!");
+        }
+    }
+
+    //Popoup that appears when the user is matched with another opponenet.
+    private void showMatchFoundPopup(String opponentName, Game game, ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Match Found!");
+        alert.setHeaderText("Opponent found: " + opponentName);
+        alert.setContentText("Do you want to accept this match for " + game.getTitle() + "?");
+
+
+        ButtonType acceptButton = new ButtonType("Accept");
+        ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(acceptButton, declineButton);
+
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+
+
+        Button accBtn = (Button) dialogPane.lookupButton(acceptButton);
+        Button decBtn = (Button) dialogPane.lookupButton(declineButton);
+
+
+        if(accBtn != null) {
+            accBtn.getStyleClass().add("basic-button");
+        }
+        if (decBtn != null) {
+            decBtn.getStyleClass().add("basic-button");
+        }
+
+
+        alert.showAndWait().ifPresent(type -> {
+            if (type == acceptButton) {
+                try {
+                    System.out.println("Accept button hit");
+                    int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"1"}).get();
+                    System.out.println(result);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                String fxmlFile = "/fxml/" + game.getFxmlPath() + "GamePage.fxml";
+                switchScene(event, fxmlFile, "Playing " + game.getTitle());
+            } else {
+                try {
+                    int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"0"}).get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                errorField.setText("Match declined.");
+            }
+        });
+    }
+
+
+    @FXML
+    public void updateInfo(ActionEvent event) { //updates the Radio Buttons
+        RadioButton selected = (RadioButton) group.getSelectedToggle();
+
+        if (selected != null) {
+            Game selectedGame = findGame(selected.getText());
+            displayGame(selectedGame);
         }
     }
 
@@ -343,6 +511,7 @@ public class mainController {
            RadioButton rb = new RadioButton(game.getTitle());
            rb.setToggleGroup(group);
            gameOptions.getChildren().add(rb);
+           rb.setOnAction(this::updateInfo); //updates the info
 
        }
 

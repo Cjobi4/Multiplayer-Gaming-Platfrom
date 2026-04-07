@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.games.tictactoe;
+package ca.ucalgary.seng300.games;
 
 //Note*** using the abbreviation "ttt" in place of tic tac toe for some coding aspects
 

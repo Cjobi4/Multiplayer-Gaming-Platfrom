@@ -1,6 +1,14 @@
 package ca.ucalgary.seng300.games.tictactoe;
 
 
+/**
+ *
+ * IDEALLY MAKE IT SO Sanmeet can call something that shows what the move (just the move is) bc weikai updates it --> sendMoveTTT()
+ *
+ */
+
+
+
 import ca.ucalgary.seng300.core.identity.client.Session;
 import ca.ucalgary.seng300.games.GameState;
 
