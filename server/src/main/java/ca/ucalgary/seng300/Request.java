@@ -16,6 +16,7 @@ public class Request
     {
         type = t;
         parameters = p;
+        future = new CompletableFuture<>();
     }
 
     //type getter
