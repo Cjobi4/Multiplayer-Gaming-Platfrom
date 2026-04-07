@@ -14,7 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NetworkTest {
 
-    // TODO rewrite tests to reflect updates in main code
+    /** TODO rewrite tests to reflect updates in main code
+     * Should simply require making a testing constructor in Network.java
+     * Theoretically no impact on the project itself
+     */
     /*
     Most of these test cases can only test the logic of the functions
     This is because I cannot connect to the server itself to verify
