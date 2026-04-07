@@ -247,7 +247,9 @@ public class Network extends Thread {
                         requestBoard();
                     }
                     else if (descriptionByte == REQUEST_MOVE_PROMPT) {
-                        sendMoveTTT(TTTServerSession.sendMoveTTT());
+                        // TODO: work out moves
+                        String n = "test";
+                        sendMoveTTT(n);
                     }
                     else if (descriptionByte == REQUEST_GAME_STATE) {
                         requestGameState();
