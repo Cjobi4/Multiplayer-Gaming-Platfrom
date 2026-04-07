@@ -109,6 +109,7 @@ public class Database
                 stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(0, \"Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^TTT^YES\")");
                 stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(1, \"Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^C4^YES\")");
                 stmt.executeUpdate("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(\"admin\", 999, 999, 999, 999, 999, 999)");
+                stmt.executeUpdate("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(\"test\", 0, 0, 0, 0, 0, 0)");
                 stmt.executeUpdate("INSERT INTO matchRecord(gameType, p1Username, p2Username, winnerName, date) VALUES(\"gameType\", \"admin\", \"test\", \"Tic-Tac-Toe\", \"date\")");
             }
         } catch (SQLException e)
@@ -204,6 +205,8 @@ public class Database
             ResultSet rs = pstmt.executeQuery();
             rs.next();
 
+            System.out.println("name is unique");
+
             //if it wasn't notify user
             if (rs.getInt(1) != 0)
             {
@@ -215,10 +218,18 @@ public class Database
             String hashedPassword = hash(password, username);
 
             //then add it to the database
-            pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(username, password) VALUES(?, ?)");
-            pstmt.setString(2, username);
-            pstmt.setString(3, hashedPassword);
+            pstmt = conn.prepareStatement("INSERT INTO userLoginInfo(username, password) VALUES(?, ?);");
+            pstmt.setString(1, username);
+            pstmt.setString(2, hashedPassword);
             pstmt.executeUpdate();
+
+            //add a leaderboard entry for the user
+            //then add it to the database
+            pstmt = conn.prepareStatement("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(?, 0, 0, 0, 0, 0, 0)");
+            pstmt.setString(1, username);
+            pstmt.executeUpdate();
+
+            System.out.println("added");
 
             //update list of logged-in users
             loggedInUsers.put(username, session);
@@ -226,6 +237,7 @@ public class Database
             return 1;
         } catch (Exception e) //if something goes wrong, assume invalid input and reject acount creation
         {
+            System.out.println(e);
             return -1;
         }
     }
@@ -243,6 +255,12 @@ public class Database
     {
         try
         {
+            //make sure someone else hasn't already signed in to the same account yet
+            if (loggedInUsers.contains(username))
+            {
+                return -1;
+            }
+
             //hash the password first
             String hashedPassword = hash(password, username);
 
@@ -289,6 +307,11 @@ public class Database
             rs.next();
 
             //return the winrate
+            if (rs.getInt(game + "MatchesPlayed") == 0)
+            {
+                return -1;
+            }
+
             return rs.getInt(game + "Wins") / rs.getInt(game + "MatchesPlayed") * 100;
         } catch (SQLException e)
         {
@@ -388,6 +411,11 @@ public class Database
         return sbuild.toString();
     }
 
+    public static Session getSession(String username)
+    {
+        return loggedInUsers.get(username);
+    }
+
     /**
      * Given the results of a match, update the leaderboard entries and add it to the list of match records.
      * @param playerOne The username of the first player from the game in String format.
@@ -396,7 +424,7 @@ public class Database
      * @param date The date the match occurred in String format.
      * @param game The game type that was played in String format. "ttt" for Tic-tac-toe, "c4" for Connect 4.
      */
-    public static void addMatchResult(String playerOne, String playerTwo, String winner, String date, String game)
+    public static synchronized void addMatchResult(String playerOne, String playerTwo, String winner, String date, String game)
     {
         //if there was no winner don't count the match
         if (winner != null)
