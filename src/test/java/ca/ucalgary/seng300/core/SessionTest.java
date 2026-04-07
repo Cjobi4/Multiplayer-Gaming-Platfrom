@@ -1,5 +1,7 @@
 package ca.ucalgary.seng300.core;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -28,24 +30,39 @@ public class SessionTest {
         // if no connection is made, the rest of the tests will be skipped as they WILL fail with no connection
     }
 
+    // this BeforeAll is effectively a test in itself, which tests if a connection can be made
+
+    /*
+    If the BeforeAll fails, then NONE of these tests are run
+     */
     @Test
-    void testStartSession(){
+    void testSuccessfulAndFailedAccountCreation() throws Exception {
+        //attempt to connect to the server
+        Network clientNet = Network.getInstance("127.0.0.1", 14001);
+
+        // test creating an account
+        String[] testAcc = {"testusername", "password123"};
+
+        // send request to the server
+        int result = (Integer) clientNet.queueRequest(Network.CREATE_ACCOUNT, testAcc).get();
+
+        // check the server sends back what we need
+        Assertions.assertEquals(1, result);
+
+        int secondResult = (Integer) clientNet.queueRequest(Network.CREATE_ACCOUNT, testAcc).get();
+        Assertions.assertNotEquals(1, secondResult); // should fail because existing username
+    }
+
+    @Test
+    void testDataRetrieval() throws Exception {
 
     }
 
     @Test
-    void testEndSession(){
+    void testShutdown() throws Exception {
 
     }
 
+    // Matchmaking tests should be an entity of their own, so I will not be testing them.
 
-    @Test
-    void testSubmitScore(){
-
-    }
-
-    @Test
-    void testGetDuration(){
-
-    }
 }
