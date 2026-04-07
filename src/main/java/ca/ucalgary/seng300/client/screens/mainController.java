@@ -128,10 +128,10 @@ public class mainController {
             -fx-padding: 10;
         """);
 
-        rankLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
-        nameLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
-        winsLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
-        matchesLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #6f5a52;");
+        rankLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
+        nameLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
+        winsLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
+        matchesLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
 
         return rowBox;
     }
