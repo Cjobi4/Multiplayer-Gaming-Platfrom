@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.core.identity.client;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
+import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
@@ -61,6 +62,10 @@ public class Network extends Thread {
     public static final byte RESPOND_QUEUE = 35;
     public static final byte SEND_CHALLENGE = 16;
     public static final byte RECEIVE_CHALLENGE = 17;
+    public static final byte REQUEST_BOARD = 18;
+    public static final byte REQUEST_MOVE_PROMPT = 19;
+    public static final byte REQUEST_GAME_STATE = 20;
+
 
     // to be added/modified later
     public static final byte SEND_MOVE_TTT = 125;
@@ -237,6 +242,15 @@ public class Network extends Thread {
                     }
                     else if (descriptionByte == RECEIVE_CHALLENGE) {
                         receiveChallenge();
+                    }
+                    else if (descriptionByte == REQUEST_BOARD) {
+                        requestBoard();
+                    }
+                    else if (descriptionByte == REQUEST_MOVE_PROMPT) {
+                        sendMoveTTT(TTTServerSession.sendMoveTTT());
+                    }
+                    else if (descriptionByte == REQUEST_GAME_STATE) {
+                        requestGameState();
                     }
                 }
 
@@ -647,12 +661,20 @@ public class Network extends Thread {
         }
     }
 
-    public void sendMoveTTT(String boardState) throws Exception {
-        // send description byte
-        socket.getOutputStream().write(SEND_MOVE_TTT);
+    public String requestBoard() throws Exception {
+        String receivedBoard = readResponseString();
+        return receivedBoard;
+    }
 
-        // send board
-        sendRequestParameter(boardState);
+
+    public void sendMoveTTT(String move) throws Exception {
+        // send move
+        sendRequestParameter(move);
+    }
+
+    public String requestGameState() throws Exception {
+        String serverResponse = readResponseString();
+        return serverResponse;
     }
 
     public String receiveMoveTTT() throws Exception {
