@@ -11,7 +11,7 @@ public class Matchmaker extends Thread
     private LinkedBlockingQueue<Session> mQueue = new LinkedBlockingQueue<>();      //matchmaking queue
     private LinkedBlockingQueue<Session> quittersQueue = new LinkedBlockingQueue<>();       //list of players trying to leave
     private String gameName;
-
+    private boolean m = false;
 
 
     //constructor
@@ -283,8 +283,12 @@ public class Matchmaker extends Thread
             Request req1 = new Request(12, new String[]{p2.getUsername()});
             Request req2 = new Request(12, new String[]{p1.getUsername()});
 
-            p1.addRequest(req1);
-            p2.addRequest(req2);
+            System.out.println("Req1 is: " + req1);
+
+            p1.addRequest2(req1);
+            p2.addRequest2(req2);
+
+            System.out.println("requests added to players");
 
             //see if they accepted it
             String p1Accept = req1.getResult();
@@ -318,6 +322,7 @@ public class Matchmaker extends Thread
             return 3;
         } catch (Exception e)   //if something went wrong, notify Matchmaker
         {
+            System.out.println("Create match exception: " + e);
             return 4;
         }
     }

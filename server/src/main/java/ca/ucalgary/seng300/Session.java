@@ -19,6 +19,7 @@ public class Session extends Thread
     private boolean inTttQueue;
     private boolean inC4Queue;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<Request> mQueue = new LinkedBlockingQueue<>();
 
     //////////////// REQUEST TYPES ////////////////
     //private final int PING = 0;
@@ -73,8 +74,15 @@ public class Session extends Thread
      @param req The Request object to be added into the queue.
      @throws Exception NullPointerException if the request is null, or InterruptedException if is interrupted while
      waiting*/
-    public void addRequest(Request req) throws Exception{
-        requestQueue.put(req);}
+    public void addRequest(Request req) throws Exception
+    {
+        requestQueue.put(req);
+    }
+
+    public void addRequest2(Request req) throws Exception
+    {
+        mQueue.put(req);
+    }
 
     @Override
     public void run()
@@ -110,6 +118,14 @@ public class Session extends Thread
                     {
                         //handle the request
                         req = requestQueue.take();
+                        System.out.println("Req1 is: " + req);
+                        processRequest(req.getType(), AESKey, req);
+                    }//if the queue isn't empty
+                    if (!mQueue.isEmpty())
+                    {
+                        //handle the request
+                        req = mQueue.take();
+                        System.out.println("Req1 is: " + req);
                         processRequest(req.getType(), AESKey, req);
                     }
                 }
@@ -457,7 +473,9 @@ public class Session extends Thread
                     System.out.println("opp username sent");
 
                     //check if user accepted/declined
-                    req.setFuture(Integer.toString(client.getInputStream().read()));
+                    result = client.getInputStream().read();
+                    System.out.println("Match response from " + username + " is: " + result);
+                    req.setFuture(Integer.toString(result));
                     break;
                 case 13:    //if has been kicked from queue...
                     //let client know
