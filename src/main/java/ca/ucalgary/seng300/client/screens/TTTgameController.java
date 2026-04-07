@@ -3,6 +3,7 @@ package ca.ucalgary.seng300.client.screens;
 import ca.ucalgary.seng300.core.identity.client.Session;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
+import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Message;
 import javafx.event.ActionEvent;
@@ -82,12 +83,18 @@ public class TTTgameController {
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
+
+            gameOverController controller = loader.getController();
+            controller.setGameType(GameType.TICTACTOE);
+
             Stage stage = (Stage) ttt00.getScene().getWindow();
             Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
             stage.setScene(gameOverScene);
             stage.setTitle("Game Over"); //Change stage title to reflect current scene
             stage.setResizable(false);
             stage.show();
+
+
 
             // Create Match Record (Not sure where to get player info, will be needed to make a match record)
 
