@@ -285,8 +285,8 @@ public class Matchmaker extends Thread
 
             System.out.println("Req1 is: " + req1);
 
-            p1.addRequest2(req1);
-            p2.addRequest2(req2);
+            p1.addRequest(req1);
+            p2.addRequest(req2);
 
             System.out.println("requests added to players");
 

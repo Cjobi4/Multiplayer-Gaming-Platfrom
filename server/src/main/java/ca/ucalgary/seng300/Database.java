@@ -338,7 +338,7 @@ public class Database
         try
         {
             //collect all the info on the games
-            return stmt.executeQuery("SELECT * FROM games;");
+            return stmt.executeQuery("SELECT * FROM gameInfo;");
         } catch (SQLException e)
         {
             return null;
@@ -372,8 +372,9 @@ public class Database
         try
         {
             //collect all the leaderboard entries with matching usernames
-            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE username = ? LIMIT 10;");
-            pstmt.setString(1, String.valueOf(username));
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM matchRecord WHERE p1Username = ? OR p2Username = ? LIMIT 10;");
+            pstmt.setString(1, username);
+            pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
 
             return rs;

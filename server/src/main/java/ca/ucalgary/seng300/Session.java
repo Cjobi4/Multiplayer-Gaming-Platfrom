@@ -20,7 +20,6 @@ public class Session extends Thread
     private boolean inTttQueue;
     private boolean inC4Queue;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
-    private LinkedBlockingQueue<Request> mQueue = new LinkedBlockingQueue<>();
 
     //////////////// REQUEST TYPES ////////////////
     //private final int PING = 0;
@@ -80,11 +79,6 @@ public class Session extends Thread
         requestQueue.put(req);
     }
 
-    public void addRequest2(Request req) throws Exception
-    {
-        mQueue.put(req);
-    }
-
     @Override
     public void run()
     {
@@ -126,13 +120,6 @@ public class Session extends Thread
                     {
                         //handle the request
                         req = requestQueue.take();
-                        System.out.println("Req1 is: " + req);
-                        processRequest(req.getType(), AESKey, req);
-                    }//if the queue isn't empty
-                    if (!mQueue.isEmpty())
-                    {
-                        //handle the request
-                        req = mQueue.take();
                         System.out.println("Req1 is: " + req);
                         processRequest(req.getType(), AESKey, req);
                     }
