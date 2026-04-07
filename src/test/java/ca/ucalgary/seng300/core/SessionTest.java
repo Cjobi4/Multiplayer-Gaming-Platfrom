@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.core;
 
 import ca.ucalgary.seng300.core.identity.client.Network;
+import ca.ucalgary.seng300.core.registry.GameRegistry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,29 +33,56 @@ public class SessionTest {
 
     // this BeforeAll is effectively a test in itself, which tests if a connection can be made
 
-    /*
+    /**
     If the BeforeAll fails, then NONE of these tests are run
      */
     @Test
     void testSuccessfulAndFailedAccountCreation() throws Exception {
         //attempt to connect to the server
-        Network clientNet = Network.getInstance("127.0.0.1", 14001);
+        Network connect = Network.getInstance("127.0.0.1", 14001);
 
         // test creating an account
         String[] testAcc = {"testusername", "password123"};
 
         // send request to the server
-        int result = (Integer) clientNet.queueRequest(Network.CREATE_ACCOUNT, testAcc).get();
+        int result = (Integer) connect.queueRequest(Network.CREATE_ACCOUNT, testAcc).get();
 
         // check the server sends back what we need
         Assertions.assertEquals(1, result);
 
-        int secondResult = (Integer) clientNet.queueRequest(Network.CREATE_ACCOUNT, testAcc).get();
+        int secondResult = (Integer) connect.queueRequest(Network.CREATE_ACCOUNT, testAcc).get();
         Assertions.assertNotEquals(1, secondResult); // should fail because existing username
     }
 
+    /**
+    Testing the retrieval of games from the database
+     */
     @Test
-    void testDataRetrieval() throws Exception {
+    void testGameListRetrieval() throws Exception {
+        try {
+            Network connect = Network.getInstance("127.0.0.1", 14001);
+
+            // queue request for game list
+            connect.queueRequest(Network.GET_GAME_LIST, null).get();
+
+            // amount of games in the game registry
+            int gameCount = GameRegistry.getInstance().ListAll().size();
+
+            // after a successful retrieval there should be more than 0 games
+            Assertions.assertTrue(gameCount > 0);
+
+        } catch (Exception e) {
+            System.out.println("Error with retrieving Game List: " + e);
+        }
+    }
+
+    @Test
+    void testLeaderboardRetrieval() throws Exception {
+
+    }
+
+    @Test
+    void testMatchRecordRetrieval() throws Exception {
 
     }
 
