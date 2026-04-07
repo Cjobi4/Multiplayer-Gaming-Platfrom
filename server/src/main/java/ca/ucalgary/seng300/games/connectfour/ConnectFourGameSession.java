@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.games.connectfour;
 
 import ca.ucalgary.seng300.Session;
+import ca.ucalgary.seng300.Request;
 import ca.ucalgary.seng300.Database;
 import ca.ucalgary.seng300.games.GameState;
 import java.util.Date;
@@ -42,10 +43,8 @@ public class ConnectFourGameSession extends Thread {
                 Session activeSession = getCurrentPlayerSession();
                 char activeToken = game.getCurrentPlayer();
 
-                // Create the Request instance from the session
-                Session.Request turnReq = activeSession.new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
-
-                // Add the request to the session queue
+                // Create the Request instance and add to the session queue
+                Request turnReq = new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
                 activeSession.addRequest(turnReq);
 
                 // 2. Turn Awaiting Move: Block until move is received
@@ -93,11 +92,11 @@ public class ConnectFourGameSession extends Thread {
 
     public void sendGameResult() {
         try {
-            int winnerID = 0;
+            String winnerName = "";
             if (game.getGameState() == GameState.PLAYER_WIN) {
                 Session winner = (game.getWinner() == 'X') ? playerOne : playerTwo;
                 Session loser = (game.getWinner() == 'X') ? playerTwo : playerOne;
-                winnerID = winner.getUserID();
+                winnerName = winner.getUsername();
 
                 // Type 14 Notifications
                 winner.addRequest(14, new String[]{"You won!"});
@@ -109,9 +108,9 @@ public class ConnectFourGameSession extends Thread {
 
             // Adding the match data to the Database
             Database.addMatchResult(
-                    playerOne.getUserID(),
-                    playerTwo.getUserID(),
-                    winnerID,
+                    playerOne.getUsername(),
+                    playerTwo.getUsername(),
+                    winnerName,
                     new Date().toString(),
                     "c4"
             );

@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class Request
 {
-    private CompletableFuture<String> future;
+    CompletableFuture<String> future;
     private int type;
     private String[] parameters;
 

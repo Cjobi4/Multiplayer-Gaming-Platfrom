@@ -64,6 +64,17 @@ public class Session extends Thread
         requestQueue.put(req);
     }
 
+    /**
+     * Adds a pre-built Request to the queue for the Session to execute.
+     * Used when the caller needs to track the Request's result via its future.
+     * @param req The Request object to enqueue.
+     * @throws Exception InterruptedException if interrupted while waiting.
+     */
+    public void addRequest(Request req) throws Exception
+    {
+        requestQueue.put(req);
+    }
+
     //this function adds a request to the session queue AND waits for a response from the client
     //we need this because addRequest() only sends data, but does NOT wait for a reply
     //this function allows the server (game session) to ask the client for something (like a move)
