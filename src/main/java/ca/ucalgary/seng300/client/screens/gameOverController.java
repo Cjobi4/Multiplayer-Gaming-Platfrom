@@ -5,6 +5,8 @@ import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -96,7 +98,21 @@ public class gameOverController {
             return;
         }
 
+        int userWins = 0;
+       ObservableList<String> listRows = FXCollections.observableArrayList();
 
+       for(int i = 0; i < leaderboard.size(); i++){
+           LeaderboardEntry entry = leaderboard.get(i);
+
+           listRows.add("#" + (i + 1) + " " + entry.getUsername());
+
+           if(entry.getUsername().equals(activeUsername)){
+                userWins = entry.getWins();
+           }
+       }
+
+        scoreValueLabel.setText(userWins + " pts");
+        rankingListView.setItems(listRows);
     }
 
     @FXML
