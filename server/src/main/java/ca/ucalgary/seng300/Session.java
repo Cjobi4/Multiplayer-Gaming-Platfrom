@@ -184,7 +184,7 @@ public class Session extends Thread
      * @param req The request from requestQueue that is being processed. If this did not originate from a request, req
      *            should be passed as null.
      */
-    private void processRequest(int requestType, SecretKey AESKey, Request req) throws Exception
+    void processRequest(int requestType, SecretKey AESKey, Request req) throws Exception
     {
         int messageLength;
         byte[] messageBytes;
