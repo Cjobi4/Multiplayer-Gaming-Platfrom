@@ -17,9 +17,9 @@ public class TTTServerSession extends Thread{
 
     //request type constants (temporary until confirmed with platform core)
     //TEMPORARY TILL HELP
-    private static final int REQUEST_BOARD_UPDATE = 12;
-    private static final int REQUEST_MOVE_PROMPT = 13;
-    private static final int REQUEST_GAME_STATE = 14;
+    private static final int REQUEST_BOARD_UPDATE = 18;
+    private static final int REQUEST_MOVE_PROMPT = 19;
+    private static final int REQUEST_GAME_STATE = 20;
 
     //this stores the session for player one
     private Session playerOneSession;
@@ -302,6 +302,7 @@ public class TTTServerSession extends Thread{
 
         //ask the active player for their move and wait for the result
         Request req = new Request(REQUEST_MOVE_PROMPT, new String[]{"Your Turn", String.valueOf(game.getCurrentPlayer())});
+        activePlayerSession.addRequest(req);
         String moveString = req.getResult();
 
         //if no move came back, do nothing this loop
