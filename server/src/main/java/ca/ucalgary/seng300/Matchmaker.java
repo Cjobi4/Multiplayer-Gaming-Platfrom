@@ -283,8 +283,6 @@ public class Matchmaker extends Thread
             Request req1 = new Request(12, new String[]{p2.getUsername()});
             Request req2 = new Request(12, new String[]{p1.getUsername()});
 
-            System.out.println("Req1 is: " + req1);
-
             p1.addRequest(req1);
             p2.addRequest(req2);
 

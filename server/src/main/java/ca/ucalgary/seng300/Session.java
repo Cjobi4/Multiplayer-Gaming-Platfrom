@@ -40,6 +40,9 @@ public class Session extends Thread
     //private final int MATCH_REJECTED = 15;
     //private final int SEND_CHALLENGE = 16;
     //private final int RECEIVE_CHALLENGE = 17;
+    //private final int SEND_BOARD = 18;
+    //private final int PROMPT_MOVE = 19;
+    //private final int NOTIFY_GAME_STATE = 20;
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -120,7 +123,6 @@ public class Session extends Thread
                     {
                         //handle the request
                         req = requestQueue.take();
-                        System.out.println("Req1 is: " + req);
                         processRequest(req.getType(), AESKey, req);
                     }
                 }
@@ -552,6 +554,42 @@ public class Session extends Thread
                     result = client.getInputStream().read();
                     req.setFuture(Integer.toString(result));
 
+                    break;
+                case 18:    //if sending board string...
+                    //p1.addRequest(18, new String[]{boardString});
+                    //notify client of incoming board
+                    client.getOutputStream().write(18);
+
+                    //send the board
+                    messageBytes = Network.encrypt(req.getParameters()[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("board sent");
+                    break;
+                case 19:    //if asking for a move from client...
+                    //Request req = new Request(18, new String[]{boardString});
+                    //p1.addRequest(req);
+                    //String move = req.getResult();
+                    //notify client it's their time
+                    client.getOutputStream().write(19);
+
+                    //collect their move
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    message = Network.decrypt(messageBytes, AESKey);
+
+                    req.setFuture(message);
+                    break;
+                case 20:    //if sending game state to client...
+                    //p1.addRequest(20, new String[]{gameStateString});
+                    //notify client of incoming game state
+                    client.getOutputStream().write(20);
+
+                    //send the game state
+                    messageBytes = Network.encrypt(req.getParameters()[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("game state sent");
                     break;
             }
         }
