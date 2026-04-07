@@ -39,7 +39,7 @@ public class gameOverController {
 
     @FXML
     public void initialize() {
-        String activeUsername = ActivePlayer.getInstance().getUsername();
+        String activeUsername = getLocalUsername();
 
         if (activeUsername == null || activeUsername.isEmpty()) {
             activeUsername = "Unknown User";
@@ -77,7 +77,7 @@ public class gameOverController {
         task.setOnSucceeded(event -> renderGameOverData(task.getValue()));
 
         task.setOnFailed(event -> {
-            String activeUsername = ActivePlayer.getInstance().getUsername();
+            String activeUsername = getLocalUsername();
 
             if (activeUsername == null || activeUsername.isEmpty()) {
                 activeUsername = "Unknown User";
@@ -110,12 +110,13 @@ public class gameOverController {
     private void renderGameOverData(List<LeaderboardEntry> leaderboard) {
         rankingListView.getItems().clear();
 
-        String activeUsername = ActivePlayer.getInstance().getUsername();
-        if(activeUsername == null || activeUsername.isEmpty()) {
-            activeUsername = "unknown";
+        String localUsername = getLocalUsername();
+
+        if(localUsername == null || localUsername.isEmpty()) {
+            localUsername = "Unknown User";
         }
 
-        usernameLabel.setText(activeUsername);
+        usernameLabel.setText(localUsername);
 
         if(leaderboard == null || leaderboard.isEmpty()){
             scoreValueLabel.setText("0 Wins");
@@ -123,21 +124,32 @@ public class gameOverController {
             return;
         }
 
+        ObservableList<String> listRows = FXCollections.observableArrayList();
         int userWins = 0;
-       ObservableList<String> listRows = FXCollections.observableArrayList();
+        boolean found = false;
+        for(int i = 0; i < leaderboard.size(); i++){
+            LeaderboardEntry entry = leaderboard.get(i);
 
-       for(int i = 0; i < leaderboard.size(); i++){
-           LeaderboardEntry entry = leaderboard.get(i);
-
-           listRows.add("#" + (i + 1) + " " + entry.getUsername());
-
-           if(entry.getUsername().equals(activeUsername)){
+            if(entry.getUsername().equals(localUsername)){
+                listRows.add("#" + (i + 1) + " " + entry.getUsername()
+                        + " - " + entry.getWins() + " wins"
+                        + " - " + entry.getMatches() + " matches");
                 userWins = entry.getWins();
-           }
-       }
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            listRows.add(localUsername + " - no ranking found");
+        }
 
         scoreValueLabel.setText(userWins + " Wins");
         rankingListView.setItems(listRows);
+    }
+
+    private String getLocalUsername() {
+        return ActivePlayer.getInstance().getUsername();
     }
 
     @FXML
