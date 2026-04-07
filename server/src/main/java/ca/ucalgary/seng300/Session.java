@@ -2,6 +2,7 @@ package ca.ucalgary.seng300;
 
 import javax.crypto.SecretKey;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.sql.ResultSet;
@@ -12,10 +13,11 @@ import java.util.concurrent.TimeUnit;
 public class Session extends Thread
 {
     private SecretKey AESKey = null;
-    private int userID;
     private String username = null;
     private Socket client;
     private boolean loggedIn;
+    private boolean inTttQueue;
+    private boolean inC4Queue;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
 
     //////////////// REQUEST TYPES ////////////////
@@ -30,6 +32,11 @@ public class Session extends Thread
     //private final int LEAVE_TTT_QUEUE = 8;
     //private final int JOIN_C4_QUEUE = 9;
     //private final int LEAVE_C4_QUEUE = 10;
+    //private final int GET_USER_LIST = 11;
+    //private final int MATCH_FOUND = 12;
+    //private final int KICKED_FROM_QUEUE = 13;
+    //private final int MATCH_ACCEPTED = 14;
+    //private final int MATCH_REJECTED = 15;
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -38,47 +45,14 @@ public class Session extends Thread
     Session(Socket soc)
     {
         client = soc;
-        userID = -1;    //invalid userID, placeholder to show client is not signed in yet
         loggedIn = false;
+        inTttQueue = false;
+        inC4Queue = false;
     }
 
     /**
-     * inner class for sending and receiving requests to the client FROM THE SERVER (server initiated transmissions)
-     */
-    class Request
-    {
-        CompletableFuture<String> future;
-        private int type;
-        private String[] parameters;
-
-        //constructor
-        Request(int t, String[] p)
-        {
-            type = t;
-            parameters = p;
-        }
-
-        //type getter
-        public int getType()
-        {
-            return type;
-        }
-
-        //parameter getter
-        public String[] getParameters()
-        {
-            return parameters;
-        }
-
-        //returns the result of the future (must handle exception)
-        public String getResult() throws Exception
-        {
-            return future.get();
-        }
-    }
-
-    /**
-     * Adds a request to the queue for the Session to execute.
+     * Adds a request to the queue for the Session to execute. This should be used when NO response is needed. A Request
+     * object is automatically made from the input and given to the Session.
      * @param type The request type, in int form
      * @param parameters The parameters for the request, in a String array with each parameter under a different index
      * @throws Exception NullPointerException if the request is null, or InterruptedException if is interrupted while
@@ -90,6 +64,38 @@ public class Session extends Thread
         requestQueue.put(req);
     }
 
+    /**
+     * Adds a pre-built Request to the queue for the Session to execute.
+     * Used when the caller needs to track the Request's result via its future.
+     * @param req The Request object to enqueue.
+     * @throws Exception InterruptedException if interrupted while waiting.
+     */
+    public void addRequest(Request req) throws Exception
+    {
+        requestQueue.put(req);
+    }
+
+    //this function adds a request to the session queue AND waits for a response from the client
+    //we need this because addRequest() only sends data, but does NOT wait for a reply
+    //this function allows the server (game session) to ask the client for something (like a move)
+    //and then pause until the client responds with a result
+    public String addRequestAndWait(int type, String[] parameters) throws Exception {
+
+        //create a new request object with a specific type and parameters
+        Request req = new Request(type, parameters);
+
+        //initialize a future object so we can wait for the client's response later
+        //this is what allows getResult() to "block" until a result is returned
+        req.future = new CompletableFuture<>();
+
+        //add the request to the request queue so it gets sent to the client
+        requestQueue.put(req);
+
+        //wait for the client to respond and return the result
+        //this will pause execution here until the client sends back a response
+        return req.getResult();
+    }
+
     @Override
     public void run()
     {
@@ -99,7 +105,6 @@ public class Session extends Thread
         try
         {
             int requestType;
-            client.setSoTimeout(5000);  //server pauses checking every 5 seconds
             Request req;
 
             //then start listening for incoming requests
@@ -107,8 +112,17 @@ public class Session extends Thread
             {
                 try //listen for incoming transmissions
                 {
+                    client.setSoTimeout(3000);  //server pauses checking every 3 seconds
+
                     //see what type of request it is
                     requestType = client.getInputStream().read();
+
+                    if (requestType == -1)
+                    {
+                        throw new RuntimeException();
+                    }
+
+                    System.out.println("requestType: " + requestType + " from " + username);
 
                     //int messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     //byte[] message = client.getInputStream().readNBytes(messageLength);
@@ -131,24 +145,45 @@ public class Session extends Thread
 
         } catch (Exception e) //if an exception happens, it will kill the thread automatically
         {
-            throw new RuntimeException(e);
+            System.out.println("session closed");
+
+            //if something goes wrong, log out
+            if (loggedIn)
+            {
+                Database.logOut(username);
+            }
+
+            //if in any matchmaking queues, exit
+            if (inTttQueue)
+            {
+                Database.getTttMatchmaker().leaveMQueue(this);
+            }else if (inC4Queue)
+            {
+                Database.getC4Matchmaker().leaveMQueue(this);
+            }
+
+            //close the thread and connection
+            try
+            {
+                client.close();
+            } catch (Exception ex)
+            {
+                //socket connection couldn't be closed, nothing to be done, just close the connection anyway
+                System.out.println("Connection couldn't be closed.");
+            }
+            Thread.currentThread().interrupt();
+
+            System.out.println(e);
         }
     }
 
-    /*@Override //maybe not necessary? perhaps notify client of connection closing first?
-    public void setUncaughtExceptionHandler(UncaughtExceptionHandler eh)
-    {
-        //if something goes wrong, kill the thread
-        Thread.currentThread().interrupt();
-    }*/
-
     /**
-     * Getter for the Session's userID.
-     * @return The Session's userID.
+     * Getter for the Session's username.
+     * @return The Session's username.
      */
-    public int getUserID()
+    public String getUsername()
     {
-        return userID;
+        return username;
     }
 
 
@@ -165,8 +200,12 @@ public class Session extends Thread
         int messageLength;
         byte[] messageBytes;
         String message;
+        int result;
         ResultSet rs;
         StringBuilder sbuild;
+
+        //make sure the connection doesn't time out while waiting for response
+        client.setSoTimeout(10000);
 
         //these requests don't need the user to be logged in
         switch (requestType) {
@@ -184,28 +223,34 @@ public class Session extends Thread
                 messageBytes = client.getInputStream().readNBytes(messageLength);
                 String newPassword = Network.decrypt(messageBytes, AESKey);
 
-                //check to see if the password meets the password requirements
-                if (newPassword.length() < 8 || newPassword.length() > 18) {
+                //check to see if the password meets the password requirements, and see if the username has restricted special characters
+                if (newPassword.length() < 8 || newPassword.length() > 18
+                        || newUsername.contains("`") || newUsername.contains("^"))
+                {
                     //if it doesn't pass don't make an account
-                    client.getOutputStream().write(0);
+                    client.getOutputStream().write(2);
                     break;
                 }
 
                 //only one Session can run this block at a time
                 synchronized (Session.class) {
                     //check if it was successful
-                    userID = Database.createAccount(newUsername, newPassword, this);
+                    result = Database.createAccount(newUsername, newPassword, this);
                 }
 
                 //if it was, save the username for the session
-                if (userID != -1) {
+                if (result == 1) {
                     username = newUsername;
                     loggedIn = true;
+
                     //notify the client of success
                     client.getOutputStream().write(1);
-                } else //otherwise notify of failure
+                } else if (result == 0) //if the username was already taken
                 {
                     client.getOutputStream().write(0);
+                } else //otherwise notify of failure
+                {
+                    client.getOutputStream().write(3);
                 }
                 break;
             case 2:     //if it was a login request...
@@ -219,23 +264,26 @@ public class Session extends Thread
                 messageBytes = client.getInputStream().readNBytes(messageLength);
                 String passwordInput = Network.decrypt(messageBytes, AESKey);
 
-                //check to see if the password meets the password requirements
-                if (passwordInput.length() < 8 || passwordInput.length() > 18) {
-                    //if it doesn't pass don't bother asking database
+                //check to see if the password meets the password requirements, and see if the username has restricted special characters
+                if (passwordInput.length() < 8 || passwordInput.length() > 18
+                        || usernameInput.contains("`") || usernameInput.contains("^"))
+                {
+                    //if it doesn't pass don't make an account
                     client.getOutputStream().write(0);
                     break;
                 }
 
                 //check if it was successful
-                userID = Database.checkLoginCredentials(usernameInput, passwordInput, this);
+                result = Database.checkLoginCredentials(usernameInput, passwordInput, this);
 
                 //if it was, save the username for the session
-                if (userID != -1) {
+                if (result == 1) {
                     username = usernameInput;
                     loggedIn = true;
 
                     //notify the client of success
                     client.getOutputStream().write(1);
+                    System.out.println("Logged in: " +  loggedIn);
                 } else //otherwise notify of failure
                 {
                     client.getOutputStream().write(0);
@@ -246,10 +294,11 @@ public class Session extends Thread
         //these requests require the user to be logged in
         if (loggedIn)
         {
+            System.out.println("reached.");
             switch (requestType)
             {
                 case 3:     //if it was a logout request
-                    Database.logOut(userID);
+                    Database.logOut(username);
 
                     //close the connection with the client
                     TimeUnit.SECONDS.sleep(2);      //give some time, make sure client disconnects first before closing session thread
@@ -281,64 +330,62 @@ public class Session extends Thread
                     }
                     break;
                 case 5:     //if it was a request for leaderboard data
-                    //collect the leaderboard entries from the database
-                    rs = Database.getAllLeaderboardEntries();
+                    //collect the game to be queried
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    message = Network.decrypt(messageBytes, AESKey);
+                    System.out.println("message: " + message);
+
+                    //collect the leaderboard entries from the database for that game
+                    rs = Database.getAllLeaderboardEntries(message);
 
                     //go through the results
-                    if (rs != null && rs.next())
+                    if (rs.next())
                     {
                         sbuild = new StringBuilder();
+                        System.out.println("sbuild made");
 
                         //go through each entry...
                         do
                         {
-                            //turn each entry into a single string
-                            for (int i = 1; i <= 6; i++)
-                            {
-                                //if it is the username, send that first
-                                if (i != 2)
-                                {
-                                    messageBytes = Network.encrypt(rs.getString(i), AESKey);
-                                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
-                                    client.getOutputStream().write(messageBytes);
-                                }else   //otherwise keep formatting the rest of data into a single string
-                                {
-                                    sbuild.append(rs.getString(i));
-                                    sbuild.append("^");     //use ^ as separators
-                                }
-                            }
+                            //send the username separately
+                            messageBytes = Network.encrypt(rs.getString(1), AESKey);
+                            client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                            client.getOutputStream().write(messageBytes);
+
+                            System.out.println("Username sent: " + rs.getString(1));
+
+                            //then turn the wins/losses into a single string
+                            sbuild.append(rs.getString(message + "Wins"));
+                            sbuild.append("^");
+                            sbuild.append(rs.getString(message + "MatchesPlayed"));
+
+                            System.out.println("matchs sent: " + sbuild.toString());
 
                             //send the formatted leaderboard entry to the client
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
                             System.out.println("leaderboard entry sent");  //for debug
-
-                            //notify the client of success
-                            client.getOutputStream().write(1);
                         } while (rs.next());
+
+                        //notify the client of success
+                        client.getOutputStream().write(1);
                     } else //if something went wrong and no leaderboard data was found, notify client
                     {
                         client.getOutputStream().write(0);
                     }
                     break;
                 case 6:    //if it was a request for match record's from a specific user
-                    //collect the desired userid
+                    //collect the desired username
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
 
-                    try
-                    {
-                        //collect the match records with matching userids from the database
-                        rs = Database.getMatchRecord(Integer.parseInt(message));
-                    } catch (NumberFormatException e)       //if an invalid userid was entered, notify client
-                    {
-                        client.getOutputStream().write(0);
-                        break;
-                    }
+                    //collect the match records with matching usernames from the database
+                    rs = Database.getMatchRecord(message);
 
-                    //if the inputted userid was valid, go through the results
+                    //if the inputted username was valid, go through the results
                     if (rs != null && rs.next())
                     {
                         sbuild = new StringBuilder();
@@ -352,6 +399,9 @@ public class Session extends Thread
                                 sbuild.append(rs.getString(i));
                                 sbuild.append("^");
                             }
+
+                            //remove the trailing ^ symbol
+                            sbuild.deleteCharAt(sbuild.length());
 
                             //send the formatted match records to the client
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);
@@ -369,7 +419,9 @@ public class Session extends Thread
                     break;
                 case 7:     //if it was a request to join the Tic-tac-toe matchmaking queue...
                     //join the queue and notify if successful
-                    if (Database.getTttMatchmaker().joinMQueue(this))
+                    inTttQueue = Database.getTttMatchmaker().joinMQueue(this);
+
+                    if (inTttQueue)
                     {
                         client.getOutputStream().write(1);
                     }else
@@ -379,7 +431,9 @@ public class Session extends Thread
                     break;
                 case 8:     //if it was a request to leave the Tic-tac-toe matchmaking queue...
                     //leave the queue and notify if successful
-                    if (Database.getTttMatchmaker().leaveMQueue(this))
+                    inTttQueue = !Database.getTttMatchmaker().leaveMQueue(this);
+
+                    if (!inTttQueue)
                     {
                         client.getOutputStream().write(1);
                     }else
@@ -389,7 +443,9 @@ public class Session extends Thread
                     break;
                 case 9:     //if it was a request to join the Connect-4 matchmaking queue...
                     //join the queue and notify if successful
-                    if (Database.getC4Matchmaker().joinMQueue(this))
+                    inC4Queue = Database.getC4Matchmaker().joinMQueue(this);
+
+                    if (inC4Queue)
                     {
                         client.getOutputStream().write(1);
                     }else
@@ -399,13 +455,22 @@ public class Session extends Thread
                     break;
                 case 10:     //if it was a request to leave the Connect-4 matchmaking queue...
                     //leave the queue and notify if successful
-                    if (Database.getC4Matchmaker().leaveMQueue(this))
+                    inC4Queue = !Database.getC4Matchmaker().leaveMQueue(this);
+
+                    if (!inC4Queue)
                     {
                         client.getOutputStream().write(1);
                     }else
                     {
                         client.getOutputStream().write(0);
                     }
+                    break;
+                case 11:    //if it was a request of all logged-in users for matchmaking...
+                    //get the list of players from the database and send it to the client
+                    messageBytes = Network.encrypt(Database.getLoggedInUsers(), AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("player list sent");  //for debug
                     break;
             }
         }
