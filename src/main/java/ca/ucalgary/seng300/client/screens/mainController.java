@@ -350,14 +350,26 @@ public class mainController {
     }
 
     @FXML
-    protected void onMatchMakeButtonClick(ActionEvent event) {
+    protected void onMatchMakeButtonClick(ActionEvent event) throws Exception {
         RadioButton selected = (RadioButton) group.getSelectedToggle();
         if (selected != null)
         {
             Game selectedGame = findGame(selected.getText());
             if (selectedGame != null) {
-                showMatchFoundPopup("Garry", selectedGame, event);
-                errorField.setText("");
+
+                if (selectedGame.getTitle().equals("TicTacToe"))
+                {
+                    errorField.setText("Finding a match...");
+                    String joinedTTT = Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get().toString();
+                    showMatchFoundPopup(joinedTTT, selectedGame, event);
+                }
+                else
+                {
+                    errorField.setText("Finding a match...");
+                    String joinedC4  = Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get().toString();
+                    showMatchFoundPopup(joinedC4, selectedGame, event);
+                }
+
             } else {
                 errorField.setText("Could not find the selected game.");
             }
@@ -393,8 +405,6 @@ public class mainController {
         if(accBtn != null) {
             accBtn.getStyleClass().add("basic-button");
         }
-
-
         if (decBtn != null) {
             decBtn.getStyleClass().add("basic-button");
         }
@@ -402,9 +412,21 @@ public class mainController {
 
         alert.showAndWait().ifPresent(type -> {
             if (type == acceptButton) {
+                try {
+                    System.out.println("Accept button hit");
+                    int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"1"}).get();
+                    System.out.println(result);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 String fxmlFile = "/fxml/" + game.getFxmlPath() + "GamePage.fxml";
                 switchScene(event, fxmlFile, "Playing " + game.getTitle());
             } else {
+                try {
+                    int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"0"}).get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 errorField.setText("Match declined.");
             }
         });
