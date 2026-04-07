@@ -1,8 +1,6 @@
 package ca.ucalgary.seng300.core;
 
 import ca.ucalgary.seng300.core.identity.client.Network;
-import ca.ucalgary.seng300.core.registry.GameRegistry;
-import ca.ucalgary.seng300.shared.models.Game;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,22 +22,19 @@ public class NetworkTest {
         Network.setupTestEncryption();
     }
 
-//    @Test
-//    void testSuccessfulLogin() throws Exception {
-//        byte[] encryptedTrue = Network.encrypt("true");
-//        byte[] simulatedServerResponse = ByteBuffer.allocate(4 + encryptedTrue.length)
-//                .putInt(encryptedTrue.length)
-//                .put(encryptedTrue)
-//                .array();
-//        // allocates as much space as needed and fills it with data
-//        StubSocket stubSocket = new StubSocket(simulatedServerResponse);
-//        // create the fake server
-//
-//        Network myNetwork = new Network(stubSocket);
-//
-//        boolean loginResult = myNetwork.login("testUser", "testPassword");
-//        assertTrue(loginResult);
-//    }
+    @Test
+    void testSuccessfulLogin() throws Exception {
+        byte[] simulatedServerResponse = new byte[]{1};
+        // for this function, we don't read a response, but rather the raw byte data
+        // as such we simply make a '1' response
+        StubSocket stubSocket = new StubSocket(simulatedServerResponse);
+        // create the fake server
+
+        Network myNetwork = new Network(stubSocket);
+
+        int loginResult = myNetwork.login("testUser", "testPassword");
+        assertEquals(1, loginResult);
+    }
 
     /*
     Testing scenarios where the server returns false
