@@ -17,6 +17,8 @@ public class TTTServerSession extends Thread{
     private static final int REQUEST_MOVE_PROMPT = 13;
     private static final int REQUEST_GAME_STATE = 14;
 
+    private String latestMove;
+
     //this stores the session for player one
     private Session playerOneSession;
 
@@ -43,6 +45,28 @@ public class TTTServerSession extends Thread{
 
         //set the session to active when the match begins
         activeSession = true;
+
+        latestMove = "";
+    }
+
+    public String getLatestMove() {
+
+        //return the latest move in row,col format
+        return latestMove;
+    }
+
+    public void sendMoveTTT() throws Exception {
+
+        //if no move has been made yet do nothing
+        if (latestMove == null || latestMove.isBlank()) {
+            return;
+        }
+
+        //send the latest move to player one
+        playerOneSession.addRequest(REQUEST_BOARD_UPDATE, new String[]{latestMove});
+
+        //send the latest move to player two
+        playerTwoSession.addRequest(REQUEST_BOARD_UPDATE, new String[]{latestMove});
     }
 
     //this is my getter for returning the first players session
