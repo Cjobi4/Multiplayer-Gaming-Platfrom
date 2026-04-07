@@ -166,22 +166,22 @@ public class TicTacToeGame {
     public void fromDataString(String gameDataString) {
 
         //split the full game data string using | as the separator
-        String[] gameDataParts = gameDataString.split("\\|");
+        String[] specificGameItem = gameDataString.split("\\|");
 
         //restore the board using the first part of the string
-        board.fromString(gameDataParts[0]);
+        board.fromString(specificGameItem[0]);
 
         //restore the current player from the second part
-        currentPlayer = gameDataParts[1].charAt(0);
+        currentPlayer = specificGameItem[1].charAt(0);
 
         //restore the winner from the third part
-        winner = gameDataParts[2].charAt(0);
+        winner = specificGameItem[2].charAt(0);
 
         //restore the game state using the enum value from the fourth part
-        gameState = GameState.valueOf(gameDataParts[3]);
+        gameState = GameState.valueOf(specificGameItem[3]);
 
         //restore the move count from the fifth part
-        moveCount = Integer.parseInt(gameDataParts[4]);
+        moveCount = Integer.parseInt(specificGameItem[4]);
     }
     //GETTERS for new functions
 
