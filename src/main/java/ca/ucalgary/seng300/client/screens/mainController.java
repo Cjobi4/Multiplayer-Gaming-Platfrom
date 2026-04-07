@@ -291,16 +291,17 @@ public class mainController {
 
                 if (selectedGame.getTitle().equals("TicTacToe"))
                 {
-                    boolean joinedTTT = (Boolean) Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get();
-
+                    String joinedTTT = Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get().toString();
+                    showMatchFoundPopup(joinedTTT, selectedGame, event);
+                    errorField.setText("");
                 }
                 else
                 {
-                    boolean joinedC4  = (Boolean) Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get();
+                    String joinedC4  = Network.getInstance().queueRequest(Network.JOIN_C4_QUEUE, null).get().toString();
+                    showMatchFoundPopup(joinedC4, selectedGame, event);
+                    errorField.setText("");
                 }
 
-                showMatchFoundPopup("Garry", selectedGame, event);
-                errorField.setText("");
             } else {
                 errorField.setText("Could not find the selected game.");
             }
@@ -345,9 +346,19 @@ public class mainController {
 
         alert.showAndWait().ifPresent(type -> {
             if (type == acceptButton) {
+                try {
+                    int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"1"}).get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 String fxmlFile = "/fxml/" + game.getFxmlPath() + "GamePage.fxml";
                 switchScene(event, fxmlFile, "Playing " + game.getTitle());
             } else {
+                try {
+                    int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"0"}).get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 errorField.setText("Match declined.");
             }
         });
