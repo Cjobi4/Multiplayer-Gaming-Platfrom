@@ -75,8 +75,9 @@ public class gameOverController {
                 task.getException().printStackTrace();
             }
         });
-
-
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     private void renderGameOverData(List<LeaderboardEntry> leaderboard) {
