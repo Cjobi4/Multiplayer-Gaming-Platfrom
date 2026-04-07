@@ -8,6 +8,10 @@ import static ca.ucalgary.seng300.Database.addMatchResult;
 //import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.Session;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 //this class represents the server-side tic tac toe game session (extending thread)
 public class TTTServerSession extends Thread{
 
@@ -165,7 +169,10 @@ public class TTTServerSession extends Thread{
         String winnerUserName = null;
 
         //hold the date in a string variable
-        String date = java.time.LocalDate.now().toString();
+        ZoneId zoneId = ZoneId.of("Canada/Edmonton");
+        ZonedDateTime now = ZonedDateTime.now(zoneId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String date = now.format(formatter);
 
         //specific gametype name for tic tac toe is TicTacToe
         String gameName = "ttt";
