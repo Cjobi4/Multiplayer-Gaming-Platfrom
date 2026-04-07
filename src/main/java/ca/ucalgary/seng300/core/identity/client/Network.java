@@ -972,6 +972,16 @@ public class Network extends Thread {
     }
 
 
+    /**
+     * Initializes encryption with a dummy key for unit testing.
+     * This bypasses the Diffie-Hellman key exchange that requires a live server.
+     * @throws Exception if key generation fails.
+     */
+    public static void setupTestEncryption() throws Exception {
+        sharedKey = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+        generateAESKey();
+    }
+
     /** Turning the shared key into a usable AES encryption key
      *
      * @throws Exception

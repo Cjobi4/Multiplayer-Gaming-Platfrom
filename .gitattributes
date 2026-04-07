@@ -16,6 +16,9 @@ mvnw.cmd text eol=crlf
 *.xml text
 *.properties text
 *.md text
+*.yml text
+*.yaml text
+*.json text
 
 # Binary assets
 *.png binary
@@ -26,3 +29,4 @@ mvnw.cmd text eol=crlf
 *.pdf binary
 *.jar binary
 *.class binary
+*.db binary

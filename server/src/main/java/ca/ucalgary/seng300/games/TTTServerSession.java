@@ -8,6 +8,10 @@ import static ca.ucalgary.seng300.Database.addMatchResult;
 //import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.Session;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 //this class represents the server-side tic tac toe game session (extending thread)
 public class TTTServerSession extends Thread{
 
@@ -16,8 +20,6 @@ public class TTTServerSession extends Thread{
     private static final int REQUEST_BOARD_UPDATE = 12;
     private static final int REQUEST_MOVE_PROMPT = 13;
     private static final int REQUEST_GAME_STATE = 14;
-
-    private String latestMove;
 
     //this stores the session for player one
     private Session playerOneSession;
@@ -45,28 +47,6 @@ public class TTTServerSession extends Thread{
 
         //set the session to active when the match begins
         activeSession = true;
-
-        latestMove = "";
-    }
-
-    public String getLatestMove() {
-
-        //return the latest move in row,col format
-        return latestMove;
-    }
-
-    public void sendMoveTTT() throws Exception {
-
-        //if no move has been made yet do nothing
-        if (latestMove == null || latestMove.isBlank()) {
-            return;
-        }
-
-        //send the latest move to player one
-        playerOneSession.addRequest(REQUEST_BOARD_UPDATE, new String[]{latestMove});
-
-        //send the latest move to player two
-        playerTwoSession.addRequest(REQUEST_BOARD_UPDATE, new String[]{latestMove});
     }
 
     //this is my getter for returning the first players session
@@ -189,7 +169,10 @@ public class TTTServerSession extends Thread{
         String winnerUserName = null;
 
         //hold the date in a string variable
-        String date = java.time.LocalDate.now().toString();
+        ZoneId zoneId = ZoneId.of("Canada/Edmonton");
+        ZonedDateTime now = ZonedDateTime.now(zoneId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String date = now.format(formatter);
 
         //specific gametype name for tic tac toe is TicTacToe
         String gameName = "ttt";
