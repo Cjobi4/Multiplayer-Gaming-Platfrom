@@ -46,7 +46,7 @@ public class gameOverController {
 
     public void setGameType(GameType gameType){
         this.currentGameType = gameType;
-        //loadGameOverData();
+        loadGameOverData();
     }
 
     private void  loadGameOverData(){
@@ -111,7 +111,7 @@ public class gameOverController {
            }
        }
 
-        scoreValueLabel.setText(userWins + " pts");
+        scoreValueLabel.setText(userWins + " Wins");
         rankingListView.setItems(listRows);
     }
 
