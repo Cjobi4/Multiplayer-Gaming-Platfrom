@@ -268,6 +268,8 @@ public class TTTServerSession extends Thread{
             return false;
         }
 
+
+        //this handles:
         //since the session is active,
         //apply the move using the tic tac toe backend logic (makeMove() function!)
         boolean moveSuccessCheck = game.makeMove(row, col, playerSymbol);
@@ -320,14 +322,16 @@ public class TTTServerSession extends Thread{
     @Override
     public void run() {
         try{
-            //send the initial board state to both players
-            sendBoardState();
 
-            //send the initial turn to both players
-            sendCurrentTurn();
-
-            //send the initial game state to both players
-            sendGameState();
+            sendGameUpdate();
+//            //send the initial board state to both players
+//            sendBoardState();
+//
+//            //send the initial turn to both players
+//            sendCurrentTurn();
+//
+//            //send the initial game state to both players
+//            sendGameState();
 
             //loop that runs until game is over
             while (!Thread.currentThread().isInterrupted() && activeSession) {
