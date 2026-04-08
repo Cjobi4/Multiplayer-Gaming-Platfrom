@@ -85,6 +85,12 @@ public class mainController {
                     alert.setHeaderText(challengerName + " has challenged you to " + gameType.toUpperCase() + "!");
                     alert.setContentText("Would you like to accept this challenge?");
 
+                    Image image = new Image(getClass().getResource("/images/DINOALERT.png").toExternalForm());
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(70);
+                    imageView.setFitHeight(70);
+                    alert.setGraphic(imageView);
+
                     ButtonType buttonAccept = new ButtonType("Accept");
                     ButtonType buttonDecline = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
                     alert.getButtonTypes().setAll(buttonAccept, buttonDecline);
