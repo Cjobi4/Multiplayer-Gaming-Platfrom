@@ -250,6 +250,12 @@ public class mainController {
         alert.setTitle("About The Application");
         alert.setHeaderText("Trainwreck!");
 
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
         String information = "Trainwreck is a competitive, online multiplayergame platform that" +
                 "allows users to remotely play minigames together and track their progrss.\n\n" +
 
@@ -290,6 +296,12 @@ public class mainController {
         alert.setTitle("Player Stats");
         alert.setHeaderText("Trainwreck!");
         StringBuilder message = new StringBuilder();
+
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
 
         String information = " ";
         try {
@@ -336,6 +348,12 @@ public class mainController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About The Developers");
         alert.setHeaderText("Trainwreck Developers!");
+
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
 
         String information = "DEVELOPED BY: \n" +
                 "Platform Core Team:\n" +
