@@ -63,6 +63,7 @@ public class C4gameController {
 
         messageInput.setOnAction(event -> onSendMessage());
         refreshChatDisplay();
+        startChatWatcher();
     }
 
 
@@ -109,7 +110,7 @@ public class C4gameController {
         chatScrollPane.setVvalue(1.0);
     }
 
-    private void startChartWatcher(){
+    private void startChatWatcher(){
         chatRefreshTimeline = new Timeline(
                 new KeyFrame(Duration.millis(250), event ->{
                     int currentSize = ChatRegistry.getInstance().ListAll().size();
