@@ -1,9 +1,9 @@
 package ca.ucalgary.seng300.core.identity.client;
 
+import ca.ucalgary.seng300.client.screens.C4opponentSelectController;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
-import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
@@ -28,6 +28,12 @@ import java.util.concurrent.CompletableFuture;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar;
+import java.util.Optional;
+
 public class Network extends Thread {
     private static byte[] sharedKey = null;
     private static SecretKey AESKey;
@@ -40,6 +46,7 @@ public class Network extends Thread {
     private Socket socket;
     private String clientID = null;
     private static Network instance;
+    private ChallengeListener challengeListener;
 
     public static final byte PING = 0;
     public static final byte CREATE_ACCOUNT = 1;
@@ -62,10 +69,6 @@ public class Network extends Thread {
     public static final byte RESPOND_QUEUE = 35;
     public static final byte SEND_CHALLENGE = 16;
     public static final byte RECEIVE_CHALLENGE = 17;
-    public static final byte REQUEST_BOARD = 18;
-    public static final byte REQUEST_MOVE_PROMPT = 19;
-    public static final byte REQUEST_GAME_STATE = 20;
-
 
     // to be added/modified later
     public static final byte SEND_MOVE_TTT = 125;
@@ -229,7 +232,6 @@ public class Network extends Thread {
     @Override
     public void run() {
         try {
-            System.out.print("attempting to start server");
 
             while (true) {
                 try {
@@ -243,18 +245,11 @@ public class Network extends Thread {
                     else if (descriptionByte == RECEIVE_CHALLENGE) {
                         receiveChallenge();
                     }
-                    else if (descriptionByte == REQUEST_BOARD) {
-                        // read board string from server
-
-                        String updatedBoard = requestBoard();
-                        // TODO: call something in ui to update the board
-                    }
-                    else if (descriptionByte == REQUEST_MOVE_PROMPT) {
-                        notifyPlayerTurn();
-                    }
-                    else if (descriptionByte == REQUEST_GAME_STATE) {
-                        requestGameState();
-                    }
+//                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
+//                    else if (descriptionByte == 19) {
+//                        System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
+//                        sendRequestParameter("dummy_local_move");
+//                    }
                 }
 
                 catch (SocketTimeoutException e) {
@@ -370,7 +365,24 @@ public class Network extends Thread {
                 req.future.complete(sendChallenge(parameters[0], parameters[1]));
                 System.out.println("send challenge");
                 break;
+
+            case RECEIVE_CHALLENGE:
+                boolean acceptChallenge = parameters[0].equals("1");
+
+                if (acceptChallenge) {
+                    socket.getOutputStream().write(MATCH_ACCEPTED); // Sends 14
+                } else {
+                    socket.getOutputStream().write(MATCH_REJECTED); // Sends 15
+                }
+
+                // Wait for case 17 to echo the byte back so we know the GameSession is created
+                int finalResult = socket.getInputStream().read();
+                req.future.complete(finalResult);
+                break;
+
+
         }
+
     }
 
     // LOGIN
@@ -623,21 +635,36 @@ public class Network extends Thread {
             sendRequestParameter(username);
             sendRequestParameter(gameType);
 
-            // either 14 if accepted or 15 if rejected
-            int response = socket.getInputStream().read();
-
-            return response;
+            return socket.getInputStream().read();
         } catch (Exception e) {
             return -1;
         }
     }
 
-    // 14 if accept, 15 if reject
+    public interface ChallengeListener {
+        void onChallengeReceived(String challengerName, String gameType);
+    }
+
+
+    public void setChallengeListener(ChallengeListener listener) {
+        this.challengeListener = listener;
+    }
+
     public void receiveChallenge() throws Exception {
-        String username = readResponseString();
+        System.out.println("User Receiving Challenge...");
+
+
+        String challengerName = readResponseString();
         String gameType = readResponseString();
 
-        incomingChallenge.complete(new String[]{username, gameType});
+
+        if (challengeListener != null) {
+            challengeListener.onChallengeReceived(challengerName, gameType);
+        } else {
+
+            System.err.println("No UI is listening for challenges! Auto-declining.");
+            queueRequest(RECEIVE_CHALLENGE, new String[]{"0"});
+        }
     }
 
     public void getOnlinePlayers() throws Exception {
@@ -664,24 +691,12 @@ public class Network extends Thread {
         }
     }
 
-    public String requestBoard() throws Exception {
-        String receivedBoard = readResponseString();
-        return receivedBoard;
-    }
+    public void sendMoveTTT(String boardState) throws Exception {
+        // send description byte
+        socket.getOutputStream().write(SEND_MOVE_TTT);
 
-
-    public void sendMoveTTT(String move) throws Exception {
-        // send move
-        sendRequestParameter(move);
-    }
-
-    public void notifyPlayerTurn() throws Exception {
-        // TODO: call something in ui to enable board for input
-    }
-
-    public String requestGameState() throws Exception {
-        String serverResponse = readResponseString();
-        return serverResponse;
+        // send board
+        sendRequestParameter(boardState);
     }
 
     public String receiveMoveTTT() throws Exception {
@@ -826,6 +841,7 @@ public class Network extends Thread {
         // send request parameters as byte[]
         sendRequestParameter(id);
         sendRequestParameter(content);
+        sendRequestParameter(sender);
 
         // update local directory
         ChatRegistry.getInstance().addMessage(new Message(id, content, sender));

@@ -309,6 +309,8 @@ public class Matchmaker extends Thread
 
             //if both players accepted, create a new match
             if (gameName.equals("ttt")) {
+                p1.setOpp(p2);
+                p2.setOpp(p1);
                 TicTacToeGameSession gameSession = new TicTacToeGameSession(p1, p2);
                 gameSession.start();
             } else if (gameName.equals("c4")) {
