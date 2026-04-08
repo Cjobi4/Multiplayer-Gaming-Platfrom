@@ -1,0 +1,32 @@
+* text=auto
+
+# Shell scripts must be LF
+mvnw text eol=lf
+*.sh text eol=lf
+
+# Windows scripts must be CRLF
+mvnw.cmd text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Source and config files
+*.java text
+*.fxml text
+*.css text
+*.xml text
+*.properties text
+*.md text
+*.yml text
+*.yaml text
+*.json text
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg binary
+*.pdf binary
+*.jar binary
+*.class binary
+*.db binary

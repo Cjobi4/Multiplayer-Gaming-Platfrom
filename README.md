@@ -1,140 +1,251 @@
-# First-Day Setup Checklist — JavaFX Maven Project
+# Online Multiplayer Game Platform
 
-Use this checklist **before you start working** on the project.  
-If all items pass, your environment is correctly set up.
+Group 8 Online Multiplayer Game Platform
 
----
+University of Calgary
 
-## 1. Required Software
+SENG 300 Tutorial T08
 
-Confirm you have **all** of the following:
+Winter 2026
 
-- ✅ **JDK 25** installed
-- ✅ **IntelliJ IDEA** (Community or Ultimate)
-- ✅ Git installed
+A turn-based online multiplayer game platform (Tic-Tac-Toe and Connect Four) built with JavaFX and a socket-based server.
 
-> ⚠ **IntelliJ is the expected IDE for this course.**  
-> Students using any other IDE may encounter setup and collaboration issues when working in groups that use IntelliJ exclusively.  
-> If you use something other than IntelliJ, you are responsible for resolving any IDE-specific issues.
+## Project Status
 
----
+**Please read the [CURRENT_STATE.md](CURRENT_STATE.md) file**. All team members should reference this document to understand what is done, what is in progress, and what remains.
 
-## 2. Clone the Repository
+## Prerequisites
 
-Clone the starter repository using Git (HTTPS or SSH):
+### Client
 
-```
-git clone <repo-url>
-cd <repo-directory>
-```
+- **JDK 25**
+- **Git**
 
-Do not copy files manually between machines.
+### Server
 
----
+- **JDK 25**
+- **Git**
+- **Admin access may be required for firewall setup**
 
-## 3. Open the Project in IntelliJ
+### Cross-Platform Note
 
-1. Open IntelliJ IDEA
-2. Choose Open
-3. Select the root folder of the repository
-4. When prompted:
-    - Trust the project
-    - Allow IntelliJ to import the Maven project
+Commands below use `./mvnw` (Linux, macOS, Git Bash on Windows).
 
-IntelliJ should detect this as a Maven project automatically.
+On **Windows CMD or PowerShell**, use `mvnw.cmd` instead (e.g., `mvnw.cmd clean compile`).
 
----
+## Client Build and Run
 
-## 4. Verify the JDK in IntelliJ
+Compile first to check for errors, then run tests to verify correctness, then launch the application.
 
-In IntelliJ:
+### Build Instructions
 
-1. File -> Project Structure -> Project
-2. Confirm:
-    - Project SDK: JDK 25
-    - Language level: 25
-
-If this is incorrect, fix it before continuing.
-
----
-
-## 5. Do NOT Run MainApp Directly
-
-Do not click the green Run button on MainApp.
-
-Doing so will result in the following error:
-
-```
-JavaFX runtime components are missing
+```bash
+./mvnw clean compile
 ```
 
-This project must be run using Maven, which correctly configures JavaFX.
+### Test Instructions
 
----
-
-## 6. Run the Project (Choose One Method)
-
-### Option A - Run in IntelliJ (recommended)
-
-1. Open the Maven tool window
-2. Expand:
-   Project
-   -> Plugins
-   -> javafx
-3. Double-click:
-   javafx:run
-
-A JavaFX window should open.
-
----
-
-### Option B - Run from the Terminal (Maven Wrapper)
-
-This project uses the Maven Wrapper.
-You do not need to install Maven.
-
-Windows (PowerShell):
-
-```
-.\mvnw.cmd javafx:run
+```bash
+./mvnw clean test
 ```
 
-macOS or Linux:
+### Run Instructions
+
+```bash
+./mvnw clean javafx:run
+```
+
+## Server Build and Run
+
+Server commands can be run from either the project root (using `-f server/pom.xml`) or from the `server/` directory.
+
+### Build Instructions
+
+From project root:
+
+```bash
+./mvnw -f server/pom.xml clean compile
+```
+
+Or from the `server/` directory:
+
+```bash
+cd server
+../mvnw clean compile
+```
+
+To package the server JAR:
+
+```bash
+./mvnw -f server/pom.xml clean package
+```
+
+### Test Instructions
+
+```bash
+./mvnw -f server/pom.xml clean test
+```
+
+### Run Instructions
+
+```bash
+./mvnw -f server/pom.xml exec:java
+```
+
+Or from the `server/` directory:
+
+```bash
+cd server
+../mvnw exec:java
+```
+
+**Note:** The server cannot run directly from IntelliJ IDE due to firewall restrictions. Running from terminal/command line with admin privileges is required.
+
+## Firewall Configuration
+
+Before running the server for the first time, allow TCP traffic on port **14001**.
+
+### Windows
+
+1. Open **Windows Defender Firewall** → **Advanced Settings**
+2. Create **Inbound Rule**:
+   - Type: Port
+   - Protocol: TCP, Port: 14001
+   - Action: Allow the connection
+   - Profile: All
+   - Name: "SENG300 Server Port"
+3. Create matching Outbound Rule
+4. Enable both rules when server is running and disable rules when server is not running
+
+### macOS
+
+macOS does not block outbound connections by default. If using the built-in firewall, allow incoming connections for Java in **System Settings > Network > Firewall**.
+
+### Linux
+
+```bash
+sudo ufw allow 14001/tcp
+```
+
+## Server Configuration
+
+The server uses:
+
+- **Port:** 14001 (configured in `server/src/.../Network.java`)
+- **Database:** SQLite (bundled with Maven)
+
+## Network Notes
+
+- The server listens for TCP connections on port `14001`.
+- Clients connect using the server machine's internal IP address and port.
+- Under the current test setup, client and server must be on the same network.
+- If the server IP address changes, the client configuration may need to be updated.
+
+## Project Structure
 
 ```
-./mvnw javafx:run
+project-root/
+├── docs/                              # Design documents and diagrams
+│   ├── architecture/                  # System-wide architecture
+│   ├── platform-core/                 # Platform Core designs
+│   │   ├── identity/                  # Authentication and session
+│   │   ├── game-registry/             # Game registry design
+│   │   ├── rooms-and-matchmaking/     # Matchmaking design
+│   │   ├── turn-engine/               # Turn engine design
+│   │   └── persistence/               # Database and server design
+│   ├── client-ui/                     # Client/UI designs
+│   │   ├── screens/                   # Screen-level designs
+│   │   └── game-rendering/            # Game rendering designs
+│   ├── rules-validation/              # Rules & Validation designs
+│   │   ├── leaderboard/               # Leaderboard design
+│   │   └── move-validation/           # Move validation design
+│   ├── quality-testing/               # Test plans
+│   └── integration-release/           # I&R process docs
+├── server/                            # Server module (separate Maven project)
+│   ├── pom.xml
+│   └── src/
+│       ├── main/java/.../
+│       │   ├── Database.java          # SQLite persistence and user management
+│       │   ├── Matchmaker.java        # Skill-based matchmaking queue
+│       │   ├── Network.java           # TCP server socket listener with encryption
+│       │   ├── Request.java           # Async request DTO with CompletableFuture
+│       │   ├── ServerMain.java        # Server entry point
+│       │   ├── Session.java           # Per-client session handler (12 request types)
+│       │   └── Games/                 # Server-side game sessions
+│       │       ├── GameState.java
+│       │       ├── TicTacToeGameSession.java
+│       │       ├── tictactoe/         # Server TTT board and game logic
+│       │       └── connectfour/       # Server C4 board, game, and session
+│       └── test/java/.../             # Server unit tests (Matchmaker)
+├── src/
+│   ├── main/
+│   │   ├── java/ca/ucalgary/seng300/
+│   │   │   ├── app/                   # Application entry point (MainApp)
+│   │   │   ├── shared/                # Cross-team contracts and models
+│   │   │   │   ├── interfaces/        # Shared interfaces (stub, .gitkeep only)
+│   │   │   │   └── models/            # Game, Tag, Player, Message, ActivePlayer
+│   │   │   ├── core/
+│   │   │   │   ├── identity/          # Client-side auth and networking
+│   │   │   │   ├── registry/          # Game, Chat, and Player registries
+│   │   │   │   ├── matchmaking/       # Matchmaking (stub, .gitkeep only)
+│   │   │   │   ├── persistence/       # Persistence (stub, .gitkeep only)
+│   │   │   │   ├── rooms/             # Room management (stub, .gitkeep only)
+│   │   │   │   └── turnengine/        # Game session management
+│   │   │   ├── rules/
+│   │   │   │   ├── leaderboard/       # Scoring models, queries, and database
+│   │   │   │   └── validation/        # Move validation pipeline (stub)
+│   │   │   ├── client/
+│   │   │   │   ├── screens/           # FXML controllers (9 screens)
+│   │   │   │   ├── components/        # Leaderboard row model and mock data
+│   │   │   │   └── rendering/         # Board rendering (stub)
+│   │   │   └── games/
+│   │   │       ├── GameEngine.java    # Game engine interface (commented out)
+│   │   │       ├── GameController.java # Game controller (commented out)
+│   │   │       ├── GameState.java     # Game state enum
+│   │   │       ├── Move.java          # Move placeholder stub
+│   │   │       ├── GeneralStats.java  # Stats placeholder stub
+│   │   │       ├── tictactoe/         # Tic-Tac-Toe board, game, and game session
+│   │   │       └── connectfour/       # Connect Four board, game, and game session
+│   │   └── resources/
+│   │       ├── css/                   # Stylesheets
+│   │       ├── fxml/                  # Screen layouts (9 FXML files)
+│   │       └── images/               # Static assets
+│   └── test/                          # JUnit 5 test suite
+│       └── java/.../
+│           ├── client/                # UI controller tests
+│           ├── core/                  # Registry and network tests
+│           ├── games/                 # Game logic tests (TTT and C4)
+│           ├── rules/                 # Leaderboard tests
+│           └── integration/           # Integration tests (stub)
+├── scripts/                           # Utility scripts
+├── .gitlab-ci.yml                     # CI/CD pipeline (build + test, client and server)
+├── .gitlab/                           # GitLab merge request templates
+├── mvnw / mvnw.cmd                    # Maven wrapper (Unix / Windows)
+├── pom.xml                            # Client Maven build config
+├── CHANGELOG.md                       # Version history
+├── CURRENT_STATE.md                   # Feature status and requirements checklist
+└── team.md                            # Sub-team roster
 ```
 
-First run note:
-The first run may take one to two minutes while dependencies download. This is normal.
+## Key Documents
+
+- [Current State](CURRENT_STATE.md)
+- [Team Roster](team.md)
+- [Changelog](CHANGELOG.md)
+- [Documentation Directory](docs/README.md)
+
+## Sub-Team Responsibilities
+
+See [team.md](team.md) for the full sub-team roster, leads, and members.
+
+| Sub-Team              | Package                | Responsibilities                                                                        |
+| --------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
+| Platform Core         | `core/`, `server/`     | Identity management, game registry, rooms and matchmaking, turn engine, and persistence |
+| Client/UI             | `client/`              | Login/signup, lobby, game info screen, leaderboard dashboard, and admin console         |
+| Rules & Validation    | `rules/`, `games/`     | Move validation pipeline and leaderboard scoring                                        |
+| Quality & Testing     | `test/`                | End-to-end test planning                                                                |
+| Integration & Release | Root files, `scripts/` | Branching/merging workflow, peer review process, and versioning management              |
 
 ---
 
-## 7. Expected Result
-
-If everything is correct:
-- A JavaFX window opens
-- No JavaFX runtime errors appear
-- No additional setup is required
-
-You are ready to start the project.
-
----
-
-## 8. Common Problems (Quick Check)
-
-If something goes wrong, check these first:
-
-- Running MainApp directly instead of javafx:run
-- Wrong JDK selected in IntelliJ
-- Installing JavaFX manually
-- Using mvn instead of mvnw or mvnw.cmd
-
-If the JavaFX window opens, your setup is correct.
-
----
-
-## Summary
-
-If the project runs using javafx:run, your setup is correct and you may begin work.
-
+_Last updated: 2026-04-07_
