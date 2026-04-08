@@ -4,6 +4,8 @@ import ca.ucalgary.seng300.client.screens.C4opponentSelectController;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
+import ca.ucalgary.seng300.games.GameState;
+import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
@@ -39,7 +41,9 @@ public class Network extends Thread {
     private static SecretKey AESKey;
     private static SecureRandom sRan;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
-    public CompletableFuture<String[]> incomingChallenge = new CompletableFuture<>();
+    //public CompletableFuture<String[]> incomingChallenge = new CompletableFuture<>();
+    private TicTacToeGame tttGame = null;
+
 
     // private static final String serverIP ="10.2.1.179";
     // private static final int serverPort = 501;
@@ -64,11 +68,15 @@ public class Network extends Thread {
     public static final byte KICKED_FROM_QUEUE = 13;
     public static final byte MATCH_ACCEPTED = 14;
     public static final byte MATCH_REJECTED = 15;
-    //??
-
-    public static final byte RESPOND_QUEUE = 35;
     public static final byte SEND_CHALLENGE = 16;
     public static final byte RECEIVE_CHALLENGE = 17;
+    private final int SEND_BOARD = 18;
+    private final int PROMPT_MOVE = 19;
+    private final int NOTIFY_GAME_STATE = 20;
+    private final int SEND_CHAT = 21;
+    private final int RECEIVE_CHAT = 22;
+
+    public static final byte RESPOND_QUEUE = 35;
 
     // to be added/modified later
     public static final byte SEND_MOVE_TTT = 125;
@@ -246,10 +254,17 @@ public class Network extends Thread {
                         receiveChallenge();
                     }
 //                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
-//                    else if (descriptionByte == 19) {
-//                        System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
-//                        sendRequestParameter("dummy_local_move");
-//                    }
+                    else if (descriptionByte == PROMPT_MOVE) {
+                        notifyPlayerTurn();
+                        System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
+                        sendRequestParameter("dummy_local_move");
+                    }
+                    else if (descriptionByte == SEND_BOARD) {
+                        String updatedBoard = receiveBoard();
+                        tttGame.getBoard().fromString(updatedBoard);
+                        updateState();
+                        // TODO call something in UI and pass in updated board
+                    }
                 }
 
                 catch (SocketTimeoutException e) {
@@ -383,6 +398,20 @@ public class Network extends Thread {
 
         }
 
+    }
+
+    // TTT GAME
+
+    public void setTTT(TicTacToeGame game) {
+        this.tttGame = game;
+    }
+
+    public TicTacToeGame getTTTGame(TicTacToeGame game) {
+        return game;
+    }
+
+    public void clearTTTGame() {
+        tttGame = null;
     }
 
     // LOGIN
@@ -691,17 +720,25 @@ public class Network extends Thread {
         }
     }
 
-    public void sendMoveTTT(String boardState) throws Exception {
-        // send description byte
-        socket.getOutputStream().write(SEND_MOVE_TTT);
-
-        // send board
-        sendRequestParameter(boardState);
+    public void sendMoveTTT(String move) throws Exception {
+        // send board move
+        sendRequestParameter(move);
     }
 
-    public String receiveMoveTTT() throws Exception {
+    public String receiveBoard() throws Exception {
+        // read the updated ttt board
+        return readResponseString();
 
-        return null;
+    }
+
+    public void notifyPlayerTurn() throws Exception {
+        // TODO: ui updates to enable input for move, then call sendMoveTTT()
+    }
+
+    public void updateState() throws Exception {
+        String state = readResponseString();
+        GameState updGameState = GameState.valueOf(state);
+        tttGame.setGameState(updGameState);
     }
 
     // LEADERBOARD
