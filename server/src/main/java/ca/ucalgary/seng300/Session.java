@@ -19,6 +19,7 @@ public class Session extends Thread
     private boolean loggedIn;
     private boolean inTttQueue;
     private boolean inC4Queue;
+    private Session opp;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
 
     //////////////// REQUEST TYPES ////////////////
@@ -43,6 +44,8 @@ public class Session extends Thread
     //private final int SEND_BOARD = 18;
     //private final int PROMPT_MOVE = 19;
     //private final int NOTIFY_GAME_STATE = 20;
+    //private final int SEND_CHAT = 21;
+    //private final int RECEIVE_CHAT = 22;
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -172,6 +175,15 @@ public class Session extends Thread
         return username;
     }
 
+    /**
+     * Setter for the current opponent in the match
+     * @param o The Session object for the opponent
+     */
+    public void setOpp(Session o)
+    {
+        opp = o;
+    }
+
 
     /**
      * Reads the request type and executes the required actions. Also uses synchronization to prevent multiple Sessions
@@ -186,6 +198,7 @@ public class Session extends Thread
         int messageLength;
         byte[] messageBytes;
         String message;
+        String[] chatMessage;
         int result;
         ResultSet rs;
         StringBuilder sbuild;
@@ -406,11 +419,17 @@ public class Session extends Thread
                             System.out.println("match record sent");  //for debug
 
                             //notify the client of success
-                            client.getOutputStream().write(1);
+                            messageBytes = Network.encrypt("1", AESKey);
+                            client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                            client.getOutputStream().write(messageBytes);
+                            System.out.println("1 sent");
                         } while (rs.next());
                     } else //if something went wrong and no match records were found, notify client
                     {
-                        client.getOutputStream().write(0);
+                        messageBytes = Network.encrypt("0", AESKey);
+                        client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                        client.getOutputStream().write(messageBytes);
+                        System.out.println("0 sent");
                     }
                     break;
                 case 7:     //if it was a request to join the Tic-tac-toe matchmaking queue...
@@ -590,6 +609,48 @@ public class Session extends Thread
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
                     System.out.println("game state sent");
+                    break;
+                case 21:    //if sending a chat message...
+                    chatMessage = new String[3];
+
+                    //collect the id
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    chatMessage[0] = Network.decrypt(messageBytes, AESKey);
+
+                    //collect the contents
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    chatMessage[1] = Network.decrypt(messageBytes, AESKey);
+
+                    //collect the sender
+//                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+//                    messageBytes = client.getInputStream().readNBytes(messageLength);
+//                    chatMessage[2] = Network.decrypt(messageBytes, AESKey);
+                    chatMessage[2] = username;
+
+                    //send the message to the recipient
+                    opp.addRequest(22, chatMessage);
+                    break;
+                case 22:    //if receiving a chat message...
+                    //get the message
+                    chatMessage = req.getParameters();
+
+                    //send the id
+                    messageBytes = Network.encrypt(chatMessage[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+
+                    //send the contents
+                    messageBytes = Network.encrypt(chatMessage[1], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+
+                    //send the sender
+                    messageBytes = Network.encrypt(chatMessage[2], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+
                     break;
             }
         }
