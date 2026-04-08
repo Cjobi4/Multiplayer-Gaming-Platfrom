@@ -13,6 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -118,14 +120,6 @@ public class C4gameController {
             stage.show();
 
 
-            // Create Match Record (Not sure where to get player info, will be needed to make a match record)
-
-            // MatchRecord matchRecord = new MatchRecord();
-
-            // Update Leaderboard
-
-            // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
-
             ChatRegistry.getInstance().clearChat();
 
         } catch (IOException e) {
@@ -198,6 +192,12 @@ public class C4gameController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("How to Play Connect-4");
         alert.setHeaderText("Game Instructions");
+
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
 
         String instructions = "1. The game is played on a vertical grid with 7 columns and 6 rows.\n\n"
                 + "2. Players take turns dropping one of their colored discs into a column. The disc falls to the lowest available space in that column.\n\n"
