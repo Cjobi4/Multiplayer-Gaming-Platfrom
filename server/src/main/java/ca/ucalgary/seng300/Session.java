@@ -1,5 +1,8 @@
 package ca.ucalgary.seng300;
 
+import ca.ucalgary.seng300.games.ConnectFourGameSession;
+import ca.ucalgary.seng300.games.TicTacToeGameSession;
+
 import javax.crypto.SecretKey;
 import java.net.Socket;
 import java.net.SocketException;
@@ -533,46 +536,56 @@ public class Session extends Thread
                     client.getOutputStream().write(15);
                     break;
                 case 16:    //if it was a direct challenge...
-                    //collect the username of the opp to be challenged
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     String name = Network.decrypt(messageBytes, AESKey);
 
-                    //collect the desired game type
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     String gameType = Network.decrypt(messageBytes, AESKey);
 
-                    //create a challenge and send it
-                    req = new Request(17, new String[]{username});
-                    Database.getSession(name).addRequest(req);
+                    Session oppSession = Database.getSession(name);
+                    req = new Request(17, new String[]{username, gameType});
+                    oppSession.addRequest(req);
 
-                    //see if accepted or declined
+                    // Wait for the receiver to accept/decline
                     result = Integer.parseInt(req.getResult());
 
-                    //if accepted make game
-                    if (result == 14)
-                    {
-                        if (gameType.equals("ttt"))
-                        {
-                            Database.getTttMatchmaker().createMatch(this, Database.getSession(name));
-                        }else
-                        {
-                            Database.getC4Matchmaker().createMatch(this, Database.getSession(name));
+                    // If accepted, skip matchmaking and make game session
+                    if (result == 14) {
+                        this.setOpp(oppSession);
+                        oppSession.setOpp(this);
+
+                        if (gameType.equals("ttt")) {
+                            // new TicTacToeGameSession(this, oppSession).start();
+                        } else {
+                            // new ConnectFourGameSession(this, oppSession).start();
                         }
+
                         client.getOutputStream().write(14);
-                    }else
-                    {
+                    } else {
                         client.getOutputStream().write(15);
                     }
                     break;
                 case 17:    //if receiving direct challenge...
+                    System.out.println("Sending User a Challenge Request");
                     client.getOutputStream().write(17);
 
-                    //send response to server
+                    // Send challenger name
+                    messageBytes = Network.encrypt(req.getParameters()[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+
+                    // Send game type
+                    messageBytes = Network.encrypt(req.getParameters()[1], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+
+                    System.out.println("Awaiting Response...");
                     result = client.getInputStream().read();
                     req.setFuture(Integer.toString(result));
 
+                    client.getOutputStream().write(result);
                     break;
                 case 18:    //if sending board string...
                     //p1.addRequest(18, new String[]{boardString});
