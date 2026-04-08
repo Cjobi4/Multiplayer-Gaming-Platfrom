@@ -348,12 +348,13 @@ public class Session extends Thread
                     //go through the results
                     if (rs.next())
                     {
-                        sbuild = new StringBuilder();
                         System.out.println("sbuild made");
 
                         //go through each entry...
                         do
                         {
+                            sbuild = new StringBuilder();
+
                             //send the username separately
                             messageBytes = Network.encrypt(rs.getString(1), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
