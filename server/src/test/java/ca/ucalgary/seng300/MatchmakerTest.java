@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Testing the Matchmaker class from server
+ * Limitation: Cannot directly test run()
  */
 class MatchmakerTest {
 

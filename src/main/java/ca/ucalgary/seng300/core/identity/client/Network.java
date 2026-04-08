@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.core.identity.client;
 
+import ca.ucalgary.seng300.client.screens.C4opponentSelectController;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
@@ -27,6 +28,12 @@ import java.util.concurrent.CompletableFuture;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar;
+import java.util.Optional;
+
 public class Network extends Thread {
     private static byte[] sharedKey = null;
     private static SecretKey AESKey;
@@ -39,6 +46,7 @@ public class Network extends Thread {
     private Socket socket;
     private String clientID = null;
     private static Network instance;
+    private ChallengeListener challengeListener;
 
     public static final byte PING = 0;
     public static final byte CREATE_ACCOUNT = 1;
@@ -224,7 +232,6 @@ public class Network extends Thread {
     @Override
     public void run() {
         try {
-            System.out.print("attempting to start server");
 
             while (true) {
                 try {
@@ -238,6 +245,11 @@ public class Network extends Thread {
                     else if (descriptionByte == RECEIVE_CHALLENGE) {
                         receiveChallenge();
                     }
+//                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
+//                    else if (descriptionByte == 19) {
+//                        System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
+//                        sendRequestParameter("dummy_local_move");
+//                    }
                 }
 
                 catch (SocketTimeoutException e) {
@@ -353,7 +365,24 @@ public class Network extends Thread {
                 req.future.complete(sendChallenge(parameters[0], parameters[1]));
                 System.out.println("send challenge");
                 break;
+
+            case RECEIVE_CHALLENGE:
+                boolean acceptChallenge = parameters[0].equals("1");
+
+                if (acceptChallenge) {
+                    socket.getOutputStream().write(MATCH_ACCEPTED); // Sends 14
+                } else {
+                    socket.getOutputStream().write(MATCH_REJECTED); // Sends 15
+                }
+
+                // Wait for case 17 to echo the byte back so we know the GameSession is created
+                int finalResult = socket.getInputStream().read();
+                req.future.complete(finalResult);
+                break;
+
+
         }
+
     }
 
     // LOGIN
@@ -606,21 +635,36 @@ public class Network extends Thread {
             sendRequestParameter(username);
             sendRequestParameter(gameType);
 
-            // either 14 if accepted or 15 if rejected
-            int response = socket.getInputStream().read();
-
-            return response;
+            return socket.getInputStream().read();
         } catch (Exception e) {
             return -1;
         }
     }
 
-    // 14 if accept, 15 if reject
+    public interface ChallengeListener {
+        void onChallengeReceived(String challengerName, String gameType);
+    }
+
+
+    public void setChallengeListener(ChallengeListener listener) {
+        this.challengeListener = listener;
+    }
+
     public void receiveChallenge() throws Exception {
-        String username = readResponseString();
+        System.out.println("User Receiving Challenge...");
+
+
+        String challengerName = readResponseString();
         String gameType = readResponseString();
 
-        incomingChallenge.complete(new String[]{username, gameType});
+
+        if (challengeListener != null) {
+            challengeListener.onChallengeReceived(challengerName, gameType);
+        } else {
+
+            System.err.println("No UI is listening for challenges! Auto-declining.");
+            queueRequest(RECEIVE_CHALLENGE, new String[]{"0"});
+        }
     }
 
     public void getOnlinePlayers() throws Exception {
