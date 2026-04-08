@@ -1,6 +1,7 @@
 package ca.ucalgary.seng300.core.identity.client;
 
 import ca.ucalgary.seng300.client.screens.C4opponentSelectController;
+import ca.ucalgary.seng300.client.screens.TTTgameController;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
@@ -51,6 +52,8 @@ public class Network extends Thread {
     private String clientID = null;
     private static Network instance;
     private ChallengeListener challengeListener;
+    private C4BoardListener c4BoardListener;
+    private NotifyPlayerTurnListener notifyPlayerTurnListener;
 
     public static final byte PING = 0;
     public static final byte CREATE_ACCOUNT = 1;
@@ -253,17 +256,23 @@ public class Network extends Thread {
                     else if (descriptionByte == RECEIVE_CHALLENGE) {
                         receiveChallenge();
                     }
-//                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
-                    else if (descriptionByte == PROMPT_MOVE) {
-                        notifyPlayerTurn();
-                        System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
-                        sendRequestParameter("dummy_local_move");
+                    else if (descriptionByte == SEND_BOARD) { // 18
+                        String updatedBoard = readResponseString();
+
+                        if (c4BoardListener != null) {
+                            c4BoardListener.onC4BoardReceived(updatedBoard);
+                        }
                     }
-                    else if (descriptionByte == SEND_BOARD) {
-                        String updatedBoard = receiveBoard();
-                        tttGame.getBoard().fromString(updatedBoard);
-                        updateState();
-                        // TODO call something in UI and pass in updated board
+                    else if (descriptionByte == PROMPT_MOVE) { // 19
+                        if (notifyPlayerTurnListener != null) {
+                            notifyPlayerTurnListener.onNotifyPlayerReceived();
+                        } else {
+                            sendRequestParameter("dummy");
+                        }
+                    }
+                    else if (descriptionByte == NOTIFY_GAME_STATE) { // 20
+                        String state = readResponseString();
+                        // TODO: need listener for state but will do later
                     }
                 }
 
@@ -674,6 +683,24 @@ public class Network extends Thread {
         void onChallengeReceived(String challengerName, String gameType);
     }
 
+    public interface NotifyPlayerTurnListener {
+        void onNotifyPlayerReceived();
+    }
+
+    public void setNotifyPlayerTurnListener(NotifyPlayerTurnListener listener)
+    {
+        this.notifyPlayerTurnListener = listener;
+    }
+
+    public interface C4BoardListener {
+        void onC4BoardReceived(String boardState);
+    }
+
+    public void setC4BoardListener(C4BoardListener listener)
+    {
+        this.c4BoardListener = listener;
+    }
+
 
     public void setChallengeListener(ChallengeListener listener) {
         this.challengeListener = listener;
@@ -723,16 +750,6 @@ public class Network extends Thread {
     public void sendMoveTTT(String move) throws Exception {
         // send board move
         sendRequestParameter(move);
-    }
-
-    public String receiveBoard() throws Exception {
-        // read the updated ttt board
-        return readResponseString();
-
-    }
-
-    public void notifyPlayerTurn() throws Exception {
-        // TODO: ui updates to enable input for move, then call sendMoveTTT()
     }
 
     public void updateState() throws Exception {

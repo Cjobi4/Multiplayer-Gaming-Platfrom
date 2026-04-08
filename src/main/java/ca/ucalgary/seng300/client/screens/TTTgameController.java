@@ -7,6 +7,7 @@ import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Message;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,22 +40,45 @@ public class TTTgameController {
     public VBox chatContainer;
     public TextField messageInput;
 
-    TicTacToeGame current;
-    Button[][] grid;
 
     TicTacToeGame game;
 
+    TicTacToeGame current = new TicTacToeGame();
+    Button[][] grid;
 
-
+    @FXML
     public void initialize() {
         grid = new Button[][]{{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
 
-        try
-        {
-            game =  Network.getInstance().getTTTGame(current);
+        try {
+            // Register this UI screen to listen for updating board state
+            Network.getInstance().setC4BoardListener((boardState) -> {
+
+                current.getBoard().fromString(boardState);
+
+                Platform.runLater(() -> {
+                    updateboardpt2();
+                });
+            });
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.err.println("Failed to connect board state listener: " + e.getMessage());
+        }
+
+        try {
+            // Register this UI screen to listen for notifying player turns
+            Network.getInstance().setNotifyPlayerTurnListener(() -> {
+
+                // Force the UI update onto the JavaFX Thread
+                Platform.runLater(() -> {
+                    notifyTurn();
+
+                    // might need to enable grid buttons too?
+                });
+            });
+
+        } catch (Exception e) {
+            System.err.println("Failed to connect notify player turn listener: " + e.getMessage());
         }
     }
 

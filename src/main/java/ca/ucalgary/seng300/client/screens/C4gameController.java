@@ -1,11 +1,13 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.Message;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +23,7 @@ import ca.ucalgary.seng300.games.connectfour.ConnectFourGame;
 import ca.ucalgary.seng300.games.connectfour.ConnectFourBoard;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class C4gameController {
 
@@ -52,6 +55,34 @@ public class C4gameController {
                 grid[row][col] = button;
             }
         }
+
+        // register to listen for board state
+
+        try {
+            // Register this UI screen to listen for updating board state
+            Network.getInstance().setC4BoardListener((boardState) -> {
+
+
+                // in here update board with boardState
+
+            });
+        } catch (Exception e) {
+            System.err.println("Failed to connect board state listener: " + e.getMessage());
+        }
+
+        try {
+            // Register this UI screen to listen for notifying player turns
+            Network.getInstance().setNotifyPlayerTurnListener(() -> {
+
+
+                // ui for notifying player its their turn
+
+            });
+        } catch (Exception e) {
+            System.err.println("Failed to connect notify player turn listener: " + e.getMessage());
+
+        }
+
     }
 
 
