@@ -3,66 +3,85 @@ package ca.ucalgary.seng300.games;
 import ca.ucalgary.seng300.Request;
 import ca.ucalgary.seng300.Session;
 import ca.ucalgary.seng300.Database;
-import ca.ucalgary.seng300.games.GameState;
-import ca.ucalgary.seng300.games.ConnectFourGame;
 
 import java.util.Date;
 
 /**
- * The Client-side controller for Connect Four.
- * This class handles the communication between the UI and the Game Logic.
- * @author Hoang Khoi Nguyen
- * @email hoangkhoi.nguyen@ucalgary.ca
- * @version 4.0 04/02/2026
+ * The server-side controller for a Tic-Tac-Toe game session between two players.
+ * Manages the game loop, validates moves received from clients, broadcasts board
+ * state updates to both players, and reports the final result to the database.
+ *
+ * Follows the same session lifecycle as {@link ConnectFourGameSession}:
+ * send initial board state, prompt the active player for a move, validate and
+ * apply the move, check end conditions, and repeat until the game terminates.
  */
-
-public class ConnectFourGameSession extends Thread {
+public class TicTacToeGameSession extends Thread {
 
     private Session playerOne;
     private Session playerTwo;
-    private ConnectFourGame game;
+    private TicTacToeGame game;
     private boolean isRunning = true;
 
-    public ConnectFourGameSession(Session p1, Session p2) {
+    /**
+     * Constructs a new TicTacToeGameSession for the two matched players.
+     *
+     * @param p1 the session for player one (plays as 'X')
+     * @param p2 the session for player two (plays as 'O')
+     */
+    public TicTacToeGameSession(Session p1, Session p2) {
         this.playerOne = p1;
         this.playerTwo = p2;
-        this.game = new ConnectFourGame();
+        this.game = new TicTacToeGame();
     }
 
+    /**
+     * Returns the session of the player whose turn it currently is.
+     *
+     * @return the active player's session
+     */
     private Session getCurrentPlayerSession() {
         return (game.getCurrentPlayer() == 'X') ? playerOne : playerTwo;
     }
 
+    /**
+     * Main game loop. Sends the initial board state, then repeatedly prompts
+     * the active player for a move, validates it, applies it, and checks for
+     * win or draw conditions. Runs until the game terminates or the thread is
+     * interrupted.
+     */
     @Override
     public void run() {
         try {
-            // Initializing Game Setup
             sendBoardState();
 
             while (isRunning && !Thread.currentThread().isInterrupted()) {
 
-                // 1. Determine Active Player & Await Move
+                // Determine the active player and their token
                 Session activeSession = getCurrentPlayerSession();
                 char activeToken = game.getCurrentPlayer();
 
-                // Create the Request instance from the session
+                // Create a move-prompt request (type 13) for the active player
                 Request turnReq = new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
 
                 // Add the request to the session queue
                 activeSession.addRequest(turnReq);
 
-                // 2. Turn Awaiting Move: Block until move is received
+                // Block until the client responds with a move
                 String moveResult = turnReq.getResult();
 
                 try {
-                    // 3. Turn Validating & Applying Move
-                    int col = Integer.parseInt(moveResult);
+                    // Parse the move: expected format is "row,col"
+                    String[] parts = moveResult.split(",");
+                    assert parts.length == 2 : "Move must contain exactly two values separated by a comma";
 
-                    if (game.makeMove(col, activeToken)) {
-                        // Update board for both players (Type 12)
+                    int row = Integer.parseInt(parts[0].trim());
+                    int col = Integer.parseInt(parts[1].trim());
+
+                    if (game.makeMove(row, col, activeToken)) {
+                        // Broadcast updated board to both players (type 12)
                         sendBoardState();
 
-                        // 4. Turn Check End Conditions
+                        // Check if the game has ended
                         if (game.getGameState() == GameState.PLAYER_WIN ||
                                 game.getGameState() == GameState.PLAYER_DRAW) {
                             isRunning = false;
@@ -84,6 +103,10 @@ public class ConnectFourGameSession extends Thread {
         }
     }
 
+    /**
+     * Broadcasts the current board state to both players as a type 12 request.
+     * The board is serialized via {@link TicTacToeBoard#toString()}.
+     */
     public void sendBoardState() {
         try {
             String boardState = game.getBoard().toString();
@@ -94,6 +117,10 @@ public class ConnectFourGameSession extends Thread {
         }
     }
 
+    /**
+     * Sends the final game result to both players as a type 14 request and
+     * records the match outcome in the database.
+     */
     public void sendGameResult() {
         try {
             int winnerID = 0;
@@ -102,7 +129,7 @@ public class ConnectFourGameSession extends Thread {
                 Session loser = (game.getWinner() == 'X') ? playerTwo : playerOne;
                 winnerID = Integer.parseInt(winner.getUsername());
 
-                // Type 14 Notifications
+                // Type 14 notifications
                 winner.addRequest(14, new String[]{"You won!"});
                 loser.addRequest(14, new String[]{"You lost!"});
             } else {
@@ -110,13 +137,13 @@ public class ConnectFourGameSession extends Thread {
                 playerTwo.addRequest(14, new String[]{"Draw!"});
             }
 
-            // Adding the match data to the Database
+            // Record the match in the database
             Database.addMatchResult(
                     playerOne.getUsername(),
                     playerTwo.getUsername(),
                     String.valueOf(winnerID),
                     new Date().toString(),
-                    "c4"
+                    "ttt"
             );
         } catch (Exception e) {
             System.err.println("Reporting Error: " + e.getMessage());

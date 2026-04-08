@@ -1,7 +1,5 @@
-package ca.ucalgary.seng300.games.ConnectFourGame;
+package ca.ucalgary.seng300.games;
 
-import ca.ucalgary.seng300.games.ConnectFourBoard;
-import ca.ucalgary.seng300.games.GameState;
 
 /**
  * Manages the state and rules of a Connect Four game.
