@@ -245,24 +245,31 @@ public class mainController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About The Application");
         alert.setHeaderText("Trainwreck!");
+        StringBuilder message = new StringBuilder();
 
         String information = " ";
-        UserRecord info = LeaderBoard.getUserRecord(currentPlayer);
-
-        int C4matches = info.getMatchesC4();
-        int TTTmatches = info.getMatchesTTT();
-        int totalmatches = info.getTotalMatches();
-        int C4wins = info.getWinsC4();
-        int TTTwins = info.getWinsTTT();
-        int totalwins = info.getTotalWins();
+        try {
+            UserRecord info = LeaderBoard.getUserRecord(currentPlayer);
+            if (info.isEmpty())  {
+                message.append("Couldn't get information.");
+            }else {
+                int C4matches = info.getMatchesC4();
+                int TTTmatches = info.getMatchesTTT();
+                int totalmatches = info.getTotalMatches();
+                int C4wins = info.getWinsC4();
+                int TTTwins = info.getWinsTTT();
+                int totalwins = info.getTotalWins();
 //
-        StringBuilder message = new StringBuilder();
-        message.append("Total Matches: " + totalmatches + "\n");
-        message.append("Tic Tac Toe Matches: " + TTTmatches + "\n");
-        message.append("Connect 4 Matches: " + C4matches + "\n");
-        message.append("Total Wins: " + totalwins + "\n");
-        message.append("Connect 4 Wins: " + C4wins + "\n");
-        message.append("Tic Tac Toe Matches: " + TTTwins + "\n");
+                message.append("Total Matches: " + totalmatches + "\n");
+                message.append("Tic Tac Toe Matches: " + TTTmatches + "\n");
+                message.append("Connect 4 Matches: " + C4matches + "\n");
+                message.append("Total Wins: " + totalwins + "\n");
+                message.append("Connect 4 Wins: " + C4wins + "\n");
+                message.append("Tic Tac Toe Matches: " + TTTwins + "\n");
+            }
+        } catch (Exception e) {
+            message.append("You don't have any info L");
+        }
 
 
         information = message.toString();

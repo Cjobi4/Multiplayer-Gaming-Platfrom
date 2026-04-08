@@ -58,8 +58,8 @@ public class LeaderBoard {
      */
     public static UserRecord getUserRecord (String username){
         try {
-            // List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Networtk.GET_MATCH_RECORD, new String[]{username}).get();
-            ArrayList<MatchRecord> records = new ArrayList<MatchRecord>();
+            List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{username}).get();
+            // ArrayList<MatchRecord> records = new ArrayList<MatchRecord>();
             MatchRecord record1 = new MatchRecord("test", "admin", GameType.TICTACTOE, "test");
             records.add(record1);
             int winsTTT = 0;
