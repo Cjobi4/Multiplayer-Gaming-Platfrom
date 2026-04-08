@@ -86,6 +86,40 @@ public class GameRegistryTest {
     }
 
     /**
+     * Testing the method findByName()
+     * Input: name of game, which is set as CONNECT4
+     * Expected Output: game1
+     * Actual Output: the game found by findByName("CONNECT4")
+     */
+    @Test
+    void testFindByNameReturnsCorrectGame() {
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
+        gameRegistry.register(game1);
+
+        Game actualGame = gameRegistry.findByName("CONNECT4");
+
+        assertEquals(game1, actualGame, "Expected game is:" + game1 + " and found: " + actualGame + " when searching for game by name.");
+    }
+
+    /**
+     * Testing the method findByName() when there is no game with such a name in the registry
+     * Input: TICTACTOE
+     * Expected Output: null, no game should have been found
+     * Actual Output: the game found by findByName("TICTACTOE")
+     */
+    @Test
+    void testFindByNameWhenGameDNE() {
+        List<Tag> tags = Collections.singletonList(new Tag("two-player", "RED"));
+        Game game1 = new Game("game1", "CONNECT4", "some_description", tags, "testing.fxml.Path");
+        gameRegistry.register(game1);
+
+        Game found = gameRegistry.findByName("TICTACTOE");
+
+        assertNull(found, "No game should have been found.");
+    }
+
+    /**
      * This test tests to see if multiple games can correctly be added to the game registry
      * Input: game1, game2, game3
      * Expected Output: size of 3
