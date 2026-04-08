@@ -558,9 +558,9 @@ public class Session extends Thread
                         oppSession.setOpp(this);
 
                         if (gameType.equals("ttt")) {
-                            new TicTacToeGameSession(this, oppSession).start();
+                            // new TicTacToeGameSession(this, oppSession).start();
                         } else {
-                            new ConnectFourGameSession(this, oppSession).start();
+                            // new ConnectFourGameSession(this, oppSession).start();
                         }
 
                         client.getOutputStream().write(14);

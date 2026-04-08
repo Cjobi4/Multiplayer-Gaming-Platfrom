@@ -245,6 +245,11 @@ public class Network extends Thread {
                     else if (descriptionByte == RECEIVE_CHALLENGE) {
                         receiveChallenge();
                     }
+//                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
+//                    else if (descriptionByte == 19) {
+//                        System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
+//                        sendRequestParameter("dummy_local_move");
+//                    }
                 }
 
                 catch (SocketTimeoutException e) {
@@ -374,6 +379,8 @@ public class Network extends Thread {
                 int finalResult = socket.getInputStream().read();
                 req.future.complete(finalResult);
                 break;
+
+
         }
 
     }
