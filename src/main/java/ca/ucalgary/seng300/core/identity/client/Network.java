@@ -6,10 +6,7 @@ import ca.ucalgary.seng300.core.registry.PlayerRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
-import ca.ucalgary.seng300.shared.models.Game;
-import ca.ucalgary.seng300.shared.models.Message;
-import ca.ucalgary.seng300.shared.models.Player;
-import ca.ucalgary.seng300.shared.models.Tag;
+import ca.ucalgary.seng300.shared.models.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
@@ -35,6 +32,7 @@ public class Network extends Thread {
     private static SecretKey AESKey;
     private static SecureRandom sRan;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
+    public CompletableFuture<String[]> incomingChallenge = new CompletableFuture<>();
 
     // private static final String serverIP ="10.2.1.179";
     // private static final int serverPort = 501;
@@ -58,7 +56,11 @@ public class Network extends Thread {
     public static final byte KICKED_FROM_QUEUE = 13;
     public static final byte MATCH_ACCEPTED = 14;
     public static final byte MATCH_REJECTED = 15;
-    public static final byte RESPOND_QUEUE = 16;
+    //??
+
+    public static final byte RESPOND_QUEUE = 35;
+    public static final byte SEND_CHALLENGE = 16;
+    public static final byte RECEIVE_CHALLENGE = 17;
 
     // to be added/modified later
     public static final byte SEND_MOVE_TTT = 125;
@@ -140,6 +142,10 @@ public class Network extends Thread {
           Decline Queue
                 int result = (Integer) Network.getInstance().queueRequest(Network.RESPOND_QUEUE, new String[]{"0"}).get();
 
+           -- CHALLENGE PLAYER --
+
+           pass in the username and gametype as a string
+           int result = (Integer) Network.getInstance().queueRequest(Network.SEND_CHALLENGE, new String[]{"username", "gameType"}).get();
 
     */
 
@@ -227,15 +233,18 @@ public class Network extends Thread {
     public void run() {
         try {
             System.out.print("attempting to start server");
-            socket.setSoTimeout(3000);
 
             while (true) {
                 try {
+                    socket.setSoTimeout(3000);
 
                     int descriptionByte = socket.getInputStream().read();
                     // chats are the only unprompted requests currently...add matchmaking later
                     if (descriptionByte == receive_chat) {
                         receiveMessage();
+                    }
+                    else if (descriptionByte == RECEIVE_CHALLENGE) {
+                        receiveChallenge();
                     }
                 }
 
@@ -280,6 +289,7 @@ public class Network extends Thread {
      * @throws Exception
      */
     private void processRequest(Request req) throws Exception {
+        socketRequestTimeout();
         String[] parameters = req.getParameters();
         switch (req.getType()) {
 
@@ -304,6 +314,7 @@ public class Network extends Thread {
 
             case GET_LEADERBOARD:
                 req.future.complete(getLeaderboard(parameters[0]));
+                System.out.print("getLeaderboard returrned");
                 break;
 
             case GET_MATCH_RECORD:
@@ -325,6 +336,7 @@ public class Network extends Thread {
             /*case LEAVE_C4_QUEUE:
                 req.future.complete(leaveQueue(GameType.CONNECT4));
                 break;*/
+
             case RESPOND_QUEUE:
                 boolean accept = parameters[0].equals("1");
                 req.future.complete(respondQueue(accept));
@@ -345,8 +357,11 @@ public class Network extends Thread {
                 req.future.complete(null);
                 break;
 
+            case SEND_CHALLENGE:
+                req.future.complete(sendChallenge(parameters[0], parameters[1]));
+                System.out.println("send challenge");
+                break;
         }
-
     }
 
     // LOGIN
@@ -374,9 +389,13 @@ public class Network extends Thread {
             sendRequestParameter(pwd);
 
             // interpret whether the login attempt was successful or not
-            return socket.getInputStream().read();
-        } finally {
-            socketListenTimeout();
+            int response = socket.getInputStream().read();
+            if (response == 1) {
+                ActivePlayer.getInstance().setUsername(username);
+            }
+            return response;
+        } catch (Exception e) {
+            return -1;
         }
     }
 
@@ -413,9 +432,14 @@ public class Network extends Thread {
             sendRequestParameter(password);
 
             // interpret whether registration was successful or not
-            return socket.getInputStream().read();
-        } finally {
-            socketListenTimeout();
+            int response = socket.getInputStream().read();
+            if (response == 1) {
+                ActivePlayer.getInstance().setUsername(username);
+            }
+
+            return response;
+        } catch (Exception e) {
+            return -1;
         }
     }
 
@@ -469,8 +493,8 @@ public class Network extends Thread {
 
                 GameRegistry.getInstance().register(new Game(id, title, description, tags, fxmlPath));
             }
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return;
         }
     }
 
@@ -509,9 +533,6 @@ public class Network extends Thread {
             // 90 sec passed, no queue pop. tell server to leave queue
             leaveQueue(game);
             return null;
-        } finally {
-            // reset socket timeout for run loop
-            socket.setSoTimeout(3000);
         }
         return null;
     }
@@ -521,7 +542,7 @@ public class Network extends Thread {
      * @param game
      * @throws Exception
      */
-    public void leaveQueue(GameType game) throws Exception {
+    public int leaveQueue(GameType game) throws Exception {
         socketRequestTimeout();
         try {
             if (game == GameType.TICTACTOE) {
@@ -529,9 +550,11 @@ public class Network extends Thread {
             } else if (game == GameType.CONNECT4) {
                 socket.getOutputStream().write(LEAVE_C4_QUEUE);
             }
+            // 1 if left successfully, otherwise 0
             int leaveSuccessful = socket.getInputStream().read();
-        } finally {
-            socketListenTimeout();
+            return leaveSuccessful;
+        } catch (Exception e){
+            return -1;
         }
     }
 
@@ -577,9 +600,35 @@ public class Network extends Thread {
                 }
             }
             return -1;
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return -1;
         }
+    }
+
+
+    public int sendChallenge(String username, String gameType) throws Exception {
+        socketRequestTimeout();
+        try {
+            socket.getOutputStream().write(SEND_CHALLENGE);
+
+            sendRequestParameter(username);
+            sendRequestParameter(gameType);
+
+            // either 14 if accepted or 15 if rejected
+            int response = socket.getInputStream().read();
+
+            return response;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    // 14 if accept, 15 if reject
+    public void receiveChallenge() throws Exception {
+        String username = readResponseString();
+        String gameType = readResponseString();
+
+        incomingChallenge.complete(new String[]{username, gameType});
     }
 
     public void getOnlinePlayers() throws Exception {
@@ -601,8 +650,8 @@ public class Network extends Thread {
             for (String player : activePlayers) {
                 PlayerRegistry.getInstance().register(new Player(player));
             }
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return;
         }
     }
 
@@ -644,30 +693,39 @@ public class Network extends Thread {
             while (receiving) {
 
                 // receive username as first response, or "0"/"1" if end of entries
+                System.out.println("listening for response");
                 response = readResponseString();
+                System.out.print("Reponse: " + response);
 
                 if (response.equals("0") || response.equals("1")) {
                     receiving = false;
                 } else {
                     String username = response;
 
+                    System.out.println("username: " + username);
                     // data sent as: wins^matches
                     String[] parts = readResponseString().split("\\^");
 
                     int wins = Integer.parseInt(parts[0]);
                     int matches = Integer.parseInt(parts[1]);
 
+                    System.out.println("Wins: " + wins + " matches: " + matches);
                     // parse string and add to individual lists
                     entries.add(new LeaderboardEntry(username, wins, matches));
+                    System.out.print("reached");
+                    System.out.println(entries);
                 }
             }
+
             // error from server side
             if (response.equals("0")) {
                 return null;
             }
+            System.out.println("entry returned");
             return entries;
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            System.out.println("exceptioned: " + e);
+            return null;
         }
     }
 
@@ -725,8 +783,8 @@ public class Network extends Thread {
                 return null;
             }
             return records;
-        } finally {
-            socketListenTimeout();
+        } catch (Exception e) {
+            return null;
         }
     }
 

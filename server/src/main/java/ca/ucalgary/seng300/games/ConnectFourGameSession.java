@@ -1,9 +1,11 @@
-package ca.ucalgary.seng300.games.connectfour;
+package ca.ucalgary.seng300.games;
 
-import ca.ucalgary.seng300.Session;
 import ca.ucalgary.seng300.Request;
+import ca.ucalgary.seng300.Session;
 import ca.ucalgary.seng300.Database;
 import ca.ucalgary.seng300.games.GameState;
+import ca.ucalgary.seng300.games.ConnectFourGame;
+
 import java.util.Date;
 
 /**
@@ -43,8 +45,10 @@ public class ConnectFourGameSession extends Thread {
                 Session activeSession = getCurrentPlayerSession();
                 char activeToken = game.getCurrentPlayer();
 
-                // Create the Request instance and add to the session queue
+                // Create the Request instance from the session
                 Request turnReq = new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
+
+                // Add the request to the session queue
                 activeSession.addRequest(turnReq);
 
                 // 2. Turn Awaiting Move: Block until move is received
@@ -92,11 +96,11 @@ public class ConnectFourGameSession extends Thread {
 
     public void sendGameResult() {
         try {
-            String winnerName = "";
+            int winnerID = 0;
             if (game.getGameState() == GameState.PLAYER_WIN) {
                 Session winner = (game.getWinner() == 'X') ? playerOne : playerTwo;
                 Session loser = (game.getWinner() == 'X') ? playerTwo : playerOne;
-                winnerName = winner.getUsername();
+                winnerID = Integer.parseInt(winner.getUsername());
 
                 // Type 14 Notifications
                 winner.addRequest(14, new String[]{"You won!"});
@@ -110,7 +114,7 @@ public class ConnectFourGameSession extends Thread {
             Database.addMatchResult(
                     playerOne.getUsername(),
                     playerTwo.getUsername(),
-                    winnerName,
+                    String.valueOf(winnerID),
                     new Date().toString(),
                     "c4"
             );
