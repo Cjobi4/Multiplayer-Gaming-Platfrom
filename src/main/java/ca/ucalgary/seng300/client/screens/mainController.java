@@ -235,17 +235,35 @@ public class mainController {
         alert.setTitle("About The Application");
         alert.setHeaderText("Trainwreck!");
 
-        String information = "About app:\n" +
-                "Trainwreck is a competitive, online multiplayer game platform that allows for its users to remotely play minigames together, and have their skills tracked. \n" +
-                "The program tracks a user’s wins and matches and places them on a leaderboard based on their skills, allowing them to be competitively matched to opponents on their skill level, or just to challenge other players online. \n";
+        String information = "Trainwreck is a competitive, online multiplayergame platform that" +
+                "allows users to remotely play minigames together and track their progrss.\n\n" +
+
+                "The program tracks wins and matches to place players on aleaderboard, " +
+                "ensuring competitive matchmaking or allowing for direct online challenges.\n\n" +
+
+                "Version: 6.7\n" +
+
+                "---------------------------------------------------------\n\n" +
+                "HOW TO MATCHMAKE:\n" +
+                "1. Select a game from the game list.\n" +
+                "2. Press the 'Matchmake' button.\n" +
+                "3. Once matched, you can Accept or Decline the game.\n\n" +
+
+                "HOW TO CHALLENGE:\n" +
+                "1. Select a game from the game list.\n" +
+                "2. Press the 'Opponent Select' button.\n" +
+                "3. Wait for the user list to load and select a player.\n" +
+                "4. Use the 'Play' button to send a challenge.\n\n" +
+
+                "NOTE: To receive a challenge, a player must be on the Main Page.";
 
         alert.setContentText(information);
 
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         dialogPane.getStyleClass().add("pane");
-        dialogPane.setMinHeight(400);
-        dialogPane.setMinWidth(450);
+        dialogPane.setMinHeight(550);
+        dialogPane.setMinWidth(550);
 
         alert.showAndWait();
 
