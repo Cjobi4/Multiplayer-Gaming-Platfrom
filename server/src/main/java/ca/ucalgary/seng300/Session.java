@@ -611,7 +611,7 @@ public class Session extends Thread
                     System.out.println("game state sent");
                     break;
                 case 21:    //if sending a chat message...
-                    chatMessage = new String[3];
+                    chatMessage = new String[2];
 
                     //collect the id
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
@@ -627,7 +627,7 @@ public class Session extends Thread
 //                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
 //                    messageBytes = client.getInputStream().readNBytes(messageLength);
 //                    chatMessage[2] = Network.decrypt(messageBytes, AESKey);
-                    chatMessage[2] = username;
+                    //chatMessage[2] = username;
 
                     //send the message to the recipient
                     opp.addRequest(22, chatMessage);
@@ -647,7 +647,7 @@ public class Session extends Thread
                     client.getOutputStream().write(messageBytes);
 
                     //send the sender
-                    messageBytes = Network.encrypt(chatMessage[2], AESKey);
+                    messageBytes = Network.encrypt(opp.username, AESKey);
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
 
