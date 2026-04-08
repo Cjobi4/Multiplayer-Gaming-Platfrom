@@ -216,13 +216,16 @@ public class mainController {
         rowBox.getChildren().addAll(rankLabel, nameLabel, winsLabel, matchesLabel);
 
         rowBox.setStyle("""
-            -fx-background-color: #f3c1cf;
-            -fx-background-radius: 10;
-            -fx-padding: 10;
+             -fx-background-color: #f3c1cf;
+                -fx-background-radius: 10;
+                -fx-border-color:   #FCE0D2;
+                -fx-border-radius: 10;
+                -fx-border-width: 1;
+                -fx-padding: 10;
         """);
 
         rankLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
-        nameLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
+        nameLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52; -fx-font-weight: bold;");
         winsLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
         matchesLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
 
