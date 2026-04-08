@@ -100,7 +100,7 @@ public class mainController {
                         accBtn.getStyleClass().add("basic-button");
                     }
 
-                    if(decBtn != null) {
+                    if (decBtn != null) {
                         decBtn.getStyleClass().add("basic-button");
                     }
 
@@ -156,9 +156,21 @@ public class mainController {
         } catch (Exception e) {
             System.err.println("Failed to connect Network listener: " + e.getMessage());
         }
+
+        resetToDefault();
     }
 
-    private void loadCombinedLeaderboard(){
+    private void resetToDefault() {
+        clearDisplay();
+
+        gameTitleLabel.setText("Select a game to view details");
+        gameTitleLabel.setFont(new Font("Dubai Medium", 18));
+        gameTitleLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
+        setThumbnailDefault();
+    }
+
+
+    private void loadCombinedLeaderboard() {
         leaderboardBox.getChildren().clear();
 
         Task<List<LeaderboardEntry>> task = new Task<>() {
@@ -188,17 +200,17 @@ public class mainController {
         thread.start();
     }
 
-    public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
+    public void renderLeaderboard(List<LeaderboardEntry> leaderboard) {
         leaderboardBox.getChildren().clear();
 
         for (int i = 0; i < leaderboard.size(); i++) {
             LeaderboardEntry entry = leaderboard.get(i);
-            leaderboardBox.getChildren().add(showLeaderboardRow(i+1, entry));
+            leaderboardBox.getChildren().add(showLeaderboardRow(i + 1, entry));
         }
 
     }
 
-    public HBox showLeaderboardRow(int rank, LeaderboardEntry entry){
+    public HBox showLeaderboardRow(int rank, LeaderboardEntry entry) {
         Label rankLabel = new Label("#" + rank);
         Label nameLabel = new Label(entry.getUsername());
         Label winsLabel = new Label(entry.getWins() + " W");
@@ -222,7 +234,7 @@ public class mainController {
                 -fx-border-radius: 10;
                 -fx-border-width: 1;
                 -fx-padding: 10;
-        """);
+                        """);
 
         rankLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
         nameLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52; -fx-font-weight: bold;");
@@ -347,6 +359,7 @@ public class mainController {
 
         alert.showAndWait();
 
+
     }
 
 
@@ -367,7 +380,7 @@ public class mainController {
         String input = searchField.getText().trim();
 
         if(input.isEmpty()){
-            clearDisplay(); // Function to be created at the end to clear display from all labels incase of past search
+            resetToDefault(); // Function to be created at the end to clear display from all labels incase of past search
             gameTitleLabel.setText("Please enter a game title");
             return;
         }
@@ -456,6 +469,7 @@ public class mainController {
         gameDescriptionLabel.setText("");
         gameIdLabel.setText("");
         gameTagsLabel.setText("");
+        thumbnail.setImage(null);
     }
 
 
@@ -466,6 +480,11 @@ public class mainController {
 
     private void setThumbnailC4() {
         Image image = new Image(getClass().getResource("/images/C4thumbnail.jpg").toExternalForm());
+        thumbnail.setImage(image);
+    }
+
+    private void setThumbnailDefault() {
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
         thumbnail.setImage(image);
     }
 

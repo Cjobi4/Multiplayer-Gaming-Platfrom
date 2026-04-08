@@ -99,7 +99,7 @@
                   </Label>
                   <StackPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffc7ce" height="150.0" stroke="#ffc7ce" width="200.0" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffc9d100" height="150.0" stroke="#ffc9d100" width="200.0" />
                         <ImageView fx:id="thumbnail" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </StackPane>
