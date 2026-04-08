@@ -80,7 +80,7 @@ public class mainController {
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                     alert.setTitle("Incoming Challenge!");
                     alert.setHeaderText(challengerName + " has challenged you to " + gameType.toUpperCase() + "!");
-                    alert.setContentText("Do you accept?");
+                    alert.setContentText("Would you like to accept this challenge?");
 
                     ButtonType buttonAccept = new ButtonType("Accept");
                     ButtonType buttonDecline = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
