@@ -39,38 +39,50 @@ public class NetworkTest {
     /*
     Testing scenarios where the server returns false
      */
-//    @Test
-//    void testFailedLogin() throws Exception{
-//        byte[] encryptedFalse = Network.encrypt("false");
-//        byte[] simulatedServerResponse = ByteBuffer.allocate(4 + encryptedFalse.length)
-//                .putInt(encryptedFalse.length)
-//                .put(encryptedFalse)
-//                .array();
-//        // creates a fake response
-//        StubSocket stubSocket = new StubSocket(simulatedServerResponse);
-//        // create the fake server
-//
-//        Network myNetwork = new Network(stubSocket);
-//
-//        boolean loginResult = myNetwork.login("testUser", "testPassword");
-//        assertFalse(loginResult);
-//    }
+    @Test
+    void testFailedLogin() throws Exception{
+        byte[] simulatedServerResponse = new byte[]{0}; // 0 for failed login
+        StubSocket stubSocket = new StubSocket(simulatedServerResponse);
+        // create the fake server
 
-//    @Test
-//    void testAccountCreation() throws Exception{
-//        byte[] encryptedTrue = Network.encrypt("true");
-//        byte[] simulatedServerResponse = ByteBuffer.allocate(4 + encryptedTrue.length)
-//                .putInt(encryptedTrue.length)
-//                .put(encryptedTrue)
-//                .array();
-//
-//        StubSocket stubSocket = new StubSocket(simulatedServerResponse);
-//        // create the fake server
-//
-//        Network myNetwork = new Network(stubSocket);
-//        boolean loginResult = myNetwork.registerAccount("testUser", "testPassword");
-//        assertTrue(loginResult);
-//    }
+        Network myNetwork = new Network(stubSocket);
+
+        int loginResult = myNetwork.login("testUser", "testPassword");
+        assertEquals(0, loginResult);
+    }
+
+    @Test
+    void testAccountCreation() throws Exception{
+        byte[] simulatedServerResponse = new byte[]{1}; // 1 for successful creation
+        StubSocket stubSocket = new StubSocket(simulatedServerResponse);
+        // create the fake server
+
+        Network myNetwork = new Network(stubSocket);
+
+        int loginResult = myNetwork.login("testUser", "testPassword");
+        assertEquals(1, loginResult); //success
+
+        simulatedServerResponse = new byte[]{0}; // 0 for failed creation due to taken username
+        stubSocket = new StubSocket(simulatedServerResponse);
+        myNetwork = new Network(stubSocket);
+
+        loginResult = myNetwork.registerAccount("testUser", "testPassword");
+        assertEquals(0, loginResult);
+
+        simulatedServerResponse = new byte[]{2}; // 2 for failed due to invalid credentials
+        stubSocket = new StubSocket(simulatedServerResponse);
+        myNetwork = new Network(stubSocket);
+
+        loginResult = myNetwork.registerAccount("testUser", "testPassword");
+        assertEquals(2, loginResult);
+
+        simulatedServerResponse = new byte[]{3}; // 0 for failed creation
+        stubSocket = new StubSocket(simulatedServerResponse);
+        myNetwork = new Network(stubSocket);
+
+        loginResult = myNetwork.registerAccount("testUser", "testPassword");
+        assertEquals(3, loginResult);
+    }
 
     /*
     Testing that password length is properly enforced
