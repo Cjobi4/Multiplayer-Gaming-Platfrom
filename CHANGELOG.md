@@ -6,20 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [v0.3.0] - 2026-04-06
+
 ### Added
 
-- **Platform Core:** `ActivePlayer` singleton class for locally tracking the logged-in user's state (#268). Match notification handling in `Session` for queue kicks, accepts, and rejects (#265). Synchronous `addRequestAndWait()` method in `Session` for server-to-client request/response with `CompletableFuture` (#265). Game session creation path for direct challenges (#265).
-- **Client/UI:** Leaderboard rendered on main page with data fetched from server (#188). Matchmaking popup logic and button on main page (#267). Game thumbnail images and descriptions displayed on radio buttons (#270). Image assets added for game pages (#271).
-- **Rules & Validation:** Server-side `TicTacToeGameSession` orchestrating full game loop between two connected players. `ConnectFourGameSession` with board state updates and result recording. Database integration helpers for match result storage.
+- **Platform Core (MR !61):** `Matchmaker` class for skill-based matchmaking with dynamic tolerance, match offer/accept/reject handling (`Matchmaker.java`). `Request` class for server-initiated client transmissions (`Request.java`). `ActivePlayer` singleton class for locally tracking the logged-in user's state (#268). Match notification handling in `Session` for queue kicks, accepts, and rejects (#265). Synchronous `addRequestAndWait()` method in `Session` for server-to-client request/response with `CompletableFuture` (#265). Game session creation path for direct challenges (#265).
+- **Client/UI (MR !62):** Leaderboard rendered on main page with data fetched from server (#188). Matchmaking popup logic and button on main page (#267). Game thumbnail images and descriptions displayed on radio buttons (#270). Image assets added for game pages (#271). TTT chat fully implemented in `TTTgameController.java`. Login and register functions connected to front-end through `Network.java`. Bypass button on all pages for development.
+- **Rules & Validation (MR !60):** Server-side `TicTacToeGameSession` orchestrating full game loop between two connected players. `ConnectFourGameSession` with board state updates and result recording. Database integration helpers for match result storage.
 
 ### Changed
 
-- **Platform Core:** Moved `TicTacToeGameSession` from client module to `server/` module. Capped number of `matchRecord` entries returned to 10 (#265). `Session.processRequest()` visibility changed from private for test access (#203).
-- **Client/UI:** Menu bar cleaned up and reorganized (#220). Leaderboard display updated on opponent select pages (#191). Aesthetic UI fixes across screens (#270).
+- **Platform Core (MR !61):** Copied `TicTacToeGameSession` to `server/` module (original remains in `games/tictactoe/`). Capped number of `matchRecord` entries returned to 10 (#265). `Session.processRequest()` visibility changed from private for test access (#203). Handles uncaught session errors by logging out, leaving matchmaking queues, and shutting down the session. Secure client-server communication handling in `Network.java`, including authentication, matchmaking, game actions, chat, and data retrieval using encrypted requests over a background network thread.
+- **Client/UI (MR !62):** Menu bar cleaned up and reorganized (#220). Leaderboard display updated on opponent select pages (#191). Aesthetic UI fixes across screens (#270).
 
 ### Removed
 
-- **Platform Core:** Removed redundant `setUncaughtExceptionHandler()` from `Session` (#265).
+- **Platform Core (MR !61):** Removed redundant `setUncaughtExceptionHandler()` from `Session` (#265). Extracted `Request` class out of `Session.java` into standalone `Request.java`.
 
 ### Fixed
 
@@ -57,52 +59,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Removed
 
-- **Platform Core (MR !25):** `GameDTO.java` and `shared/models/Player.java` deleted (replaced by direct `Game` getters and `games/Player.java` respectively).
+- **Platform Core (MR !25):** `GameDTO.java` deleted (replaced by direct `Game` getters).
 
 ### Fixed
 
 - **Integration:** Fixed `Network.getGames()` calling `Game` constructor with wrong argument types. Fixed incorrect `main.java.ca.ucalgary.seng300.games` package declarations in 6 game files. Removed duplicate `LeaderboardEntry` stub from `shared/models/`.
-<<<<<<< Updated upstream
-
-
-## [v0.2.0] - 2026-03-30
-
-### Added
-- **Quality & Testing (MR !40):** Created partially testing fuctions for `GameRegistry`, `Network` in Core and run successfully. 
-- **Platform Core (MR !41)**: Created SQL tables for leaderboard and match record data storage. Password length requirement validation in `registerAccount()`
-- **Client-UI (MR !38)**: Team logo and project name on welcome page; matchmaking button (currently mirrors "Choose Opponent", full implementation next week); split "Choose Opponent" and game pages into dedicated FXML + controller files per game type (Connect 4 and Tic Tac Toe) to reduce future merge conflicts
-- **Rules & Validation(MR !30)**: Created connectFour game 
-
-### Changed
-- **Platform Core(MR !41)**: `processRequest()` updated to support concurrent client requests with a narrowed synchronized block to minimize blocking; client UI controllers connected to game registry; login and register account handling now notifies client of operation outcome
-- **Client UI(MR !38)**: Login and Create Account pages are now visually 
-
-## [v0.3.0] - 2026-04-06
-
-## Added 
-- **Client UI(MR !62)**: TTT chat is fully implemented in `TTTgameController.java`, login and register function also connected to front-end through `Network.java`, and bypass button on all pages needed for development. Synchronous addRequestAndWait() method in `Session` for server-to-client request/response with `CompletableFuture`. Game session creation path for direct challenges.
-- **Platform Core (MR !61)**: Matches two players with similar win rates, creates a game if both accept, otherwise reports who declined or if an error occurred through `Matchmaker.java`. Class for sending and receiving requests to the client FROM THE SERVER (server initiated transmissions) through `Request.java` (implemented class)
-- **Rules & Validation(MR !60)**: Server-side `TicTacToeGameSession` orchestrating full game loop between two connected players. `ConnectFourGameSession` with board state updates and result recording. Database integration helpers for match result storage.
-
-## Changed 
-- **Platform Core (MR !61)**: Handles uncaught session errors by logging out, leaving matchmaking queues, and shutting down the session in `Session.java`. Handles secure client-server communication, including authentication, matchmaking, game actions, chat, and data retrieval using encrypted requests over a background network thread in `Network.java`
-- **Client/UI (MR !62)**: Menu bar cleaned up and reorganized. Leaderboard display updated on opponent select pages. Aesthetic UI fixes across screens.
-
-## Removed
-- **Platform Core (MR !61)**: Separate class Request out of `Session.java` to new `Request.java` file
-||||||| Stash base
-
-
-## [v0.2.0] - 2026-03-30
-
-### Added
-- **Quality & Testing (MR !40):** Created partially testing fuctions for `GameRegistry`, `Network` in Core and run successfully. 
-- **Platform Core (MR !41)**: Created SQL tables for leaderboard and match record data storage. Password length requirement validation in `registerAccount()`
-- **Client-UI (MR !38)**: Team logo and project name on welcome page; matchmaking button (currently mirrors "Choose Opponent", full implementation next week); split "Choose Opponent" and game pages into dedicated FXML + controller files per game type (Connect 4 and Tic Tac Toe) to reduce future merge conflicts
-- **Rules & Validation(MR !30)**: Created connectFour game 
-
-### Changed
-- **Platform Core(MR !41)**: `processRequest()` updated to support concurrent client requests with a narrowed synchronized block to minimize blocking; client UI controllers connected to game registry; login and register account handling now notifies client of operation outcome
-- **Client UI(MR !38)**: Login and Create Account pages are now visually 
-=======
->>>>>>> Stashed changes

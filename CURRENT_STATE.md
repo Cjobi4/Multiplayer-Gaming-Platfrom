@@ -1,6 +1,6 @@
 # Current State
 
-_Last Updated: 2026-04-06_
+_Last Updated: 2026-04-07_
 
 This document is the source of truth for project completion status. It tracks both subsystem implementation progress and client-facing requirements fulfillment. All team members should reference and update this document as work is completed.
 
@@ -14,11 +14,11 @@ This matrix tracks the implementation status of each subsystem at the code level
 
 | Subsystem           | Component               | Status      | Notes                                                                                                                                                                                 |
 | ------------------- | ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Identity Management | `core/identity/`        | In Progress | Client-side network with 16 request types, AES-GCM encryption via Diffie-Hellman key exchange; `ActivePlayer` singleton for local state; `Session` abstract class stubbed             |
+| Identity Management | `core/identity/`        | In Progress | Client-side `Network` with 12 request methods, AES-GCM encryption via Diffie-Hellman key exchange; `ActivePlayer` singleton for local state (located in `shared/models/`); `Session` abstract class stubbed |
 | Game Registry       | `core/registry/`        | In Progress | Game, Chat, and Player registries with find/list/clear operations; all use singleton pattern; unit tested                                                                             |
-| Rooms & Matchmaking | `server/Matchmaker`     | In Progress | Skill-based matchmaking queue with dynamic tolerance; match offer/accept/reject handling; room lifecycle and lobby not started                                                        |
-| Turn Engine         | `core/turnengine/`      | In Progress | Client-side `GameSession` stub; server-side `TicTacToeGameSession` and `ConnectFourGameSession` handle full game loops with move prompting, board updates, and result reporting       |
-| Persistence         | `server/`               | In Progress | SQLite database with 4 tables (userLoginInfo, gameInfo, leaderboard, matchRecord); SHA-256 password hashing; server session handling with encryption and 16 request types             |
+| Rooms & Matchmaking | `server/Matchmaker`     | In Progress | Skill-based matchmaking queue with dynamic tolerance; match offer/accept/reject handling via `Matchmaker.java`; room lifecycle and lobby not started (`core/rooms/` empty)            |
+| Turn Engine         | `core/turnengine/`      | In Progress | Client-side `GameSession` stub; server-side `TicTacToeGameSession` and `ConnectFourGameSession` (in `server/Games/`) handle full game loops with move prompting, board updates, and result reporting |
+| Persistence         | `server/`               | In Progress | SQLite database with 4 tables (userLoginInfo, gameInfo, leaderboard, matchRecord); SHA-256 password hashing; server session handling with encryption and 12 request types             |
 | Screens             | `client/screens/`       | In Progress | 9 screens: Welcome, Login, Create Account, Main, TTT/C4 Opponent Select, TTT/C4 Game, Game Over; all with navigation and CSS theming                                                  |
 | UI Components       | `client/components/`    | In Progress | `LeaderBoardRows` data model and `LeaderBoardMock` for sample data; additional reusable components not yet created                                                                    |
 | Game Rendering      | `client/rendering/`     | Not Started | Directory contains only .gitkeep; game boards rendered directly in FXML (TTT button grid, C4 GridPane)                                                                                |

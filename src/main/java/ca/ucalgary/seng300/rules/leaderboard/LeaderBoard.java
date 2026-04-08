@@ -13,11 +13,9 @@ import java.util.*;
  * the PersistenceService from the shared contracts layer. Display
  * is handled by the Client/UI leaderboard dashboard.</p>
  *
- * <p>TODO: Implement score submission, ranking, and query operations
  * using the shared LeaderboardEntry model.</p>
  */
 public class LeaderBoard {
-    // TODO: Implement leaderboard — placeholder for Rules & Validation
     /**
      * get the leaderboard based on ranking (like the top 10 players)
      */
@@ -25,19 +23,16 @@ public class LeaderBoard {
         // get the leaderboard based on rank
         try {
             if (gameType == GameType.TICTACTOE) {
-                // Added .get() before the cast completes
                 List<LeaderboardEntry> leaderboardTTT = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"}).get();
                 leaderboardTTT.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardTTT;
             }
             else if (gameType == GameType.CONNECT4) {
-                // Added .get() before the cast completes
                 List<LeaderboardEntry> leaderboardC4 = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"c4"}).get();
                 leaderboardC4.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardC4;
             }
             else {
-                // Added .get() before the cast completes
                 List<LeaderboardEntry> leaderboardCombined = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"total"}).get();
                 leaderboardCombined.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardCombined;

@@ -7,7 +7,6 @@ package ca.ucalgary.seng300.rules.leaderboard;
  * the Rules &amp; Validation leaderboard subsystem and displayed by
  * the Client/UI leaderboard dashboard.</p>
  *
- * <p>TODO: Define fields (player, score, rank, timestamp) and implement
  * comparable ordering for leaderboard sorting.</p>
  */
 public class LeaderboardEntry {
