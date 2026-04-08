@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.identity.client.Session;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
@@ -38,12 +39,36 @@ public class TTTgameController {
     public VBox chatContainer;
     public TextField messageInput;
 
-    TicTacToeGame current = new TicTacToeGame();
+    TicTacToeGame current;
     Button[][] grid;
+
+    TicTacToeGame game;
+
+
 
     public void initialize() {
         grid = new Button[][]{{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
+
+        try
+        {
+            game =  Network.getInstance().getTTTGame(current);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
+    public void updateboardpt2(){
+        try
+        {
+            game =  Network.getInstance().getTTTGame(current);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        updateBoard();
+    }
+
 
     @FXML
     protected void onSendMessage() {
@@ -183,11 +208,24 @@ public class TTTgameController {
                 gameOver(); //ends game if draw
             }
 //            current.switchTurn();
+            try
+            {
+                String passMove = current.toDataString();
+                Network.getInstance().queueRequest(Network.SEND_MOVE_TTT,new String[]{passMove});
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
         }else{
             turnDisplay.setText("Please make a valid move");
         }
 
         updateBoard();
+    }
+
+    public void notifyTurn(){
+        turnDisplay.setText("Its your turn!!!!");
     }
 
 
