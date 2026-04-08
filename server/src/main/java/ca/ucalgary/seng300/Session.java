@@ -636,10 +636,14 @@ public class Session extends Thread
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     chatMessage[0] = Network.decrypt(messageBytes, AESKey);
 
+                    System.out.println("id read: " + chatMessage[0]);
+
                     //collect the contents
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     chatMessage[1] = Network.decrypt(messageBytes, AESKey);
+
+                    System.out.println("content read: " + chatMessage[1]);
 
                     //collect the sender
 //                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
@@ -649,10 +653,15 @@ public class Session extends Thread
 
                     //send the message to the recipient
                     opp.addRequest(22, chatMessage);
+
+                    System.out.println("Chat message from " + username + ". Contents: " + chatMessage[1] + " id: " + chatMessage[0]);
                     break;
                 case 22:    //if receiving a chat message...
                     //get the message
                     chatMessage = req.getParameters();
+
+                    //notify client of incoming message
+                    client.getOutputStream().write(22);
 
                     //send the id
                     messageBytes = Network.encrypt(chatMessage[0], AESKey);
@@ -669,6 +678,7 @@ public class Session extends Thread
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
 
+                    System.out.println("Chat message sent by " + opp.username + ". Contents: " + chatMessage[1] + " id: " + chatMessage[0]);
                     break;
             }
         }
