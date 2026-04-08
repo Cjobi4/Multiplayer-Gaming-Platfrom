@@ -165,7 +165,7 @@ public class Session extends Thread
             }
             Thread.currentThread().interrupt();
 
-            System.out.println(e);
+            System.out.println("Exception in run: " + e);
         }
     }
 
@@ -395,25 +395,30 @@ public class Session extends Thread
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
 
+                    System.out.println("Fetching match records for " + message);
+
                     //collect the match records with matching usernames from the database
                     rs = Database.getMatchRecord(message);
 
                     //if the inputted username was valid, go through the results
-                    if (rs != null && rs.next())
+                    if (rs.next())
                     {
+                        System.out.println("Match records found for " + message);
                         //go through each match record...
                         do
                         {
                             sbuild = new StringBuilder();
                             //turn each match record into a single string
-                            for (int i = 2; i <= 6; i++)
+                            for (int i = 1; i <= 5; i++)
                             {
                                 sbuild.append(rs.getString(i));
                                 sbuild.append("^");
                             }
 
+                            System.out.println("match record is: " + sbuild.toString());
+
                             //remove the trailing ^ symbol
-                            sbuild.deleteCharAt(sbuild.length());
+                            sbuild.deleteCharAt(sbuild.length() - 1);
 
                             //send the formatted match records to the client
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);

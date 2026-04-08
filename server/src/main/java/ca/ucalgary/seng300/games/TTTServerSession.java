@@ -147,7 +147,7 @@ public class TTTServerSession extends Thread{
         sendBoardState();
 
         //send the current turn
-        sendCurrentTurn();
+        //sendCurrentTurn();
 
         //send the current game state
         sendGameState();
