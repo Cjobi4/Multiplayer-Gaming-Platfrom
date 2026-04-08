@@ -711,6 +711,9 @@ public class mainController {
        {
            RadioButton rb = new RadioButton(game.getTitle());
            rb.setToggleGroup(group);
+
+           rb.getStyleClass().add("pink-radio");
+
            gameOptions.getChildren().add(rb);
            rb.setOnAction(this::updateInfo); //updates the info
 
