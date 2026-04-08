@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,7 @@ public class createAccountController {
     public Button continueButton;
     public Label errorField;
     public TextField userNameField;
-    public PasswordField passwordField;
+    public TextField passwordField;
 
     @FXML
     protected void onContinueButtonClick(ActionEvent event) {

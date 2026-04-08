@@ -28,12 +28,13 @@
                </font>
             </Label>
             <Button fx:id="continueButton" layoutX="230.0" layoutY="245.0" mnemonicParsing="false" onAction="#onContinueButtonClick" styleClass="basic-button" text="Create Account And Continue" />
-            <Label fx:id="errorField" layoutX="230.0" layoutY="205.0" prefHeight="17.0" prefWidth="243.0" text="" textFill="#ff006e">
-               <font>
-                  <Font name="Dubai Medium" size="17.0" />
-               </font></Label>
             <Button fx:id="backButton" layoutX="14.0" layoutY="361.0" mnemonicParsing="false" onAction="#onBackButtonClick" prefHeight="25.0" prefWidth="65.0" styleClass="basic-button" text="Back" />
-            <TextField fx:id="errorField1" layoutX="230.0" layoutY="168.0" prefHeight="25.0" prefWidth="245.0" style="-fx-background-color: #F7C5AD;" />
+            <TextField fx:id="passwordField" layoutX="230.0" layoutY="168.0" prefHeight="25.0" prefWidth="245.0" style="-fx-background-color: #F7C5AD;" />
+            <Label fx:id="errorField" layoutX="120.0" layoutY="202.0" prefHeight="31.0" prefWidth="439.0" textFill="#ff006e">
+               <font>
+                  <Font name="Dubai Regular" size="14.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </children>
