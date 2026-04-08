@@ -7,6 +7,7 @@ import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Message;
+import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,6 +22,7 @@ import javafx.stage.Stage;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.games.GameState;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
@@ -51,7 +53,7 @@ public class TTTgameController {
 
         messageInput.setOnAction(event -> onSendMessage());
         refreshChatDisplay();
-        //startChatWatcher();
+        startChatWatcher();
     }
 
     @FXML
@@ -166,6 +168,27 @@ public class TTTgameController {
 
         alert.showAndWait();
 
+    }
+
+    private void startChatWatcher(){
+        chatRefreshTimeline = new Timeline(
+                new KeyFrame(Duration.millis(250), event ->{
+                    int currentSize = ChatRegistry.getInstance().ListAll().size();
+                    if(currentSize != lastChatSize){
+                        refreshChatDisplay();
+                        lastChatSize = currentSize;
+                    }
+                })
+        );
+
+        chatRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        chatRefreshTimeline.play();
+    }
+
+    private void stopChatWatcher() {
+        if (chatRefreshTimeline != null) {
+            chatRefreshTimeline.stop();
+        }
     }
 
     //Everytime this is called, the board is updated
