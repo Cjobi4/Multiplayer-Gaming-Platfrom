@@ -575,6 +575,12 @@ public class mainController {
         alert.setHeaderText("Opponent found: " + opponentName);
         alert.setContentText("Do you want to accept this match for " + game.getTitle() + "?");
 
+        Image image = new Image(getClass().getResource("/images/DINOALERT.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
 
         ButtonType acceptButton = new ButtonType("Accept");
         ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
