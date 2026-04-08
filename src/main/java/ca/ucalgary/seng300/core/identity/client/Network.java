@@ -598,6 +598,7 @@ public class Network extends Thread {
             if (response) {
                 // tell server match accepted
                 socket.getOutputStream().write(1);
+                System.out.println("Wrote 1 to respond");
 
                 // read server response
                 int desc = socket.getInputStream().read();
@@ -613,6 +614,7 @@ public class Network extends Thread {
                 }
             } else {
                 socket.getOutputStream().write(0);
+                System.out.println("Wrote 0 to respond");
                 // receive 13 if player declines and is removed from queue
                 int exitQueue = socket.getInputStream().read();
 
@@ -622,6 +624,7 @@ public class Network extends Thread {
             }
             return -1;
         } catch (Exception e) {
+            System.out.println("hi im cj");
             return -1;
         }
     }
@@ -835,11 +838,14 @@ public class Network extends Thread {
 
         // send description byte
         socket.getOutputStream().write(send_chat);
+        System.out.println("message sent");
         Message m = new Message(content, ActivePlayer.getInstance().getUsername());
 
         // send request parameters as byte[]
         sendRequestParameter(m.getId());
+        System.out.println("message sent");
         sendRequestParameter(content);
+        System.out.println("msg: " + content);
 
         // update local directory
         ChatRegistry.getInstance().addMessage(m);
@@ -853,11 +859,15 @@ public class Network extends Thread {
 
         // interpret each response sent in sequence by server
         String id = readResponseString();
+        System.out.println("received id: " + id);
         String content = readResponseString();
+        System.out.println("received content: " + content);
         String sender = readResponseString();
+        System.out.println("received sender: " + sender);
 
         // update the local chat
         ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
+        System.out.println("Registry updated");
     }
 
 

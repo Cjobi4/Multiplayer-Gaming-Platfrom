@@ -649,6 +649,7 @@ public class Session extends Thread
                     //get the message
                     chatMessage = req.getParameters();
 
+
                     //send the id
                     messageBytes = Network.encrypt(chatMessage[0], AESKey);
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
