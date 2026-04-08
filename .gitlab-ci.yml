@@ -1,0 +1,59 @@
+image: maven:3.9.12-eclipse-temurin-25
+
+stages:
+  - build
+  - test
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --show-version"
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
+cache:
+  key:
+    files:
+      - pom.xml
+      - server/pom.xml
+    prefix: maven-${CI_COMMIT_REF_SLUG}
+  paths:
+    - .m2/repository/
+
+# Client compilation passes
+build-client:
+  stage: build
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS clean compile
+
+# Server compilation passes
+build-server:
+  stage: build
+  script:
+    - ./mvnw -f server/pom.xml $MAVEN_CLI_OPTS clean compile
+
+# Client tests pass
+test-client:
+  stage: test
+  needs: ["build-client"]
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS test
+  artifacts:
+    when: always
+    reports:
+      junit: target/surefire-reports/*.xml
+
+# Server tests pass
+test-server:
+  stage: test
+  needs: ["build-server"]
+  script:
+    - ./mvnw -f server/pom.xml $MAVEN_CLI_OPTS test
+  artifacts:
+    when: always
+    reports:
+      junit: server/target/surefire-reports/*.xml
