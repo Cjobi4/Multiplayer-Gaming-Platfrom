@@ -48,7 +48,6 @@ public class C4gameController {
                 if (col == null) {
                     col = 0;
                 }
-
                 grid[row][col] = button;
             }
         }
@@ -117,15 +116,6 @@ public class C4gameController {
             stage.setResizable(false);
             stage.show();
 
-
-            // Create Match Record (Not sure where to get player info, will be needed to make a match record)
-
-            // MatchRecord matchRecord = new MatchRecord();
-
-            // Update Leaderboard
-
-            // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
-
             ChatRegistry.getInstance().clearChat();
 
         } catch (IOException e) {
@@ -153,14 +143,6 @@ public class C4gameController {
             stage.setTitle("Game Over"); //Change stage title to reflect current scene
             stage.setResizable(false);
             stage.show();
-
-            // Create Match Record (Not sure where to get player info, will be needed to make a match record)
-
-            // MatchRecord matchRecord = new MatchRecord();
-
-            // Update Leaderboard
-
-            // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
 
             ChatRegistry.getInstance().clearChat();
 
