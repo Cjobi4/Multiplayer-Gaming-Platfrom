@@ -1,10 +1,12 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Message;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -58,18 +60,30 @@ public class C4gameController {
         }
 
         messageInput.setOnAction(event -> onSendMessage());
+        refreshChatDisplay();
     }
 
 
     @FXML
     protected void onSendMessage() {
         String text = messageInput.getText();
-        if (text != null && !text.isEmpty()) {
-            Message newMessage = new Message(text, "Player 1");
+        if (text != null && !text.trim().isEmpty()) {
+            //Message newMessage = new Message(text, "Player 1");
+            String sender = ActivePlayer.getInstance().getUsername();
 
-            ChatRegistry.getInstance().addMessage(newMessage);
-            messageInput.clear();
-            refreshChatDisplay();
+            if(sender == null || sender.isBlank()){
+                sender = "Player";
+            }
+
+            try{
+                Network.getInstance().queueRequest(Network.send_chat, new String[]{"c4", text.trim(), sender});
+            } catch(Exception e){
+                System.err.println("Failed to send chat message: " + e.getMessage());
+            }
+
+            //ChatRegistry.getInstance().addMessage(newMessage);
+            //messageInput.clear();
+            //refreshChatDisplay();
         }
     }
 
