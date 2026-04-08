@@ -33,62 +33,64 @@ public class ConnectFourGameSession extends Thread {
         return (game.getCurrentPlayer() == 'X') ? playerOne : playerTwo;
     }
 
-    @Override
-    public void run() {
-        try {
-            // Initializing Game Setup
-            sendBoardState();
-
-            while (isRunning && !Thread.currentThread().isInterrupted()) {
-
-                // 1. Determine Active Player & Await Move
-                Session activeSession = getCurrentPlayerSession();
-                char activeToken = game.getCurrentPlayer();
-
-                // Create the Request instance from the session
-                Request turnReq = new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
-
-                // Add the request to the session queue
-                activeSession.addRequest(turnReq);
-
-                // 2. Turn Awaiting Move: Block until move is received
-                String moveResult = turnReq.getResult();
-
-                try {
-                    // 3. Turn Validating & Applying Move
-                    int col = Integer.parseInt(moveResult);
-
-                    if (game.makeMove(col, activeToken)) {
-                        // Update board for both players (Type 12)
-                        sendBoardState();
-
-                        // 4. Turn Check End Conditions
-                        if (game.getGameState() == GameState.PLAYER_WIN ||
-                                game.getGameState() == GameState.PLAYER_DRAW) {
-                            isRunning = false;
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid move format: " + moveResult);
-                }
-
-                Thread.sleep(100);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (Exception e) {
-            System.err.println("Game Session Error: " + e.getMessage());
-        } finally {
-            sendGameResult();
-            Thread.currentThread().interrupt();
-        }
-    }
+//    @Override
+//    public boolean run() {
+//        try {
+//            // Initializing Game Setup
+//            sendBoardState();
+//
+//            while (isRunning && !Thread.currentThread().isInterrupted()) {
+//
+//                // 1. Determine Active Player & Await Move
+//                Session activeSession = getCurrentPlayerSession();
+//                char activeToken = game.getCurrentPlayer();
+//
+//                // Create the Request instance from the session
+//                Request turnReq = new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
+//
+//                // Add the request to the session queue
+//                activeSession.addRequest(turnReq);
+//
+//                // 2. Turn Awaiting Move: Block until move is received
+//                String moveResult = turnReq.getResult();
+//
+//                try {
+//                    // 3. Turn Validating & Applying Move
+//                    int col = Integer.parseInt(moveResult);
+//
+//                    if (game.makeMove(col, activeToken)) {
+//                        // Update board for both players (Type 12)
+//                        sendBoardState();
+//
+//                        // 4. Turn Check End Conditions
+//                        if (game.getGameState() == GameState.PLAYER_WIN ||
+//                                game.getGameState() == GameState.PLAYER_DRAW) {
+//                            isRunning = false;
+//                        }
+//                    }
+//                } catch (NumberFormatException e) {
+//                    System.err.println("Invalid move format: " + moveResult);
+//                }
+//
+//                Thread.sleep(100);
+//            }
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        } catch (Exception e) {
+//            System.err.println("Game Session Error: " + e.getMessage());
+//        } finally {
+//            sendGameResult();
+//            Thread.currentThread().interrupt();
+//        }
+//
+//        return boolean;
+//    }
 
     public void sendBoardState() {
         try {
             String boardState = game.getBoard().toString();
-            playerOne.addRequest(12, new String[]{boardState});
-            playerTwo.addRequest(12, new String[]{boardState});
+            //playerOne.addRequest(12, new String[]{boardState});
+            //playerTwo.addRequest(12, new String[]{boardState});
         } catch (Exception e) {
             System.err.println("Sync Error: " + e.getMessage());
         }
@@ -103,11 +105,11 @@ public class ConnectFourGameSession extends Thread {
                 winnerID = Integer.parseInt(winner.getUsername());
 
                 // Type 14 Notifications
-                winner.addRequest(14, new String[]{"You won!"});
-                loser.addRequest(14, new String[]{"You lost!"});
+                //winner.addRequest(14, new String[]{"You won!"});
+                //loser.addRequest(14, new String[]{"You lost!"});
             } else {
-                playerOne.addRequest(14, new String[]{"Draw!"});
-                playerTwo.addRequest(14, new String[]{"Draw!"});
+                //playerOne.addRequest(14, new String[]{"Draw!"});
+                //playerTwo.addRequest(14, new String[]{"Draw!"});
             }
 
             // Adding the match data to the Database

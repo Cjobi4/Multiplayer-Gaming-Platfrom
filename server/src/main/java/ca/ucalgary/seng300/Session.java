@@ -129,6 +129,8 @@ public class Session extends Thread
                     {
                         //handle the request
                         req = requestQueue.take();
+
+                        System.out.println("Request " + req.getType() + " taken from queue.");
                         processRequest(req.getType(), AESKey, req);
                     }
                 }
@@ -300,7 +302,6 @@ public class Session extends Thread
         //these requests require the user to be logged in
         if (loggedIn)
         {
-            System.out.println("reached.");
             switch (requestType)
             {
                 case 3:     //if it was a logout request
@@ -340,7 +341,6 @@ public class Session extends Thread
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
-                    System.out.println("message: " + message);
 
                     //collect the leaderboard entries from the database for that game
                     rs = Database.getAllLeaderboardEntries(message);
@@ -348,7 +348,6 @@ public class Session extends Thread
                     //go through the results
                     if (rs.next())
                     {
-                        System.out.println("sbuild made");
 
                         //go through each entry...
                         do
@@ -360,33 +359,26 @@ public class Session extends Thread
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
 
-                            System.out.println("Username sent: " + rs.getString(1));
-
                             //then turn the wins/losses into a single string
                             sbuild.append(rs.getString(message + "Wins"));
                             sbuild.append("^");
                             sbuild.append(rs.getString(message + "MatchesPlayed"));
 
-                            System.out.println("matchs sent: " + sbuild.toString());
-
                             //send the formatted leaderboard entry to the client
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
-                            System.out.println("leaderboard entry sent");  //for debug
                         } while (rs.next());
 
                         //notify the client of success
                         messageBytes = Network.encrypt("1", AESKey);
                         client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                         client.getOutputStream().write(messageBytes);
-                        System.out.println("1 sent");
                     } else //if something went wrong and no leaderboard data was found, notify client
                     {
                         messageBytes = Network.encrypt("0", AESKey);
                         client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                         client.getOutputStream().write(messageBytes);
-                        System.out.println("0 sent");
                     }
                     break;
                 case 6:    //if it was a request for match record's from a specific user
@@ -395,15 +387,12 @@ public class Session extends Thread
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
 
-                    System.out.println("Fetching match records for " + message);
-
                     //collect the match records with matching usernames from the database
                     rs = Database.getMatchRecord(message);
 
                     //if the inputted username was valid, go through the results
                     if (rs.next())
                     {
-                        System.out.println("Match records found for " + message);
                         //go through each match record...
                         do
                         {
@@ -415,8 +404,6 @@ public class Session extends Thread
                                 sbuild.append("^");
                             }
 
-                            System.out.println("match record is: " + sbuild.toString());
-
                             //remove the trailing ^ symbol
                             sbuild.deleteCharAt(sbuild.length() - 1);
 
@@ -424,20 +411,17 @@ public class Session extends Thread
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
-                            System.out.println("match record sent");  //for debug
 
                             //notify the client of success
                             messageBytes = Network.encrypt("1", AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
-                            System.out.println("1 sent");
                         } while (rs.next());
                     } else //if something went wrong and no match records were found, notify client
                     {
                         messageBytes = Network.encrypt("0", AESKey);
                         client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                         client.getOutputStream().write(messageBytes);
-                        System.out.println("0 sent");
                     }
                     break;
                 case 7:     //if it was a request to join the Tic-tac-toe matchmaking queue...
@@ -609,11 +593,14 @@ public class Session extends Thread
                     //String move = req.getResult();
                     //notify client it's their time
                     client.getOutputStream().write(19);
+                    System.out.println("Asking for move");
 
                     //collect their move
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
+
+                    System.out.println("Move is: " + message);
 
                     req.setFuture(message);
                     break;
@@ -633,13 +620,18 @@ public class Session extends Thread
 
                     //collect the id
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    System.out.println("chat ID length: " + messageLength);
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     chatMessage[0] = Network.decrypt(messageBytes, AESKey);
+
+                    System.out.println("id sent to server: " + chatMessage[0]);
 
                     //collect the contents
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     chatMessage[1] = Network.decrypt(messageBytes, AESKey);
+
+                    System.out.println("contents sent to server: " + chatMessage[1]);
 
                     //collect the sender
 //                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
@@ -649,26 +641,34 @@ public class Session extends Thread
 
                     //send the message to the recipient
                     opp.addRequest(22, chatMessage);
+                    System.out.println("Chat request added.");
                     break;
                 case 22:    //if receiving a chat message...
                     //get the message
                     chatMessage = req.getParameters();
+
+                    client.getOutputStream().write(22);
 
                     //send the id
                     messageBytes = Network.encrypt(chatMessage[0], AESKey);
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
 
+                    System.out.println("id sent from server: " + chatMessage[0]);
+
                     //send the contents
                     messageBytes = Network.encrypt(chatMessage[1], AESKey);
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
+
+                    System.out.println("content sent from server: " + chatMessage[1]);
 
                     //send the sender
                     messageBytes = Network.encrypt(opp.username, AESKey);
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
 
+                    System.out.println("sender sent from server: " + opp.username);
                     break;
             }
         }

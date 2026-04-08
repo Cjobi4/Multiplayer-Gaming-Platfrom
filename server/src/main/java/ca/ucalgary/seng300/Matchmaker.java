@@ -314,6 +314,8 @@ public class Matchmaker extends Thread
                 TicTacToeGameSession gameSession = new TicTacToeGameSession(p1, p2);
                 gameSession.start();
             } else if (gameName.equals("c4")) {
+                p1.setOpp(p2);
+                p2.setOpp(p1);
                 ConnectFourGameSession gameSession = new ConnectFourGameSession(p1, p2);
                 gameSession.start();
             }

@@ -49,59 +49,59 @@ public class TicTacToeGameSession extends Thread {
      * win or draw conditions. Runs until the game terminates or the thread is
      * interrupted.
      */
-    @Override
-    public void run() {
-        try {
-            sendBoardState();
-
-            while (isRunning && !Thread.currentThread().isInterrupted()) {
-
-                // Determine the active player and their token
-                Session activeSession = getCurrentPlayerSession();
-                char activeToken = game.getCurrentPlayer();
-
-                // Create a move-prompt request (type 13) for the active player
-                Request turnReq = new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
-
-                // Add the request to the session queue
-                activeSession.addRequest(turnReq);
-
-                // Block until the client responds with a move
-                String moveResult = turnReq.getResult();
-
-                try {
-                    // Parse the move: expected format is "row,col"
-                    String[] parts = moveResult.split(",");
-                    assert parts.length == 2 : "Move must contain exactly two values separated by a comma";
-
-                    int row = Integer.parseInt(parts[0].trim());
-                    int col = Integer.parseInt(parts[1].trim());
-
-                    if (game.makeMove(row, col, activeToken)) {
-                        // Broadcast updated board to both players (type 12)
-                        sendBoardState();
-
-                        // Check if the game has ended
-                        if (game.getGameState() == GameState.PLAYER_WIN ||
-                                game.getGameState() == GameState.PLAYER_DRAW) {
-                            isRunning = false;
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid move format: " + moveResult);
-                }
-
-                Thread.sleep(100);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (Exception e) {
-            System.err.println("Game Session Error: " + e.getMessage());
-        } finally {
-            sendGameResult();
-            Thread.currentThread().interrupt();
-        }
-    }
+//    @Override
+//    public void run() {
+//        try {
+//            sendBoardState();
+//
+//            while (isRunning && !Thread.currentThread().isInterrupted()) {
+//
+//                // Determine the active player and their token
+//                Session activeSession = getCurrentPlayerSession();
+//                char activeToken = game.getCurrentPlayer();
+//
+//                // Create a move-prompt request (type 13) for the active player
+//                Request turnReq = new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
+//
+//                // Add the request to the session queue
+//                activeSession.addRequest(turnReq);
+//
+//                // Block until the client responds with a move
+//                String moveResult = turnReq.getResult();
+//
+//                try {
+//                    // Parse the move: expected format is "row,col"
+//                    String[] parts = moveResult.split(",");
+//                    assert parts.length == 2 : "Move must contain exactly two values separated by a comma";
+//
+//                    int row = Integer.parseInt(parts[0].trim());
+//                    int col = Integer.parseInt(parts[1].trim());
+//
+//                    if (game.makeMove(row, col, activeToken)) {
+//                        // Broadcast updated board to both players (type 12)
+//                        sendBoardState();
+//
+//                        // Check if the game has ended
+//                        if (game.getGameState() == GameState.PLAYER_WIN ||
+//                                game.getGameState() == GameState.PLAYER_DRAW) {
+//                            isRunning = false;
+//                        }
+//                    }
+//                } catch (NumberFormatException e) {
+//                    System.err.println("Invalid move format: " + moveResult);
+//                }
+//
+//                Thread.sleep(100);
+//            }
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        } catch (Exception e) {
+//            System.err.println("Game Session Error: " + e.getMessage());
+//        } finally {
+//            sendGameResult();
+//            Thread.currentThread().interrupt();
+//        }
+//    }
 
     /**
      * Broadcasts the current board state to both players as a type 12 request.
@@ -110,8 +110,8 @@ public class TicTacToeGameSession extends Thread {
     public void sendBoardState() {
         try {
             String boardState = game.getBoard().toString();
-            playerOne.addRequest(12, new String[]{boardState});
-            playerTwo.addRequest(12, new String[]{boardState});
+            //playerOne.addRequest(12, new String[]{boardState});
+            //playerTwo.addRequest(12, new String[]{boardState});
         } catch (Exception e) {
             System.err.println("Sync Error: " + e.getMessage());
         }
