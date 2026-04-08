@@ -72,8 +72,8 @@ public class Network extends Thread {
 
     // to be added/modified later
     public static final byte SEND_MOVE_TTT = 125;
-    public static final byte send_chat = 126;
-    public static final byte receive_chat = 127;
+    public static final byte send_chat = 21;
+    public static final byte receive_chat = 22;
 
     /*
         HOW TO USE THE NETWORK CLASS
@@ -357,7 +357,7 @@ public class Network extends Thread {
                 break;
 
             case send_chat:
-                sendMessage(parameters[0], parameters[1], parameters[2]);
+                sendMessage(parameters[0]);
                 req.future.complete(null);
                 break;
 
@@ -828,23 +828,21 @@ public class Network extends Thread {
 
     /** Method for sending chats
      *
-     * @param id
      * @param content
-     * @param sender
      * @throws Exception
      */
-    public void sendMessage(String id, String content, String sender) throws Exception {
+    public void sendMessage(String content) throws Exception {
 
         // send description byte
         socket.getOutputStream().write(send_chat);
+        Message m = new Message(content, ActivePlayer.getInstance().getUsername());
 
         // send request parameters as byte[]
-        sendRequestParameter(id);
+        sendRequestParameter(m.getId());
         sendRequestParameter(content);
-        sendRequestParameter(sender);
 
         // update local directory
-        ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
+        ChatRegistry.getInstance().addMessage(m);
     }
 
     /**

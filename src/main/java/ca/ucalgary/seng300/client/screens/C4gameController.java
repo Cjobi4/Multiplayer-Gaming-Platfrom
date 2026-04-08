@@ -79,13 +79,14 @@ public class C4gameController {
             }
 
             try{
-                Network.getInstance().queueRequest(Network.send_chat, new String[]{"c4", text.trim(), sender});
+                Network.getInstance().queueRequest(Network.send_chat, new String[]{text.trim()});
+                System.out.println("chat message sent");
             } catch(Exception e){
                 System.err.println("Failed to send chat message: " + e.getMessage());
             }
 
             //ChatRegistry.getInstance().addMessage(newMessage);
-            //messageInput.clear();
+            messageInput.clear();
             //refreshChatDisplay();
         }
     }
@@ -114,7 +115,7 @@ public class C4gameController {
         chatRefreshTimeline = new Timeline(
                 new KeyFrame(Duration.millis(250), event ->{
                     int currentSize = ChatRegistry.getInstance().ListAll().size();
-                    if(currentSize == lastChatSize){
+                    if(currentSize != lastChatSize){
                         refreshChatDisplay();
                         lastChatSize = currentSize;
                     }
