@@ -6,6 +6,7 @@ import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.Message;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,6 +37,9 @@ public class C4gameController {
     ConnectFourGame current = new ConnectFourGame();
     Button[][] grid = new Button[6][7];
 
+    private Timeline chatRefreshTimeline;
+    private int lastChatSize = -1;
+
     public void initialize() {
         for (Node node : c4grid.getChildren()) {
             if (node instanceof Button button) {
@@ -52,6 +56,8 @@ public class C4gameController {
                 grid[row][col] = button;
             }
         }
+
+        messageInput.setOnAction(event -> onSendMessage());
     }
 
 
