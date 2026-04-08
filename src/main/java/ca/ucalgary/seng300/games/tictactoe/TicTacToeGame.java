@@ -1,5 +1,10 @@
 package ca.ucalgary.seng300.games.tictactoe;
 
+
+//make smth to tell the player that it is their turn or the game is over or whatever that stuff
+//make the client side part
+//
+//
 //import the enums file
 import ca.ucalgary.seng300.games.GameState;
 
@@ -148,6 +153,36 @@ public class TicTacToeGame {
         return true;
     }
 
+
+    //FOR SANMEET
+    //this function converts the full tic tac toe game state into a string for database storage
+    public String toDataString() {
+
+        //this combines the board string, current player, winner, game state, and move count into one string
+        return board.toString() + "|" + currentPlayer + "|" + winner + "|" + gameState.name() + "|" + moveCount;
+    }
+
+    //this function restores the full tic tac toe game state from a database string
+    public void fromDataString(String gameDataString) {
+
+        //split the full game data string using | as the separator
+        String[] specificGameItem = gameDataString.split("\\|");
+
+        //restore the board using the first part of the string
+        board.fromString(specificGameItem[0]);
+
+        //restore the current player from the second part
+        currentPlayer = specificGameItem[1].charAt(0);
+
+        //restore the winner from the third part
+        winner = specificGameItem[2].charAt(0);
+
+        //restore the game state using the enum value from the fourth part
+        gameState = GameState.valueOf(specificGameItem[3]);
+
+        //restore the move count from the fifth part
+        moveCount = Integer.parseInt(specificGameItem[4]);
+    }
     //GETTERS for new functions
 
     //this getter gets the current player (X, O, ' ')

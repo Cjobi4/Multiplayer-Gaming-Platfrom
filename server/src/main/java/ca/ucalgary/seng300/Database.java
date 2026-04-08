@@ -412,6 +412,11 @@ public class Database
         return sbuild.toString();
     }
 
+    /**
+     * Given a username, returns the associated Session object
+     * @param username The username of the Session to be searched
+     * @return The Session object with the matching username
+     */
     public static Session getSession(String username)
     {
         return loggedInUsers.get(username);
