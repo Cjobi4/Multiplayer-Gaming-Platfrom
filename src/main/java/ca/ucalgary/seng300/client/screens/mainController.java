@@ -69,9 +69,7 @@ public class mainController {
         loadCombinedLeaderboard();
         DisplayGameList();
 
-
         // Allow Challenges to be received on this page
-
         try {
             // Register this UI screen to listen for challenges
             Network.getInstance().setChallengeListener((challengerName, gameType) -> {
@@ -87,6 +85,21 @@ public class mainController {
                     ButtonType buttonAccept = new ButtonType("Accept");
                     ButtonType buttonDecline = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
                     alert.getButtonTypes().setAll(buttonAccept, buttonDecline);
+
+                    DialogPane dialogPane = alert.getDialogPane();
+                    dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+                    dialogPane.getStyleClass().add("pane");
+
+                    Button accBtn = (Button) dialogPane.lookupButton(buttonAccept);
+                    Button decBtn = (Button) dialogPane.lookupButton(buttonDecline);
+
+                    if (accBtn != null) {
+                        accBtn.getStyleClass().add("basic-button");
+                    }
+
+                    if(decBtn != null) {
+                        decBtn.getStyleClass().add("basic-button");
+                    }
 
                     Optional<ButtonType> result = alert.showAndWait();
 
@@ -137,11 +150,9 @@ public class mainController {
                     }
                 });
             });
-
         } catch (Exception e) {
             System.err.println("Failed to connect Network listener: " + e.getMessage());
         }
-
     }
 
     private void loadCombinedLeaderboard(){
@@ -404,7 +415,6 @@ public class mainController {
     protected void onSelectButtonSelected(ActionEvent event) {
         errorField.setText("");
     }
-
 
     @FXML
     protected void onGameSelectButtonClick(ActionEvent event) {
