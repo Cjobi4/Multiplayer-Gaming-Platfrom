@@ -47,7 +47,7 @@ public class C4opponentSelectController implements Initializable {
     private final ObservableList<LeaderboardEntry> observableData = FXCollections.observableArrayList();
 
     @FXML
-    protected void onOpponentSelectedButtonClick(ActionEvent event) {
+    protected void onOpponentSelectedButtonClick(ActionEvent event) throws Exception {
         LeaderboardEntry selectedOpponent = opponentList.getSelectionModel().getSelectedItem();
 
         if(selectedOpponent == null){
@@ -59,25 +59,42 @@ public class C4opponentSelectController implements Initializable {
             return;
         }
 
-        try {
-            //Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/C4gamePage.fxml"));
-            Parent gameRoot = loader.load();
+        int result = (Integer) Network.getInstance().queueRequest(Network.SEND_CHALLENGE, new String[]{selectedOpponent.getUsername(), "c4"}).get();
 
-            //Get current stage from the button click
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        if (result == Network.MATCH_ACCEPTED) {
 
-            //Create new scene and set it on the stage
-            Scene gameScene = new Scene(gameRoot, 800, 600);
-            stage.setScene(gameScene);
-            stage.setTitle("Play Connect 4!"); //Change stage title to reflect current scene
-            stage.setResizable(false);
-            stage.show();
+            try {
+                //Load fxml file
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/C4gamePage.fxml"));
+                Parent gameRoot = loader.load();
 
-        } catch (IOException e) {
-            System.err.println("Error: Could not load C4gamePage.fxml. Check file path!");
+                //Get current stage from the button click
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+                //Create new scene and set it on the stage
+                Scene gameScene = new Scene(gameRoot, 800, 600);
+                stage.setScene(gameScene);
+                stage.setTitle("Play Connect 4!"); //Change stage title to reflect current scene
+                stage.setResizable(false);
+                stage.show();
+
+            } catch (IOException e) {
+                System.err.println("Error: Could not load C4gamePage.fxml. Check file path!");
+            }
         }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Match declined");
+            alert.setHeaderText(null);
+            alert.setContentText("The opponent declined your challenge");
+            alert.showAndWait();
+        }
+
+
     }
+
+
 
     @FXML
     protected void onBackButtonClick(ActionEvent event) {

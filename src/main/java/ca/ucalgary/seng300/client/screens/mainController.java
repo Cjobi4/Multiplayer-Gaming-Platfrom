@@ -2,9 +2,11 @@ package ca.ucalgary.seng300.client.screens;
 
 import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.shared.models.Game;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Tag;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -28,9 +30,12 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.MenuItem;
+
+import javax.swing.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class mainController {
@@ -63,6 +68,80 @@ public class mainController {
 
         loadCombinedLeaderboard();
         DisplayGameList();
+
+
+        // Allow Challenges to be received on this page
+
+        try {
+            // Register this UI screen to listen for challenges
+            Network.getInstance().setChallengeListener((challengerName, gameType) -> {
+
+                // Force the UI drawing onto the JavaFX thread:
+                Platform.runLater(() -> {
+
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Incoming Challenge!");
+                    alert.setHeaderText(challengerName + " has challenged you to " + gameType.toUpperCase() + "!");
+                    alert.setContentText("Do you accept?");
+
+                    ButtonType buttonAccept = new ButtonType("Accept");
+                    ButtonType buttonDecline = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
+                    alert.getButtonTypes().setAll(buttonAccept, buttonDecline);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+
+                    try {
+                        if (result.isPresent() && result.get() == buttonAccept) {
+
+                            // ACCEPT: Queue the request and WAIT for the server's final confirmation
+                            Network.getInstance().queueRequest(Network.RECEIVE_CHALLENGE, new String[]{"1"})
+                                    .thenAccept(res -> {
+                                        int finalResult = (Integer) res;
+
+                                        // Move BACK to the JavaFX thread to load the new scene
+                                        Platform.runLater(() -> {
+                                            if (finalResult == Network.MATCH_ACCEPTED) { // 14
+
+                                                // Determine which FXML to load based on the gameType string
+                                                String fxmlPrefix = gameType.equalsIgnoreCase("ttt") ? "TTT" : "C4";
+                                                String fxmlFile = "/fxml/" + fxmlPrefix + "gamePage.fxml";
+
+                                                try {
+                                                    FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+                                                    Parent root = loader.load();
+
+                                                    // Get the current stage using an existing UI node (since we have no ActionEvent)
+                                                    Stage stage = (Stage) gameSelectButton.getScene().getWindow();
+
+                                                    Scene scene = new Scene(root, 800, 600);
+                                                    stage.setScene(scene);
+                                                    stage.setTitle("Playing " + gameType.toUpperCase());
+                                                    stage.setResizable(false);
+                                                    stage.show();
+
+                                                } catch (IOException e) {
+                                                    errorField.setText("Error loading game page.");
+                                                    e.printStackTrace();
+                                                }
+                                            } else {
+                                                errorField.setText("Opponent disconnected or match failed.");
+                                            }
+                                        });
+                                    });
+                        } else {
+                            // DECLINE
+                            Network.getInstance().queueRequest(Network.RECEIVE_CHALLENGE, new String[]{"0"});
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            });
+
+        } catch (Exception e) {
+            System.err.println("Failed to connect Network listener: " + e.getMessage());
+        }
+
     }
 
     private void loadCombinedLeaderboard(){
