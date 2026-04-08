@@ -123,10 +123,13 @@ public class C4gameController {
         chatRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
         chatRefreshTimeline.play();
     }
+
+    private void stopChatWatcher() {
+        if (chatRefreshTimeline != null) {
+            chatRefreshTimeline.stop();
+        }
+    }
     
-
-
-
     private void updateBoard(){
         ConnectFourBoard board = current.getBoard(); //loops through the board
         for (int i = 0; i < 6; i++) {
