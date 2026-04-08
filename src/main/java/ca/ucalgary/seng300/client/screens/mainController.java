@@ -606,6 +606,7 @@ public class mainController {
     @FXML
     public void updateInfo(ActionEvent event) { //updates the Radio Buttons
         RadioButton selected = (RadioButton) group.getSelectedToggle();
+        errorField.setText("");
 
         if (selected != null) {
             Game selectedGame = findGame(selected.getText());
