@@ -244,12 +244,13 @@ public class Network extends Thread {
                         receiveChallenge();
                     }
                     else if (descriptionByte == REQUEST_BOARD) {
-                        requestBoard();
+                        // read board string from server
+
+                        String updatedBoard = requestBoard();
+                        // TODO: call something in ui to update the board
                     }
                     else if (descriptionByte == REQUEST_MOVE_PROMPT) {
-                        // TODO: work out moves
-                        String n = "test";
-                        sendMoveTTT(n);
+                        notifyPlayerTurn();
                     }
                     else if (descriptionByte == REQUEST_GAME_STATE) {
                         requestGameState();
@@ -674,6 +675,10 @@ public class Network extends Thread {
         sendRequestParameter(move);
     }
 
+    public void notifyPlayerTurn() throws Exception {
+        // TODO: call something in ui to enable board for input
+    }
+
     public String requestGameState() throws Exception {
         String serverResponse = readResponseString();
         return serverResponse;
@@ -821,7 +826,6 @@ public class Network extends Thread {
         // send request parameters as byte[]
         sendRequestParameter(id);
         sendRequestParameter(content);
-        sendRequestParameter(sender);
 
         // update local directory
         ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
