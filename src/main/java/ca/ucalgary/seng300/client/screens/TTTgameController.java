@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.identity.client.Session;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
@@ -56,12 +57,23 @@ public class TTTgameController {
     @FXML
     protected void onSendMessage() {
         String text = messageInput.getText();
-        if (text != null && !text.isEmpty()) {
-            Message newMessage = new Message(text, ActivePlayer.getInstance().getUsername());
+        if (text != null && !text.trim().isEmpty()) {
+            //Message newMessage = new Message(text, "Player 1");
+            String sender = ActivePlayer.getInstance().getUsername();
 
-            ChatRegistry.getInstance().addMessage(newMessage);
+            if(sender == null || sender.isBlank()){
+                sender = "Player";
+            }
+
+            try{
+                Network.getInstance().queueRequest(Network.send_chat, new String[]{text.trim()});
+                System.out.println("chat message sent");
+            } catch(Exception e){
+                System.err.println("Failed to send chat message: " + e.getMessage());
+            }
+
+
             messageInput.clear();
-            refreshChatDisplay();
         }
     }
 
