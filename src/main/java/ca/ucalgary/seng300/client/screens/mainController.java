@@ -254,7 +254,7 @@ public class mainController {
     @FXML
     private void onViewPlayerStatsClick() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("About The Application");
+        alert.setTitle("Player Stats");
         alert.setHeaderText("Trainwreck!");
         StringBuilder message = new StringBuilder();
 
@@ -276,7 +276,7 @@ public class mainController {
                 message.append("Connect 4 Matches: " + C4matches + "\n");
                 message.append("Total Wins: " + totalwins + "\n");
                 message.append("Connect 4 Wins: " + C4wins + "\n");
-                message.append("Tic Tac Toe Matches: " + TTTwins + "\n");
+                message.append("Tic Tac Toe Wins: " + TTTwins + "\n");
             }
         } catch (Exception e) {
             message.append("You don't have any info L");
