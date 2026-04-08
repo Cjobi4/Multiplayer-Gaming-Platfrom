@@ -207,7 +207,7 @@ public class Session extends Thread
         StringBuilder sbuild;
 
         //make sure the connection doesn't time out while waiting for response
-        client.setSoTimeout(10000);
+        client.setSoTimeout(60000);
 
         //these requests don't need the user to be logged in
         switch (requestType) {
@@ -557,9 +557,9 @@ public class Session extends Thread
                         oppSession.setOpp(this);
 
                         if (gameType.equals("ttt")) {
-                            // new TicTacToeGameSession(this, oppSession).start();
+                            new TicTacToeGameSession(this, oppSession).start();
                         } else {
-                            // new ConnectFourGameSession(this, oppSession).start();
+                            new ConnectFourGameSession(this, oppSession).start();
                         }
 
                         client.getOutputStream().write(14);
