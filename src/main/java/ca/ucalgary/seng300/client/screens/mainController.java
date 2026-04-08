@@ -5,6 +5,8 @@ import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
+import ca.ucalgary.seng300.rules.leaderboard.UserRecord;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Tag;
@@ -58,6 +60,7 @@ public class mainController {
 
     private GameRegistry games = GameRegistry.getInstance();
     ToggleGroup group = new ToggleGroup();
+    private String currentPlayer = ActivePlayer.getInstance().getUsername();
 
     @FXML
     public void initialize() {
@@ -232,15 +235,35 @@ public class mainController {
         alert.setTitle("About The Application");
         alert.setHeaderText("Trainwreck!");
 
-        String information = "This is trainwreck weeeewoooooo";
+        String information = "Trainwreck is a competitive, online multiplayergame platform that" +
+                "allows users to remotely play minigames together and track their progrss.\n\n" +
+
+                "The program tracks wins and matches to place players on aleaderboard, " +
+                "ensuring competitive matchmaking or allowing for direct online challenges.\n\n" +
+
+                "Version: 6.7\n" +
+
+                "---------------------------------------------------------\n\n" +
+                "HOW TO MATCHMAKE:\n" +
+                "1. Select a game from the game list.\n" +
+                "2. Press the 'Matchmake' button.\n" +
+                "3. Once matched, you can Accept or Decline the game.\n\n" +
+
+                "HOW TO CHALLENGE:\n" +
+                "1. Select a game from the game list.\n" +
+                "2. Press the 'Opponent Select' button.\n" +
+                "3. Wait for the user list to load and select a player.\n" +
+                "4. Use the 'Play' button to send a challenge.\n\n" +
+
+                "NOTE: To receive a challenge, a player must be on the Main Page.";
 
         alert.setContentText(information);
 
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         dialogPane.getStyleClass().add("pane");
-        dialogPane.setMinHeight(400);
-        dialogPane.setMinWidth(450);
+        dialogPane.setMinHeight(550);
+        dialogPane.setMinWidth(550);
 
         alert.showAndWait();
 
@@ -249,10 +272,36 @@ public class mainController {
     @FXML
     private void onViewPlayerStatsClick() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("About The Application");
+        alert.setTitle("Player Stats");
         alert.setHeaderText("Trainwreck!");
+        StringBuilder message = new StringBuilder();
 
-        String information = "This is trainwreck weeeewoooooo";
+        String information = " ";
+        try {
+            UserRecord info = LeaderBoard.getUserRecord(currentPlayer);
+            if (info.isEmpty())  {
+                message.append("Couldn't get information.");
+            }else {
+                int C4matches = info.getMatchesC4();
+                int TTTmatches = info.getMatchesTTT();
+                int totalmatches = info.getTotalMatches();
+                int C4wins = info.getWinsC4();
+                int TTTwins = info.getWinsTTT();
+                int totalwins = info.getTotalWins();
+//
+                message.append("Total Matches: " + totalmatches + "\n");
+                message.append("Tic Tac Toe Matches: " + TTTmatches + "\n");
+                message.append("Connect 4 Matches: " + C4matches + "\n");
+                message.append("Total Wins: " + totalwins + "\n");
+                message.append("Connect 4 Wins: " + C4wins + "\n");
+                message.append("Tic Tac Toe Wins: " + TTTwins + "\n");
+            }
+        } catch (Exception e) {
+            message.append("You don't have any info L");
+        }
+
+
+        information = message.toString();
 
         alert.setContentText(information);
 
@@ -273,7 +322,17 @@ public class mainController {
         alert.setTitle("About The Developers");
         alert.setHeaderText("Trainwreck Developers!");
 
-        String information = "This app was developed by weewoo";
+        String information = "DEVELOPED BY: \n" +
+                "Platform Core Team:\n" +
+                "Owen Hilton, Sanmeet Braich, Weikai Chen, Anh Nguyen \n" +
+                "Client-U Team:\n" +
+                "Rebecca Glover, Aanya Ahmed, Cj Obi, Heeyoun Han \n" +
+                "Quality-Testing Team:\n" +
+                "Jordan Tran, Shubhangi Babu, Jaspreet Sandhu \n" +
+                "Rules-Validation Team:\n" +
+                "Sajan Johal, Hoang Khoi Nguyen, Jonathan Hooi \n" +
+                "Integration Team:\n" +
+                "Justin Ma, Anh Tuan Vo, Dai Toan Dang\n";
 
         alert.setContentText(information);
 
