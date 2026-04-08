@@ -129,7 +129,7 @@ public class C4gameController {
             chatRefreshTimeline.stop();
         }
     }
-    
+
     private void updateBoard(){
         ConnectFourBoard board = current.getBoard(); //loops through the board
         for (int i = 0; i < 6; i++) {
@@ -145,6 +145,7 @@ public class C4gameController {
 
     protected void gameOver(){ //copy of the button version
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
@@ -179,6 +180,7 @@ public class C4gameController {
     @FXML
     protected void onGameOverButtonClick(ActionEvent event) {
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
@@ -215,6 +217,7 @@ public class C4gameController {
     @FXML
     protected void onBackButtonClick(ActionEvent event) {
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/C4opponentSelectPage.fxml"));
             Parent opponentRoot = loader.load();
