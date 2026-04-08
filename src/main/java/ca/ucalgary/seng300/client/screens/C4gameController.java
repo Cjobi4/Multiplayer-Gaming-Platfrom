@@ -84,9 +84,8 @@ public class C4gameController {
                 System.err.println("Failed to send chat message: " + e.getMessage());
             }
 
-            //ChatRegistry.getInstance().addMessage(newMessage);
+
             messageInput.clear();
-            //refreshChatDisplay();
         }
     }
 

@@ -6,6 +6,7 @@ import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Message;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,8 +42,15 @@ public class TTTgameController {
     TicTacToeGame current = new TicTacToeGame();
     Button[][] grid;
 
+    private Timeline chatRefreshTimeline;
+    private int lastChatSize = -1;
+
     public void initialize() {
         grid = new Button[][]{{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
+
+        messageInput.setOnAction(event -> onSendMessage());
+        refreshChatDisplay();
+        //startChatWatcher();
     }
 
     @FXML
