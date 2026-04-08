@@ -332,12 +332,13 @@ public class Session extends Thread
                     //go through the results
                     if (rs.next())
                     {
-                        sbuild = new StringBuilder();
                         System.out.println("sbuild made");
 
                         //go through each entry...
                         do
                         {
+                            sbuild = new StringBuilder();
+
                             //send the username separately
                             messageBytes = Network.encrypt(rs.getString(1), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
@@ -384,11 +385,10 @@ public class Session extends Thread
                     //if the inputted username was valid, go through the results
                     if (rs != null && rs.next())
                     {
-                        sbuild = new StringBuilder();
-
                         //go through each match record...
                         do
                         {
+                            sbuild = new StringBuilder();
                             //turn each match record into a single string
                             for (int i = 2; i <= 6; i++)
                             {

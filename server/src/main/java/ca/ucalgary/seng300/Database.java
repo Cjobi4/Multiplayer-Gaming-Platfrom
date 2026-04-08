@@ -412,6 +412,11 @@ public class Database
         return sbuild.toString();
     }
 
+    /**
+     * Given a username, returns the associated Session object
+     * @param username
+     * @return
+     */
     public static Session getSession(String username)
     {
         return loggedInUsers.get(username);
