@@ -595,41 +595,46 @@ public class Session extends Thread
                     client.getOutputStream().write(19);
                     System.out.println("Asking for move from " + username);
 
-                    //collect the first byte of the next received message
-                    int possibleReq = client.getInputStream().read();
-                    System.out.println("possible req is: " + possibleReq);
+                    int possibleReq = 0;
 
-                    //if it turned out to be a chat message, send it to opp
-                    if (possibleReq == 21)
+                    //keep checking for chat messages until a move is sent
+                    do
                     {
-                        chatMessage = new String[2];
+                        //collect the first byte of the next received message
+                        possibleReq = client.getInputStream().read();
+                        System.out.println("possible req is: " + possibleReq);
 
-                        //collect the id
-                        messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
-                        System.out.println("chat ID length: " + messageLength);
-                        messageBytes = client.getInputStream().readNBytes(messageLength);
-                        chatMessage[0] = Network.decrypt(messageBytes, AESKey);
+                        //if it turned out to be a chat message, send it to opp
+                        if (possibleReq == 21)
+                        {
+                            chatMessage = new String[2];
 
-                        System.out.println("id sent to server: " + chatMessage[0]);
+                            //collect the id
+                            messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                            System.out.println("chat ID length: " + messageLength);
+                            messageBytes = client.getInputStream().readNBytes(messageLength);
+                            chatMessage[0] = Network.decrypt(messageBytes, AESKey);
 
-                        //collect the contents
-                        messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
-                        messageBytes = client.getInputStream().readNBytes(messageLength);
-                        chatMessage[1] = Network.decrypt(messageBytes, AESKey);
+                            System.out.println("id sent to server: " + chatMessage[0]);
 
-                        System.out.println("contents sent to server: " + chatMessage[1]);
+                            //collect the contents
+                            messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                            messageBytes = client.getInputStream().readNBytes(messageLength);
+                            chatMessage[1] = Network.decrypt(messageBytes, AESKey);
 
-                        //collect the sender
+                            System.out.println("contents sent to server: " + chatMessage[1]);
+
+                            //collect the sender
 //                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
 //                    messageBytes = client.getInputStream().readNBytes(messageLength);
 //                    chatMessage[2] = Network.decrypt(messageBytes, AESKey);
-                        //chatMessage[2] = username;
+                            //chatMessage[2] = username;
 
-                        //send the message to the recipient
-                        opp.addRequest(22, chatMessage);
-                        System.out.println("Chat request added.");
-                        break;
-                    }
+                            //send the message to the recipient
+                            opp.addRequest(22, chatMessage);
+                            System.out.println("Chat request added.");
+                        }
+                    } while (possibleReq == 21);
 
                     //otherwise collect the rest of the message length
                     byte[] rBytes = client.getInputStream().readNBytes(3);
@@ -644,6 +649,7 @@ public class Session extends Thread
 
                     System.out.println("Move is: " + message);
 
+                    //give the client's move back to the game
                     req.setFuture(message);
                     break;
                 case 20:    //if sending game state to client...
