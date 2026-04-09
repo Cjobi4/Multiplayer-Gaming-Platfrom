@@ -252,6 +252,7 @@ public class Network extends Thread {
 //                        System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
 //                        sendRequestParameter("dummy_local_move");
 //                    }
+
                 }
 
                 catch (SocketTimeoutException e) {

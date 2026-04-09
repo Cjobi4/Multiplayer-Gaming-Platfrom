@@ -24,11 +24,11 @@
    <center>
       <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #F9EDE1;" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="TOP_CENTER" prefWidth="220.0" spacing="10.0" style="-fx-border-color: #DEB499; -fx-border-radius: 7; -fx-background-color: #FCE0D2;">
+            <VBox alignment="TOP_CENTER" prefHeight="531.0" prefWidth="316.0" spacing="10.0" style="-fx-border-color: #DEB499; -fx-border-radius: 7; -fx-background-color: #FCE0D2;">
                <children>
                   <Label text="Leaderboard" textFill="#866b59">
                      <font>
-                        <Font name="Dubai Regular" size="18.0" />
+                        <Font name="Dubai Medium" size="18.0" />
                      </font>
                   </Label>
                   <ScrollPane fitToWidth="true" prefHeight="532.0" prefWidth="213.0">
@@ -56,11 +56,6 @@
                               <Insets left="10.0" />
                            </padding>
                         </VBox>
-                        <ImageView fitHeight="76.0" fitWidth="167.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/newturtle.png" />
-                           </image>
-                        </ImageView>
                      </children>
                      <VBox.margin>
                         <Insets />
@@ -98,9 +93,9 @@
                      <font>
                         <Font name="Dubai Medium" size="12.0" />
                      </font></Label>
-                  <ImageView fitHeight="90.0" fitWidth="171.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="127.0" fitWidth="143.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../images/newtrain.png" />
+                        <Image url="@../images/OGdino.png" />
                      </image>
                   </ImageView>
                </children>

@@ -268,7 +268,7 @@ public class mainController {
                 "The program tracks wins and matches to place players on aleaderboard, " +
                 "ensuring competitive matchmaking or allowing for direct online challenges.\n\n" +
 
-                "Version: 6.7\n" +
+                "Version: 3.1.5\n" +
 
                 "---------------------------------------------------------\n\n" +
                 "HOW TO MATCHMAKE:\n" +
@@ -357,17 +357,21 @@ public class mainController {
         imageView.setFitHeight(70);
         alert.setGraphic(imageView);
 
-        String information = "DEVELOPED BY: \n" +
+        String information = "DEVELOPED BY: \n\n" +
                 "Platform Core Team:\n" +
-                "Owen Hilton, Sanmeet Braich, Weikai Chen, Anh Nguyen \n" +
+                "Owen Hilton, Sanmeet Braich, Weikai Chen, Anh Nguyen \n\n" +
+                "---------------------------------------------------------\n\n" +
                 "Client-U Team:\n" +
-                "Rebecca Glover, Aanya Ahmed, Cj Obi, Heeyoun Han \n" +
+                "Rebecca Glover, Aanya Ahmed, Cj Obi, Heeyoun Han \n\n" +
+                "---------------------------------------------------------\n\n" +
                 "Quality-Testing Team:\n" +
-                "Jordan Tran, Shubhangi Babu, Jaspreet Sandhu \n" +
+                "Jordan Tran, Shubhangi Babu, Jaspreet Sandhu \n\n" +
+                "---------------------------------------------------------\n\n" +
                 "Rules-Validation Team:\n" +
-                "Sajan Johal, Hoang Khoi Nguyen, Jonathan Hooi \n" +
+                "Sajan Johal, Hoang Khoi Nguyen, Jonathan Hooi \n\n" +
+                "---------------------------------------------------------\n\n" +
                 "Integration Team:\n" +
-                "Justin Ma, Anh Tuan Vo, Dai Toan Dang\n";
+                "Justin Ma, Anh Tuan Vo, Dai Toan Dang\n\n";
 
         alert.setContentText(information);
 
@@ -504,7 +508,7 @@ public class mainController {
     }
 
     private void setThumbnailDefault() {
-        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        Image image = new Image(getClass().getResource("/images/dinoAlert.png").toExternalForm());
         thumbnail.setImage(image);
     }
 
@@ -667,7 +671,7 @@ public class mainController {
                     .queueRequest(Network.LOGOUT, null)
                     .orTimeout(5, TimeUnit.SECONDS)
                     .whenComplete((result, throwable) -> Platform.runLater(() -> {
-                        if (throwable != null || !Boolean.TRUE.equals(result)) {
+                        if (throwable != null || Boolean.TRUE.equals(result)) {
                             System.err.println("Warning: server logout was not confirmed.");
                         }
 
