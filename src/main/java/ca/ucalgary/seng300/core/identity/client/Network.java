@@ -621,6 +621,7 @@ public class Network extends Thread {
 
                 // other player accepts, return 14
                 if (desc == MATCH_ACCEPTED) {
+                    tttGame = new TicTacToeGame();
                     return MATCH_ACCEPTED;
                 }
                 // other player declined match 15
