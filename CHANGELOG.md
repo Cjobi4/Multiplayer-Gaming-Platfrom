@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Platform Core:** Changed match date format saved to match record by TTT (#265).
+
+### Fixed
+
+- **Integration:** Fixed compilation errors from merge conflict resolution.
+
 ## [v0.3.0] - 2026-04-06
 
 ### Added
