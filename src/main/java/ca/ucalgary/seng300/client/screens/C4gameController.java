@@ -37,6 +37,8 @@ public class C4gameController {
     public GridPane c4grid;
     public Text turnDisplayc4;
 
+    private Timeline boardRefreshTimeline;
+
 
     ConnectFourGame current = new ConnectFourGame();
     Button[][] grid = new Button[6][7];
@@ -63,6 +65,36 @@ public class C4gameController {
         messageInput.setOnAction(event -> onSendMessage());
         refreshChatDisplay();
         startChatWatcher();
+        updateBoard();
+        startBoardWatcher();
+    }
+
+    private void syncBoard(){
+        try{
+
+            ConnectFourGame networkGame = Network.getInstance().getC4Game();
+
+            if(networkGame == null){
+                System.out.println("No game created");
+                return;
+            }
+
+            String networkBoard = networkGame.getBoard().toString();
+            String currentBoard = current.getBoard().toString();
+
+            if (networkGame.getGameState() == GameState.PLAYER_WIN || networkGame.getGameState() == GameState.PLAYER_DRAW || networkGame.getGameState() == GameState.PLAYER_LOSE)
+            {
+                gameOver();
+            }
+
+            if(!networkBoard.equals(currentBoard)){
+                current.getBoard().fromString(networkGame.getBoard().toString());
+                updateBoard();
+            }
+
+        } catch (Exception e){
+            System.err.println("Failed to sync board from network: " + e.getMessage());
+        }
     }
 
 
@@ -140,6 +172,20 @@ public class C4gameController {
                     grid[i][j].setStyle( "-fx-background-color: #f0a1a1;"); //red
                 }
             }
+        }
+    }
+
+    private void startBoardWatcher(){
+        System.out.println("Starting board watcher");
+        boardRefreshTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> syncBoard()));
+
+        boardRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        boardRefreshTimeline.play();
+    }
+
+    private void stopBoardWatcher() {
+        if (boardRefreshTimeline != null) {
+            boardRefreshTimeline.stop();
         }
     }
 
@@ -246,7 +292,7 @@ public class C4gameController {
     }
 
     @FXML
-    protected void onGridButtonClick(ActionEvent event) {
+    protected void onGridButtonClick(ActionEvent event) throws Exception {
         char player = current.getCurrentPlayer(); //gets whose turn it is
         Button clicked = (Button) event.getSource(); //gets what button was clicked
         int i = 8; //four, so if not intialized, the turn shouldn't count
@@ -260,12 +306,6 @@ public class C4gameController {
         }
         if (current.makeMove(i,player)) { //updates if the move was valid
             turnDisplayc4.setText("Yippee!");
-            if (current.getGameState() == GameState.PLAYER_WIN){
-                gameOver(); //ends game if someone wins
-            } else if (current.getGameState() == GameState.PLAYER_DRAW) {
-                gameOver(); //ends game if draw
-            }
-//            current.switchTurn();
         }else{
             turnDisplayc4.setText("Please make a valid move");
         }
