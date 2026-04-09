@@ -50,6 +50,10 @@ public class TTTgameController {
     private Timeline chatRefreshTimeline;
     private int lastChatSize = -1;
 
+    private Timeline boardRefreshTimeline;
+    private String lastBoardString = "";
+
+
     public void initialize() {
         grid = new Button[][]{{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
 
