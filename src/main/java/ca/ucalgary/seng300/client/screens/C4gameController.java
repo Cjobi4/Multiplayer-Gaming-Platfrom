@@ -165,15 +165,21 @@ public class C4gameController {
     }
 
     private void updateBoard(){
-        ConnectFourBoard board = current.getBoard(); //loops through the board
+        ConnectFourBoard board = current.getBoard();
         turnDisplayc4.setText("");
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 7; j++) {
-                if (board.getCell(i, j) == 'X'){ //if its not empty
-                    grid[i][j].setStyle( "-fx-background-color: #f0e8a1;"); //yellow
-                } else if (board.getCell(i, j) == 'O') {
-                    grid[i][j].setStyle( "-fx-background-color: #f0a1a1;"); //red
+                var styles = grid[i][j].getStyleClass();
+                styles.removeAll("c4-cell-x", "c4-cell-o", "c4-cell-empty");
+                char cell = board.getCell(i, j);
+                if (cell == 'X') {
+                    styles.add("c4-cell-x");
+                } else if (cell == 'O') {
+                    styles.add("c4-cell-o");
+                } else {
+                    styles.add("c4-cell-empty");
                 }
+                grid[i][j].setStyle(null);
             }
         }
     }
