@@ -74,7 +74,7 @@ public class TTTgameController {
             String currentBoard = current.getBoard().toString();
 
             if(!networkBoard.equals(currentBoard)){
-                current =networkGame;
+                current = networkGame;
                 updateBoard();
                 lastBoardString = networkBoard;
 
@@ -242,6 +242,13 @@ public class TTTgameController {
                 }
             }
         }
+    }
+
+    private void startBoardWatcher(){
+        boardRefreshTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> syncBoard()));
+
+        boardRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        boardRefreshTimeline.play();
     }
 
     @FXML
