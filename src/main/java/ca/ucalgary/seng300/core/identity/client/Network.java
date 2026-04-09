@@ -257,7 +257,7 @@ public class Network extends Thread {
 //                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
                     else if (descriptionByte == PROMPT_MOVE) {
                         //update flag
-
+                        receivedMoveRequest();
                         //System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
                         //sendRequestParameter("dummy_local_move");
                     }
@@ -281,6 +281,15 @@ public class Network extends Thread {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void receivedMoveRequest() {
+        tttGame.switchTurn();
+
+        // handle move making
+
+        // change to not your turn
+        tttGame.switchTurn();
     }
 
     private void receiveGameState() throws Exception {
