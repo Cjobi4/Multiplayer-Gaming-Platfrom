@@ -19,7 +19,7 @@ public class SessionTest {
 
     /*
     Tests that require an active connection with the main server
-    For this reason, we cannot simply fake an intended output
+    For this reason, this test class is EXTREMELY dependent on the server, and is largely unstable
      */
     @BeforeAll
     static void establishConnection(){
