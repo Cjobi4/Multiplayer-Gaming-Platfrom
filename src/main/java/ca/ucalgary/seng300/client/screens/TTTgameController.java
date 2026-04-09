@@ -151,6 +151,8 @@ public class TTTgameController {
             gameOverController controller = loader.getController();
             controller.setGameType(GameType.TICTACTOE);
 
+            controller.setResult(result);
+
             Stage stage = (Stage) ttt00.getScene().getWindow();
             Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
             stage.setScene(gameOverScene);
