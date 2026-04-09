@@ -58,6 +58,8 @@ public class MatchRecord {
     public String getDate(){
         return this.date;
     }
+    public String getPlayerOne(){ return this.username1; } // basic getters
+    public String getPlayerTwo(){ return this.username2; }
 
     /**
      * to store in the database (under the userID, one user can have multiple Match Record)

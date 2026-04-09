@@ -2,7 +2,9 @@ package ca.ucalgary.seng300.core;
 
 import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
+import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
 import ca.ucalgary.seng300.shared.models.Game;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -148,5 +150,84 @@ public class NetworkTest {
 
         assertEquals("Test Game 1",one.getTitle());
         assertEquals("Test Game 2",two.getTitle());
+    }
+
+    /*
+    Testing the leaderboard call function
+     */
+    @Test
+    void testPullingLeaderboard() throws Exception {
+        // creating fake data
+        byte[] encryptedUsername = Network.encrypt("testPlayer");
+        byte[] encryptedStats = Network.encrypt("15^25"); // 15 wins, 25 matches
+
+        // need to encrypt a string "1" rather than just a byte 1
+        byte[] encryptedTerminator = Network.encrypt("1");
+
+        // allocate space
+        int totalSpace = (4 + encryptedUsername.length) +
+                (4 + encryptedStats.length) +
+                (4 + encryptedTerminator.length);
+
+        // pack the buffer
+        byte[] toSend = ByteBuffer.allocate(totalSpace)
+                .putInt(encryptedUsername.length).put(encryptedUsername)
+                .putInt(encryptedStats.length).put(encryptedStats)
+                .putInt(encryptedTerminator.length).put(encryptedTerminator)
+                .array();
+
+        //create fake response
+        StubSocket stubSocket = new StubSocket(toSend);
+        Network myNetwork = new Network(stubSocket);
+
+        // request tic tac toe data
+        List<LeaderboardEntry> board = myNetwork.getLeaderboard("ttt");
+
+        // see if the information is packed properly
+        assertNotNull(board);
+        assertEquals(1, board.size());
+        assertEquals("testPlayer", board.getFirst().getUsername());
+        assertEquals(15, board.getFirst().getWins());
+        assertEquals(25, board.getFirst().getMatches());
+    }
+
+    /*
+    Test pulling match records
+     */
+    @Test
+    void testPullingMatchRecords() throws Exception {
+        // setting up fake data
+        String recordString = "ttt^PlayerOne^PlayerTwo^PlayerOne^2026-04-08";
+        byte[] encryptedRecord = Network.encrypt(recordString);
+
+        // terminator, encrypted "1"
+        byte[] encryptedTerminator = Network.encrypt("1");
+
+        // allocating space
+        int totalSpace = (4 + encryptedRecord.length) +
+                (4 + encryptedTerminator.length);
+
+        // packing buffer
+        byte[] toSend = ByteBuffer.allocate(totalSpace)
+                .putInt(encryptedRecord.length).put(encryptedRecord)
+                .putInt(encryptedTerminator.length).put(encryptedTerminator)
+                .array();
+
+        // fake output
+        StubSocket stubSocket = new StubSocket(toSend);
+        Network myNetwork = new Network(stubSocket);
+
+        List<MatchRecord> records = myNetwork.getMatchRecords("PlayerOne");
+
+        // assert proper output
+        assertNotNull(records);
+        assertEquals(1, records.size());
+
+        MatchRecord parsedRecord = records.getFirst();
+
+        assertEquals("PlayerOne", parsedRecord.getPlayerOne());
+        assertEquals("PlayerTwo", parsedRecord.getPlayerTwo());
+        assertTrue(parsedRecord.isWinner("PlayerOne"));
+        assertEquals(GameType.TICTACTOE, parsedRecord.getGameType());
     }
 }
