@@ -25,7 +25,7 @@ public class SessionTest {
     static void establishConnection(){
         boolean isServerAvailable = false; // assume we can't connect to the server
 
-        try(Socket testConnect = new Socket("127.0.0.1", 14001)){
+        try(Socket testConnect = new Socket("10.13.76.142", 14001)){
             isServerAvailable = true; // connection could be established
         }catch(IOException e){
             isServerAvailable = false; // connection could not be established
@@ -44,7 +44,7 @@ public class SessionTest {
     @Test
     void testSuccessfulAndFailedAccountCreation() throws Exception {
         //attempt to connect to the server
-        Network connect = Network.getInstance("127.0.0.1", 14001);
+        Network connect = Network.getInstance("10.13.76.142", 14001);
         // test creating an account
         String[] testAcc = {"testuser_" + System.currentTimeMillis(), "password123"};
         // simply generates a unique username because we actually do edit the database when running this test
@@ -65,7 +65,7 @@ public class SessionTest {
     @Test
     void testGameListRetrieval() throws Exception {
         try {
-            Network connect = Network.getInstance("127.0.0.1", 14001);
+            Network connect = Network.getInstance("10.13.76.142", 14001);
 
             // queue request for game list
             connect.queueRequest(Network.GET_GAME_LIST, null).get();
@@ -83,11 +83,11 @@ public class SessionTest {
 
     @Test
     void testLeaderboardRetrieval() throws Exception {
-        Network connect = Network.getInstance("127.0.0.1", 14001);
+        Network connect = Network.getInstance("10.13.76.142", 14001);
 
         // queue request for TTT leaderboard
         // cast the CompletableFuture result back into a List
-        List<LeaderboardEntry> board =
+        List board =
                 (List) connect.queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"}).get();
 
         // assert something was sent back
@@ -96,20 +96,20 @@ public class SessionTest {
 
     @Test
     void testMatchRecordRetrieval() throws Exception {
-        Network connect = Network.getInstance("127.0.0.1", 14001);
+        Network connect = Network.getInstance("10.13.76.142", 14001);
 
         // test username to search for
-        String usernameToSearch = "testusername";
+        String usernameToSearch = "testusename";
 
         List<MatchRecord> records = connect.getMatchRecords(usernameToSearch);
 
-        // assert something was sent back
-        Assertions.assertNotNull(records);
+        // no record for non existing username
+        Assertions.assertNull(records);
     }
 
     @Test
     void testShutdown() throws Exception {
-        Network connect = Network.getInstance("127.0.0.1", 14001);
+        Network connect = Network.getInstance("10.13.76.142", 14001);
 
         // send the logout byte to the server
         connect.queueRequest(Network.LOGOUT, null).get();
