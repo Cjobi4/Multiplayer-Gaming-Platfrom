@@ -155,6 +155,7 @@
                   <Menu mnemonicParsing="false" text="| View Player Stats |">
                     <items>
                       <MenuItem fx:id="viewPlayerStats" mnemonicParsing="false" onAction="#onViewPlayerStatsClick" text="View Player Stats" />
+                        <MenuItem fx:id="demoViewPlayerStats" mnemonicParsing="false" onAction="#onDemoViewPlayerStatsClick" text="DEMO View Player Stats" />
                     </items>
                   </Menu>
               </menus>

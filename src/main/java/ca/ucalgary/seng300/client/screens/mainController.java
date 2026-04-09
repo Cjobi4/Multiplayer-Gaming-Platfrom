@@ -332,8 +332,6 @@ public class mainController {
         } catch (Exception e) {
             message.append("You don't have any info L");
         }
-
-
         information = message.toString();
 
         alert.setContentText(information);
@@ -345,8 +343,6 @@ public class mainController {
         dialogPane.setMinWidth(450);
 
         alert.showAndWait();
-
-
     }
 
     @FXML
@@ -789,5 +785,37 @@ public class mainController {
         }
 
         alert.showAndWait();
+    }
+
+    @FXML
+    protected void onDemoViewPlayerStatsClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Player Stats");
+        alert.setHeaderText("Trainwreck!");
+
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
+        StringBuilder message = new StringBuilder();
+        message.append("Total Matches: 8\n");
+        message.append("Tic Tac Toe Matches: 6 \n");
+        message.append("Connect 4 Matches: 2 \n");
+        message.append("Total Wins: 3 \n");
+        message.append("Connect 4 Wins: 2 \n");
+        message.append("Tic Tac Toe Wins: 1 \n");
+
+        alert.setContentText(message.toString());
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(200);
+        dialogPane.setMinWidth(100);
+
+        alert.showAndWait();
+
     }
 }
