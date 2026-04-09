@@ -80,7 +80,7 @@ public class TTTgameController {
 
             if (networkGame.getGameState() == GameState.PLAYER_WIN || networkGame.getGameState() == GameState.PLAYER_DRAW || networkGame.getGameState() == GameState.PLAYER_LOSE)
             {
-                gameOver();
+                gameOver(networkGame.getGameState().name());
             }
 
             if(!networkBoard.equals(currentBoard)){
@@ -137,7 +137,7 @@ public class TTTgameController {
     }
 
 
-    protected void gameOver(){
+    protected void gameOver(String result){
 
         System.out.println("Loading game over");
         //copy of the button version
@@ -244,6 +244,7 @@ public class TTTgameController {
     //Everytime this is called, the board is updated
     private void updateBoard() {
         TicTacToeBoard board = current.getBoard();
+        turnDisplay.setText("");
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
@@ -274,24 +275,34 @@ public class TTTgameController {
 
     @FXML
     protected void onGridButtonClick(ActionEvent event) throws Exception {
-        char player = current.getCurrentPlayer(); //gets whose turn it is
-        Button clicked = (Button) event.getSource(); //gets what button was clicked
-        int i = 4; //four, so if not initialized, the turn shouldn't count
-        int j = 4;
 
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (clicked == grid[row][col]){
-                    i = row;
-                    j = col;
-                }
-            }
-        }
-        if (current.makeMove(i,j,player)) { //updates if the move was valid
-            turnDisplay.setText("Yippee!");
-        }else{
-            turnDisplay.setText("Please make a valid move");
-        }
+         if (Network.getInstance().getTTTGame().getMyTurn())
+         {
+             Button clicked = (Button) event.getSource(); //gets what button was clicked
+             int i = 4; //four, so if not initialized, the turn shouldn't count
+             int j = 4;
+
+             for (int row = 0; row < 3; row++) {
+                 for (int col = 0; col < 3; col++) {
+                     if (clicked == grid[row][col]){
+                         i = row;
+                         j = col;
+                     }
+                 }
+             }
+             if (current.makeMove(i,j)) { //updates if the move was valid
+                 turnDisplay.setText("Yippee!");
+                 Network.getInstance().getTTTGame().setTurn(false);
+             }else{
+                 turnDisplay.setText("Please make a valid move");
+             }
+         }
+         else
+         {
+             turnDisplay.setText("Not Your Turn");
+         }
+
+
 
     }
 

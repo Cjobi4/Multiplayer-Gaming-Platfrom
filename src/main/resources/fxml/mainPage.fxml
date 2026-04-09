@@ -144,7 +144,7 @@
                 <Menu mnemonicParsing="false" text="| Information |">
                   <items>
                     <MenuItem fx:id="aboutTheApp" mnemonicParsing="false" onAction="#onAboutTheAppButtonClick" text="About The Application" />
-                        <MenuItem fx:id="viewDeveloperCredits" mnemonicParsing="false" onAction="#onViewDeveloperCreditsClick" text="View Developer Credirs" />
+                        <MenuItem fx:id="viewDeveloperCredits" mnemonicParsing="false" onAction="#onViewDeveloperCreditsClick" text="View Developer Credits" />
                   </items>
                 </Menu>
                   <Menu mnemonicParsing="false" text="| View Player Stats |">

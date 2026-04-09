@@ -329,12 +329,7 @@ public class Network extends Thread {
     }
 
     private void receivedTTTMoveRequest() {
-        tttGame.switchTurn();
-
-        // handle move making
-
-        // change to not your turn
-        tttGame.switchTurn();
+        tttGame.setTurn(true);
     }
 
     private void receiveTTTGameState() throws Exception {
