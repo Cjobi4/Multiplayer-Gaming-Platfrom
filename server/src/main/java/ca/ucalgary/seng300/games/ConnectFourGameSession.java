@@ -16,9 +16,9 @@ public class ConnectFourGameSession extends Thread {
     private ConnectFourGame game;
     private boolean isRunning = true;
 
-    private static final int REQUEST_BOARD_UPDATE = 18;
-    private static final int REQUEST_MOVE_PROMPT = 19;
-    private static final int REQUEST_GAME_STATE = 20;
+    private static final int REQUEST_BOARD_UPDATE = 23;
+    private static final int REQUEST_MOVE_PROMPT = 24;
+    private static final int REQUEST_GAME_STATE = 25;
 
     public ConnectFourGameSession(Session p1, Session p2) {
         this.playerOne = p1;
@@ -130,8 +130,8 @@ public class ConnectFourGameSession extends Thread {
                 }
             } else if (game.getGameState() == GameState.PLAYER_DRAW)    //if it was a draw...
             {
-                playerOne.addRequest(REQUEST_GAME_STATE, new String[]{"Game Is A Draw"});
-                playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{"Game Is A Draw"});
+                playerOne.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_DRAW.name()});
+                playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_DRAW.name()});
             }
 
             //hold the date in a string variable
@@ -148,6 +148,13 @@ public class ConnectFourGameSession extends Thread {
                     date,
                     "c4"
             );
+
+            //reset the Sessions' opponents
+            playerOne.setOpp(null);
+            playerTwo.setOpp(null);
+
+            //close the thread
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             System.err.println("Reporting Error: " + e.getMessage());
         }

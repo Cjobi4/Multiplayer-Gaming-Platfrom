@@ -17,6 +17,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -36,6 +38,8 @@ public class C4gameController {
     public TextField messageInput;
     public GridPane c4grid;
     public Text turnDisplayc4;
+
+    private Timeline boardRefreshTimeline;
 
 
     ConnectFourGame current = new ConnectFourGame();
@@ -63,6 +67,36 @@ public class C4gameController {
         messageInput.setOnAction(event -> onSendMessage());
         refreshChatDisplay();
         startChatWatcher();
+        updateBoard();
+        startBoardWatcher();
+    }
+
+    private void syncBoard(){
+        try{
+
+            ConnectFourGame networkGame = Network.getInstance().getC4Game();
+
+            if(networkGame == null){
+                System.out.println("No game created");
+                return;
+            }
+
+            String networkBoard = networkGame.getBoard().toString();
+            String currentBoard = current.getBoard().toString();
+
+            if (networkGame.getGameState() == GameState.PLAYER_WIN || networkGame.getGameState() == GameState.PLAYER_DRAW || networkGame.getGameState() == GameState.PLAYER_LOSE)
+            {
+                gameOver(networkGame.getGameState().name());
+            }
+
+            if(!networkBoard.equals(currentBoard)){
+                current.getBoard().fromString(networkGame.getBoard().toString());
+                updateBoard();
+            }
+
+        } catch (Exception e){
+            System.err.println("Failed to sync board from network: " + e.getMessage());
+        }
     }
 
 
@@ -143,7 +177,21 @@ public class C4gameController {
         }
     }
 
-    protected void gameOver(){ //copy of the button version
+    private void startBoardWatcher(){
+        System.out.println("Starting board watcher");
+        boardRefreshTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> syncBoard()));
+
+        boardRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        boardRefreshTimeline.play();
+    }
+
+    private void stopBoardWatcher() {
+        if (boardRefreshTimeline != null) {
+            boardRefreshTimeline.stop();
+        }
+    }
+
+    protected void gameOver(String result){ //copy of the button version
         try {
             stopChatWatcher();
             //Load fxml file
@@ -228,6 +276,12 @@ public class C4gameController {
         alert.setTitle("How to Play Connect-4");
         alert.setHeaderText("Game Instructions");
 
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
         String instructions = "1. The game is played on a vertical grid with 7 columns and 6 rows.\n\n"
                 + "2. Players take turns dropping one of their colored discs into a column. The disc falls to the lowest available space in that column.\n\n"
                 + "3. The first player to get 4 of their discs in a row (vertically, horizontally, or diagonally) wins the game!\n\n"
@@ -246,7 +300,7 @@ public class C4gameController {
     }
 
     @FXML
-    protected void onGridButtonClick(ActionEvent event) {
+    protected void onGridButtonClick(ActionEvent event) throws Exception {
         char player = current.getCurrentPlayer(); //gets whose turn it is
         Button clicked = (Button) event.getSource(); //gets what button was clicked
         int i = 8; //four, so if not intialized, the turn shouldn't count
@@ -260,12 +314,6 @@ public class C4gameController {
         }
         if (current.makeMove(i,player)) { //updates if the move was valid
             turnDisplayc4.setText("Yippee!");
-            if (current.getGameState() == GameState.PLAYER_WIN){
-                gameOver(); //ends game if someone wins
-            } else if (current.getGameState() == GameState.PLAYER_DRAW) {
-                gameOver(); //ends game if draw
-            }
-//            current.switchTurn();
         }else{
             turnDisplayc4.setText("Please make a valid move");
         }
