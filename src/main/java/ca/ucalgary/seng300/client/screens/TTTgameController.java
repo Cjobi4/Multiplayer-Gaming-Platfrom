@@ -62,6 +62,28 @@ public class TTTgameController {
         startChatWatcher();
     }
 
+    private void syncBoard(){
+        try{
+            TicTacToeGame networkGame = Network.getInstance().getTTTGame(current);
+
+            if(networkGame == null){
+                return;
+            }
+
+            String networkBoard = networkGame.getBoard().toString();
+            String currentBoard = current.getBoard().toString();
+
+            if(!networkBoard.equals(currentBoard)){
+                current =networkGame;
+                updateBoard();
+                lastBoardString = networkBoard;
+
+            }
+        } catch (Exception e){
+            System.err.println("Failed to sync board from network: " + e.getMessage());
+        }
+    }
+
     @FXML
     protected void onSendMessage() {
         String text = messageInput.getText();
