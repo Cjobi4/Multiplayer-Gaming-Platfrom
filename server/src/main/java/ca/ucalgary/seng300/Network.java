@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.UUID;
 
@@ -101,16 +100,13 @@ public class Network
                 byte[] serverPublicKey = generatePublicKey(serverKeyAgreement);
                 client.getOutputStream().write(ByteBuffer.allocate(4).putInt(serverPublicKey.length).array());
                 client.getOutputStream().write(serverPublicKey);
-                System.out.println("public key sent");  //for debug
 
                 //take the client's public key...
                 int keyLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                 byte[] clientPublicKey = client.getInputStream().readNBytes(keyLength);
-                System.out.println("public key received");  //for debug
 
                 //...and create the shared secret and use it to make the AES key
-                AESKey = generateAESKey(clientID, generateSharedKey(serverKeyAgreement, clientPublicKey));   //automatically added to the keyList
-                System.out.println("shared key generated"); //for debug
+                AESKey = generateAESKey(clientID, generateSharedKey(serverKeyAgreement, clientPublicKey));
 
                 //need a flag to let client know if clientID + key pair should be overwritten?
                 /*if server and client connect so client has clientID and then server is restarted, clientID record is
@@ -122,7 +118,6 @@ public class Network
                 clientIDBytes = encrypt(clientID.toString(), AESKey);
                 client.getOutputStream().write(ByteBuffer.allocate(4).putInt(clientIDBytes.length).array());
                 client.getOutputStream().write(clientIDBytes);
-                System.out.println("clientID: " + clientID.toString()); //for debug
 
                 //add it to the key list
                 keyList.put(clientID, AESKey);
@@ -187,11 +182,7 @@ public class Network
 
         //calculate the shared secret using the client's public key and the server's private key
         serverKeyAgreement.doPhase(clientPublicKey, true);
-        byte[] sharedSecret = serverKeyAgreement.generateSecret();
-
-        System.out.println("Shared key: " + Arrays.toString(sharedSecret));    //for debug
-
-        return sharedSecret;
+        return serverKeyAgreement.generateSecret();
     }
 
     /**

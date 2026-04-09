@@ -1,6 +1,12 @@
 package ca.ucalgary.seng300.games.tictactoe;
 
+
+//make smth to tell the player that it is their turn or the game is over or whatever that stuff
+//make the client side part
+//
+//
 //import the enums file
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.games.GameState;
 
 //this is for game/move logic for tic tac toe
@@ -65,7 +71,7 @@ public class TicTacToeGame {
     //change to accept a session object
     //check the session object (git userID check it to compare who is playing, make sure a move request is from who (make sure who is playing))
     //
-    public boolean makeMove(int row, int col, char userGameIdentity) {
+    public boolean makeMove(int row, int col, char userGameIdentity) throws Exception {
         //adding gameState integration now (ticket 177)
 
         //if the game is over (win or tie), do not allow any more moves
@@ -106,7 +112,7 @@ public class TicTacToeGame {
 
         //after all validation checks
         //we can set the players data ('X' or 'O') onto the board at the specific row and column they want to be at
-        board.setCellInfo(row, col, userGameIdentity);
+        // board.setCellInfo(row, col, userGameIdentity);
 
         //incrament the movecount by 1 after each turn
         moveCount++;
@@ -144,10 +150,42 @@ public class TicTacToeGame {
         //since hte game is still running, set the state back to waiting for the next move
         gameState = GameState.TURN_AWAITING_MOVE;
 
+        Network.getInstance().queueRequest(Network.SEND_MOVE_TTT, new String[]{row + " " + col});
+
         //return true!
         return true;
     }
 
+
+    //FOR SANMEET
+    //this function converts the full tic tac toe game state into a string for database storage
+    public String toDataString() {
+
+        //this combines the board string, current player, winner, game state, and move count into one string
+        return board.toString() + "|" + currentPlayer + "|" + winner + "|" + gameState.name() + "|" + moveCount;
+    }
+
+    //this function restores the full tic tac toe game state from a database string
+    public void fromDataString(String gameDataString) {
+
+        //split the full game data string using | as the separator
+        String[] specificGameItem = gameDataString.split("\\|");
+
+        //restore the board using the first part of the string
+        board.fromString(specificGameItem[0]);
+
+        //restore the current player from the second part
+        currentPlayer = specificGameItem[1].charAt(0);
+
+        //restore the winner from the third part
+        winner = specificGameItem[2].charAt(0);
+
+        //restore the game state using the enum value from the fourth part
+        gameState = GameState.valueOf(specificGameItem[3]);
+
+        //restore the move count from the fifth part
+        moveCount = Integer.parseInt(specificGameItem[4]);
+    }
     //GETTERS for new functions
 
     //this getter gets the current player (X, O, ' ')

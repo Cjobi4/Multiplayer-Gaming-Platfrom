@@ -24,16 +24,25 @@ public class LeaderBoard {
         try {
             if (gameType == GameType.TICTACTOE) {
                 List<LeaderboardEntry> leaderboardTTT = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"}).get();
+                if (leaderboardTTT == null) {
+                    return null;
+                }
                 leaderboardTTT.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardTTT;
             }
             else if (gameType == GameType.CONNECT4) {
                 List<LeaderboardEntry> leaderboardC4 = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"c4"}).get();
+                if (leaderboardC4 == null) {
+                    return null;
+                }
                 leaderboardC4.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardC4;
             }
             else {
                 List<LeaderboardEntry> leaderboardCombined = (List<LeaderboardEntry>) Network.getInstance().queueRequest(Network.GET_LEADERBOARD, new String[]{"total"}).get();
+                if (leaderboardCombined == null) {
+                    return null;
+                }
                 leaderboardCombined.sort(Comparator.comparing(LeaderboardEntry::getWins).reversed());
                 return leaderboardCombined;
             }
@@ -50,25 +59,26 @@ public class LeaderBoard {
     public static UserRecord getUserRecord (String username){
         try {
             List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{username}).get();
+            // ArrayList<MatchRecord> records = new ArrayList<MatchRecord>();
             int winsTTT = 0;
             int winsC4 = 0;
             int matchesTTT = 0;
             int matchesC4 = 0;
 
-            for (MatchRecord record : records){
-                if (record.getGameType() == GameType.TICTACTOE){
+            for (MatchRecord record : records) {
+                if (record.getGameType() == GameType.TICTACTOE) {
                     matchesTTT++;
-                    if (record.isWinner(username)){
+                    if (record.isWinner(username)) {
                         winsTTT++;
                     }
-                }
-                else if (record.getGameType() == GameType.CONNECT4){
+                } else if (record.getGameType() == GameType.CONNECT4) {
                     matchesC4++;
-                    if (record.isWinner(username)){
+                    if (record.isWinner(username)) {
                         winsC4++;
                     }
                 }
             }
+            System.out.print("returning user record" + username);
             return new UserRecord(username, winsTTT, matchesTTT, winsC4, matchesC4);
 
         } catch (Exception e) {
