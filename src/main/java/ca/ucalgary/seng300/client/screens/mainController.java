@@ -667,7 +667,7 @@ public class mainController {
                     .queueRequest(Network.LOGOUT, null)
                     .orTimeout(5, TimeUnit.SECONDS)
                     .whenComplete((result, throwable) -> Platform.runLater(() -> {
-                        if (throwable != null || !Boolean.TRUE.equals(result)) {
+                        if (throwable != null || Boolean.TRUE.equals(result)) {
                             System.err.println("Warning: server logout was not confirmed.");
                         }
 
