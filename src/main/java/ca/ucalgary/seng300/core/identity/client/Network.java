@@ -287,7 +287,7 @@ public class Network extends Thread {
                             clearC4Game();
                             c4Game = new ConnectFourGame();
                         }
-                        receiveTTTBoard();
+                        receiveC4Board();
                     }
 //                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
                     else if (descriptionByte == PROMPT_C4_MOVE) {
