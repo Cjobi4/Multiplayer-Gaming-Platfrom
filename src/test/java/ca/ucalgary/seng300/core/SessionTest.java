@@ -21,6 +21,11 @@ public class SessionTest {
     Tests that require an active connection with the main server
     For this reason, this test class is EXTREMELY dependent on the server, and is largely unstable
      */
+
+    /**
+     * April 9 Update:
+     * Tests ARE functional, but they NEED to be made using Weikai's computer as the server.
+     */
     @BeforeAll
     static void establishConnection(){
         boolean isServerAvailable = false; // assume we can't connect to the server
