@@ -31,7 +31,7 @@ public class TicTacToeGameTest {
     Test that the move validation works as intended on bad moves
      */
     @Test
-    void makeMoveTest(){
+    void makeMoveTest() throws Exception {
         TicTacToeGame testGame = new TicTacToeGame();
 
         TicTacToeBoard testBoard = new TicTacToeBoard();
@@ -57,7 +57,7 @@ public class TicTacToeGameTest {
     makeMove() depends on game state to allow/reject moves, regardless of validity
      */
     @Test
-    void testGameStateBlockers(){
+    void testGameStateBlockers() throws Exception {
         TicTacToeGame testGame = new TicTacToeGame();
 
         testGame.setGameState(GameState.PLAYER_WIN); // simulate a player winning
@@ -73,7 +73,7 @@ public class TicTacToeGameTest {
     Simply checking for various tie scenarios
      */
     @Test
-    void testTieConditions(){
+    void testTieConditions() throws Exception {
         TicTacToeGame testGame = new TicTacToeGame();
 
         TicTacToeBoard testBoard = new TicTacToeBoard();
@@ -165,7 +165,7 @@ public class TicTacToeGameTest {
     Testing when making a move results in a win
      */
     @Test
-    void testWinningGame(){
+    void testWinningGame() throws Exception {
         TicTacToeGame testGame = new TicTacToeGame();
         TicTacToeBoard testBoard = new TicTacToeBoard();
 

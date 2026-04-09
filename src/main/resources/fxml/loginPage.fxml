@@ -34,7 +34,7 @@
                   <Font name="Dubai Bold" size="14.0" />
                </font>
             </Label>
-            <Button fx:id="bypassButton" layoutX="105.0" layoutY="362.0" mnemonicParsing="false" onAction="#onByPassButtonClick" prefHeight="25.0" prefWidth="103.0" text="BYPASS LOGIN" />
+            <Button fx:id="bypassButton" layoutX="90.0" layoutY="360.0" mnemonicParsing="false" onAction="#onByPassButtonClick" prefHeight="30.0" prefWidth="103.0" styleClass="bypass-button" text="BYPASS LOGIN" />
             <Label fx:id="errorField" layoutX="120.0" layoutY="202.0" prefHeight="31.0" prefWidth="439.0" textFill="#ff006e">
                <font>
                   <Font name="Dubai Regular" size="14.0" />

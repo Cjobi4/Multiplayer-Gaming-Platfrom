@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.games.connectfour;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.games.GameState;
 
 /**
@@ -35,7 +36,7 @@ public class ConnectFourGame {
      * @param userGameIdentity The character ('X' or 'O') of the moving user.
      * @return true if the move was valid and applied; false otherwise.
      */
-    public boolean makeMove(int col, char userGameIdentity) {
+    public boolean makeMove(int col, char userGameIdentity) throws Exception {
         // Validation logic
         if (gameState == GameState.PLAYER_WIN || gameState == GameState.PLAYER_DRAW)
             return false;
@@ -68,10 +69,15 @@ public class ConnectFourGame {
             gameState = GameState.TURN_DETERMINE_ACTIVE_PLAYER;
             switchTurn();
             gameState = GameState.TURN_AWAITING_MOVE;
+
+            // send network request
+            Network.getInstance().queueRequest(Network.SEND_MOVE_C4, new String[]{String.valueOf(col)});
+
             return true;
         }
         return false;
     }
+
 
     /**
      * Alternates the turn between player 'X' and player 'O'.
@@ -104,7 +110,7 @@ public class ConnectFourGame {
      * @param col The column index (0-6).
      * @return true if the move was valid and applied; false otherwise.
      */
-    public boolean makeMove(int col) {
+    public boolean makeMove(int col) throws Exception {
         return makeMove(col, currentPlayer);
     }
 
@@ -191,5 +197,9 @@ public class ConnectFourGame {
 
     public int getMoveCount() {
         return moveCount;
+    }
+
+    public void setGameState(GameState newState){
+        this.gameState = newState;
     }
 }

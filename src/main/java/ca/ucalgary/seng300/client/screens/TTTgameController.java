@@ -1,11 +1,15 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.identity.client.Session;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
+import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Message;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,12 +17,15 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.games.GameState;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
@@ -41,19 +48,71 @@ public class TTTgameController {
     TicTacToeGame current = new TicTacToeGame();
     Button[][] grid;
 
+    private Timeline chatRefreshTimeline;
+    private int lastChatSize = -1;
+
+    private Timeline boardRefreshTimeline;
+
+
     public void initialize() {
         grid = new Button[][]{{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
+
+        messageInput.setOnAction(event -> onSendMessage());
+        refreshChatDisplay();
+        startChatWatcher();
+
+        updateBoard();
+        startBoardWatcher();
+    }
+
+    private void syncBoard(){
+        try{
+
+            TicTacToeGame networkGame = Network.getInstance().getTTTGame();
+
+            if(networkGame == null){
+                System.out.println("No game created");
+                return;
+            }
+
+            String networkBoard = networkGame.getBoard().toString();
+            String currentBoard = current.getBoard().toString();
+
+            if (networkGame.getGameState() == GameState.PLAYER_WIN || networkGame.getGameState() == GameState.PLAYER_DRAW || networkGame.getGameState() == GameState.PLAYER_LOSE)
+            {
+                gameOver();
+            }
+
+            if(!networkBoard.equals(currentBoard)){
+                current.getBoard().fromString(networkGame.getBoard().toString());
+                updateBoard();
+            }
+
+        } catch (Exception e){
+            System.err.println("Failed to sync board from network: " + e.getMessage());
+        }
     }
 
     @FXML
     protected void onSendMessage() {
         String text = messageInput.getText();
-        if (text != null && !text.isEmpty()) {
-            Message newMessage = new Message(text, ActivePlayer.getInstance().getUsername());
+        if (text != null && !text.trim().isEmpty()) {
+            //Message newMessage = new Message(text, "Player 1");
+            String sender = ActivePlayer.getInstance().getUsername();
 
-            ChatRegistry.getInstance().addMessage(newMessage);
+            if(sender == null || sender.isBlank()){
+                sender = "Player";
+            }
+
+            try{
+                Network.getInstance().queueRequest(Network.send_chat, new String[]{text.trim()});
+                System.out.println("chat message sent");
+            } catch(Exception e){
+                System.err.println("Failed to send chat message: " + e.getMessage());
+            }
+
+
             messageInput.clear();
-            refreshChatDisplay();
         }
     }
 
@@ -78,8 +137,13 @@ public class TTTgameController {
     }
 
 
-    protected void gameOver(){ //copy of the button version
+    protected void gameOver(){
+
+        System.out.println("Loading game over");
+        //copy of the button version
         try {
+            stopBoardWatcher();
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
@@ -104,6 +168,8 @@ public class TTTgameController {
     @FXML
     protected void onBackButtonClick(ActionEvent event) {
         try {
+            stopChatWatcher();
+            stopBoardWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TTTopponentSelectPage.fxml"));
             Parent opponentRoot = loader.load();
@@ -131,6 +197,12 @@ public class TTTgameController {
         alert.setTitle("How to Play Tic-Tac-Toe");
         alert.setHeaderText("Game Instructions");
 
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
         String instructions = "1. The game is played on a 3x3 grid.\n\n"
                 + "2. If you are X, your opponent is O. If you are O, your opponent is X. Players take turns putting their marks in empty squares.\n\n"
                 + "3. The first player to get 3 of their marks in a row (up, down, across, or diagonally) is the winner.\n\n"
@@ -148,23 +220,63 @@ public class TTTgameController {
 
     }
 
+    private void startChatWatcher(){
+        chatRefreshTimeline = new Timeline(
+                new KeyFrame(Duration.millis(250), event ->{
+                    int currentSize = ChatRegistry.getInstance().ListAll().size();
+                    if(currentSize != lastChatSize){
+                        refreshChatDisplay();
+                        lastChatSize = currentSize;
+                    }
+                })
+        );
+
+        chatRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        chatRefreshTimeline.play();
+    }
+
+    private void stopChatWatcher() {
+        if (chatRefreshTimeline != null) {
+            chatRefreshTimeline.stop();
+        }
+    }
+
     //Everytime this is called, the board is updated
-    private void updateBoard(){
-       TicTacToeBoard board = current.getBoard();
+    private void updateBoard() {
+        TicTacToeBoard board = current.getBoard();
+
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                if (!board.isCellEmpty(row, col)){
-                    grid[row][col].setText(String.valueOf(board.getCellInfo(row,col)));
+                char value = board.getCellInfo(row, col);
+
+                if (value == ' ') {
+                    grid[row][col].setText("");
+                } else {
+                    grid[row][col].setText(String.valueOf(value));
                 }
             }
         }
     }
 
+    private void startBoardWatcher(){
+        System.out.println("Starting board watcher");
+        boardRefreshTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> syncBoard()));
+
+        boardRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        boardRefreshTimeline.play();
+    }
+
+    private void stopBoardWatcher() {
+        if (boardRefreshTimeline != null) {
+            boardRefreshTimeline.stop();
+        }
+    }
+
     @FXML
-    protected void onGridButtonClick(ActionEvent event) {
+    protected void onGridButtonClick(ActionEvent event) throws Exception {
         char player = current.getCurrentPlayer(); //gets whose turn it is
         Button clicked = (Button) event.getSource(); //gets what button was clicked
-        int i = 4; //four, so if not intialized, the turn shouldn't count
+        int i = 4; //four, so if not initialized, the turn shouldn't count
         int j = 4;
 
         for (int row = 0; row < 3; row++) {
@@ -177,17 +289,39 @@ public class TTTgameController {
         }
         if (current.makeMove(i,j,player)) { //updates if the move was valid
             turnDisplay.setText("Yippee!");
-            if (current.getGameState() == GameState.PLAYER_WIN){
-                gameOver(); //ends game if someone wins
-            } else if (current.getGameState() == GameState.PLAYER_DRAW) {
-                gameOver(); //ends game if draw
-            }
-//            current.switchTurn();
         }else{
             turnDisplay.setText("Please make a valid move");
         }
 
-        updateBoard();
+    }
+
+    @FXML
+    protected void onGameOverButtonClick(ActionEvent event) {
+        try {
+            stopBoardWatcher();
+            //Load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
+            Parent gameOverRoot = loader.load();
+
+
+            gameOverController controller = loader.getController();
+            controller.setGameType(GameType.CONNECT4);
+
+            //Get current stage from the button click
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            //Create new scene and set it on the stage
+            Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
+            stage.setScene(gameOverScene);
+            stage.setTitle("Game Over"); //Change stage title to reflect current scene
+            stage.setResizable(false);
+            stage.show();
+
+            ChatRegistry.getInstance().clearChat();
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
+        }
     }
 
 

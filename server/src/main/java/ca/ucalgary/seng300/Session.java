@@ -1,7 +1,7 @@
 package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.games.ConnectFourGameSession;
-import ca.ucalgary.seng300.games.TicTacToeGameSession;
+import ca.ucalgary.seng300.games.TTTServerSession;
 
 import javax.crypto.SecretKey;
 import java.net.Socket;
@@ -44,11 +44,14 @@ public class Session extends Thread
     //private final int MATCH_REJECTED = 15;
     //private final int SEND_CHALLENGE = 16;
     //private final int RECEIVE_CHALLENGE = 17;
-    //private final int SEND_BOARD = 18;
-    //private final int PROMPT_MOVE = 19;
-    //private final int NOTIFY_GAME_STATE = 20;
+    //private final int SEND_TTT_BOARD = 18;
+    //private final int PROMPT_TTT_MOVE = 19;
+    //private final int NOTIFY_TTT_GAME_STATE = 20;
     //private final int SEND_CHAT = 21;
     //private final int RECEIVE_CHAT = 22;
+    //private final int SEND_C4_BOARD = 23;
+    //private final int PROMPT_C4_MOVE = 24;
+    //private final int NOTIFY_C4_GAME_STATE = 25;
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -129,6 +132,8 @@ public class Session extends Thread
                     {
                         //handle the request
                         req = requestQueue.take();
+
+                        System.out.println("Request " + req.getType() + " taken from queue.");
                         processRequest(req.getType(), AESKey, req);
                     }
                 }
@@ -199,7 +204,7 @@ public class Session extends Thread
     void processRequest(int requestType, SecretKey AESKey, Request req) throws Exception
     {
         int messageLength;
-        byte[] messageBytes;
+        byte[] messageBytes = new byte[4];
         String message;
         String[] chatMessage;
         int result;
@@ -300,7 +305,6 @@ public class Session extends Thread
         //these requests require the user to be logged in
         if (loggedIn)
         {
-            System.out.println("reached.");
             switch (requestType)
             {
                 case 3:     //if it was a logout request
@@ -340,7 +344,6 @@ public class Session extends Thread
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
-                    System.out.println("message: " + message);
 
                     //collect the leaderboard entries from the database for that game
                     rs = Database.getAllLeaderboardEntries(message);
@@ -348,7 +351,6 @@ public class Session extends Thread
                     //go through the results
                     if (rs.next())
                     {
-                        System.out.println("sbuild made");
 
                         //go through each entry...
                         do
@@ -360,33 +362,26 @@ public class Session extends Thread
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
 
-                            System.out.println("Username sent: " + rs.getString(1));
-
                             //then turn the wins/losses into a single string
                             sbuild.append(rs.getString(message + "Wins"));
                             sbuild.append("^");
                             sbuild.append(rs.getString(message + "MatchesPlayed"));
 
-                            System.out.println("matchs sent: " + sbuild.toString());
-
                             //send the formatted leaderboard entry to the client
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
-                            System.out.println("leaderboard entry sent");  //for debug
                         } while (rs.next());
 
                         //notify the client of success
                         messageBytes = Network.encrypt("1", AESKey);
                         client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                         client.getOutputStream().write(messageBytes);
-                        System.out.println("1 sent");
                     } else //if something went wrong and no leaderboard data was found, notify client
                     {
                         messageBytes = Network.encrypt("0", AESKey);
                         client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                         client.getOutputStream().write(messageBytes);
-                        System.out.println("0 sent");
                     }
                     break;
                 case 6:    //if it was a request for match record's from a specific user
@@ -395,15 +390,12 @@ public class Session extends Thread
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
 
-                    System.out.println("Fetching match records for " + message);
-
                     //collect the match records with matching usernames from the database
                     rs = Database.getMatchRecord(message);
 
                     //if the inputted username was valid, go through the results
                     if (rs.next())
                     {
-                        System.out.println("Match records found for " + message);
                         //go through each match record...
                         do
                         {
@@ -415,8 +407,6 @@ public class Session extends Thread
                                 sbuild.append("^");
                             }
 
-                            System.out.println("match record is: " + sbuild.toString());
-
                             //remove the trailing ^ symbol
                             sbuild.deleteCharAt(sbuild.length() - 1);
 
@@ -424,20 +414,17 @@ public class Session extends Thread
                             messageBytes = Network.encrypt(sbuild.toString(), AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
-                            System.out.println("match record sent");  //for debug
 
                             //notify the client of success
                             messageBytes = Network.encrypt("1", AESKey);
                             client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                             client.getOutputStream().write(messageBytes);
-                            System.out.println("1 sent");
                         } while (rs.next());
                     } else //if something went wrong and no match records were found, notify client
                     {
                         messageBytes = Network.encrypt("0", AESKey);
                         client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                         client.getOutputStream().write(messageBytes);
-                        System.out.println("0 sent");
                     }
                     break;
                 case 7:     //if it was a request to join the Tic-tac-toe matchmaking queue...
@@ -562,7 +549,7 @@ public class Session extends Thread
                         oppSession.setOpp(this);
 
                         if (gameType.equals("ttt")) {
-                            new TicTacToeGameSession(this, oppSession).start();
+                            new TTTServerSession(this, oppSession).start();
                         } else {
                             new ConnectFourGameSession(this, oppSession).start();
                         }
@@ -592,7 +579,7 @@ public class Session extends Thread
 
                     client.getOutputStream().write(result);
                     break;
-                case 18:    //if sending board string...
+                case 18:    //if sending ttt board string...
                     //p1.addRequest(18, new String[]{boardString});
                     //notify client of incoming board
                     client.getOutputStream().write(18);
@@ -603,21 +590,72 @@ public class Session extends Thread
                     client.getOutputStream().write(messageBytes);
                     System.out.println("board sent");
                     break;
-                case 19:    //if asking for a move from client...
+                case 19:    //if asking for a c4 move from client...
                     //Request req = new Request(18, new String[]{boardString});
                     //p1.addRequest(req);
                     //String move = req.getResult();
                     //notify client it's their time
                     client.getOutputStream().write(19);
+                    System.out.println("Asking for move from " + username);
 
-                    //collect their move
-                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    int possibleReq = 0;
+
+                    //keep checking for chat messages until a move is sent
+                    do
+                    {
+                        //collect the first byte of the next received message
+                        possibleReq = client.getInputStream().read();
+                        System.out.println("possible req is: " + possibleReq);
+
+                        //if it turned out to be a chat message, send it to opp
+                        if (possibleReq == 21)
+                        {
+                            chatMessage = new String[2];
+
+                            //collect the id
+                            messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                            System.out.println("chat ID length: " + messageLength);
+                            messageBytes = client.getInputStream().readNBytes(messageLength);
+                            chatMessage[0] = Network.decrypt(messageBytes, AESKey);
+
+                            System.out.println("id sent to server: " + chatMessage[0]);
+
+                            //collect the contents
+                            messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                            messageBytes = client.getInputStream().readNBytes(messageLength);
+                            chatMessage[1] = Network.decrypt(messageBytes, AESKey);
+
+                            System.out.println("contents sent to server: " + chatMessage[1]);
+
+                            //collect the sender
+//                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+//                    messageBytes = client.getInputStream().readNBytes(messageLength);
+//                    chatMessage[2] = Network.decrypt(messageBytes, AESKey);
+                            //chatMessage[2] = username;
+
+                            //send the message to the recipient
+                            opp.addRequest(22, chatMessage);
+                            System.out.println("Chat request added.");
+                        }
+                    } while (possibleReq == 21);
+
+                    //otherwise collect the rest of the message length
+                    byte[] rBytes = client.getInputStream().readNBytes(3);
+                    byte[] fullBytes = {(byte) possibleReq, 0, 0, 0};
+
+                    System.arraycopy(rBytes, 0, fullBytes, 1, 3);
+
+                    //then use that to collect their move
+                    messageLength = ByteBuffer.wrap(fullBytes).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
 
+                    System.out.println("Move is: " + message);
+
+                    //give the client's move back to the game
                     req.setFuture(message);
                     break;
-                case 20:    //if sending game state to client...
+                case 20:    //if sending ttt game state to client...
                     //p1.addRequest(20, new String[]{gameStateString});
                     //notify client of incoming game state
                     client.getOutputStream().write(20);
@@ -633,17 +671,18 @@ public class Session extends Thread
 
                     //collect the id
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    System.out.println("chat ID length: " + messageLength);
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     chatMessage[0] = Network.decrypt(messageBytes, AESKey);
 
-                    System.out.println("id read: " + chatMessage[0]);
+                    System.out.println("id sent to server: " + chatMessage[0]);
 
                     //collect the contents
                     messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     chatMessage[1] = Network.decrypt(messageBytes, AESKey);
 
-                    System.out.println("content read: " + chatMessage[1]);
+                    System.out.println("contents sent to server: " + chatMessage[1]);
 
                     //collect the sender
 //                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
@@ -653,14 +692,12 @@ public class Session extends Thread
 
                     //send the message to the recipient
                     opp.addRequest(22, chatMessage);
-
-                    System.out.println("Chat message from " + username + ". Contents: " + chatMessage[1] + " id: " + chatMessage[0]);
+                    System.out.println("Chat request added.");
                     break;
                 case 22:    //if receiving a chat message...
                     //get the message
                     chatMessage = req.getParameters();
 
-                    //notify client of incoming message
                     client.getOutputStream().write(22);
 
                     //send the id
@@ -668,17 +705,108 @@ public class Session extends Thread
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
 
+                    System.out.println("id sent from server: " + chatMessage[0]);
+
                     //send the contents
                     messageBytes = Network.encrypt(chatMessage[1], AESKey);
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
+
+                    System.out.println("content sent from server: " + chatMessage[1]);
 
                     //send the sender
                     messageBytes = Network.encrypt(opp.username, AESKey);
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
 
-                    System.out.println("Chat message sent by " + opp.username + ". Contents: " + chatMessage[1] + " id: " + chatMessage[0]);
+                    System.out.println("sender sent from server: " + opp.username);
+                    break;
+                case 23:    //if sending c4 board string...
+                    //p1.addRequest(18, new String[]{boardString});
+                    //notify client of incoming board
+                    client.getOutputStream().write(23);
+
+                    //send the board
+                    messageBytes = Network.encrypt(req.getParameters()[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("board sent");
+                    break;
+                case 24:    //if asking for a c4 move from client...
+                    //Request req = new Request(18, new String[]{boardString});
+                    //p1.addRequest(req);
+                    //String move = req.getResult();
+                    //notify client it's their time
+                    client.getOutputStream().write(24);
+                    System.out.println("Asking for move from " + username);
+
+                    possibleReq = 0;
+
+                    //keep checking for chat messages until a move is sent
+                    do
+                    {
+                        //collect the first byte of the next received message
+                        possibleReq = client.getInputStream().read();
+                        System.out.println("possible req is: " + possibleReq);
+
+                        //if it turned out to be a chat message, send it to opp
+                        if (possibleReq == 21)
+                        {
+                            chatMessage = new String[2];
+
+                            //collect the id
+                            messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                            System.out.println("chat ID length: " + messageLength);
+                            messageBytes = client.getInputStream().readNBytes(messageLength);
+                            chatMessage[0] = Network.decrypt(messageBytes, AESKey);
+
+                            System.out.println("id sent to server: " + chatMessage[0]);
+
+                            //collect the contents
+                            messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                            messageBytes = client.getInputStream().readNBytes(messageLength);
+                            chatMessage[1] = Network.decrypt(messageBytes, AESKey);
+
+                            System.out.println("contents sent to server: " + chatMessage[1]);
+
+                            //collect the sender
+//                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+//                    messageBytes = client.getInputStream().readNBytes(messageLength);
+//                    chatMessage[2] = Network.decrypt(messageBytes, AESKey);
+                            //chatMessage[2] = username;
+
+                            //send the message to the recipient
+                            opp.addRequest(22, chatMessage);
+                            System.out.println("Chat request added.");
+                        }
+                    } while (possibleReq == 21);
+
+                    //otherwise collect the rest of the message length
+                    rBytes = client.getInputStream().readNBytes(3);
+                    fullBytes = new byte[]{(byte) possibleReq, 0, 0, 0};
+
+                    System.arraycopy(rBytes, 0, fullBytes, 1, 3);
+
+                    //then use that to collect their move
+                    messageLength = ByteBuffer.wrap(fullBytes).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    message = Network.decrypt(messageBytes, AESKey);
+
+                    System.out.println("Move is: " + message);
+
+                    //give the client's move back to the game
+                    req.setFuture(message);
+                    break;
+                case 25:    //if sending c4 game state to client...
+                    //p1.addRequest(20, new String[]{gameStateString});
+                    //notify client of incoming game state
+                    client.getOutputStream().write(25);
+
+                    //send the game state
+                    messageBytes = Network.encrypt(req.getParameters()[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("game state sent");
                     break;
             }
         }

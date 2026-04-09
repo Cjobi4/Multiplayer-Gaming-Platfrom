@@ -48,7 +48,7 @@ public class ConnectFourGameTest {
      * Actual Output: the player that current player is updated to after makeMove is used
      */
     @Test
-    void testGetCurrentPlayerAfterMoveMade() {
+    void testGetCurrentPlayerAfterMoveMade() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
         game.makeMove(0);
 
@@ -65,7 +65,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testConnectFourVertical0thColumnWinsCorrect(){
+    void testConnectFourVertical0thColumnWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         game.makeMove(0);   // player x 1
@@ -88,7 +88,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testConnectFourVertical1stColWinsCorrect(){
+    void testConnectFourVertical1stColWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         game.makeMove(0);   // x
@@ -112,7 +112,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testConnectFourVertical2ndColWinsCorrect(){
+    void testConnectFourVertical2ndColWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         game.makeMove(2);   // player x 1
@@ -135,7 +135,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testConnectFourVertical3rdColWinsCorrect(){
+    void testConnectFourVertical3rdColWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         game.makeMove(3);   // player x 1
@@ -158,7 +158,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testConnectFourVertical4thColWinsCorrect(){
+    void testConnectFourVertical4thColWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         game.makeMove(4);   // player x 1
@@ -181,7 +181,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testConnectFourVertical5thColWinsCorrect(){
+    void testConnectFourVertical5thColWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         game.makeMove(5);   // player x 1
@@ -204,7 +204,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testConnectFourVertical6thColWinsCorrect(){
+    void testConnectFourVertical6thColWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         game.makeMove(6);   // player x 1
@@ -227,7 +227,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testBackslashDiagonalWinsCorrect(){
+    void testBackslashDiagonalWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         // need to create a backslash of 'O'
@@ -256,7 +256,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testForwardSlashDiagonalWinsCorrect(){
+    void testForwardSlashDiagonalWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         // manually add each piece
@@ -284,7 +284,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testHorizontal1stRowWinsCorrect(){
+    void testHorizontal1stRowWinsCorrect() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         game.makeMove(0); //x
@@ -323,7 +323,7 @@ public class ConnectFourGameTest {
      * Actual Output: the win condition based on the checkWin logic
      */
     @Test
-    void testCheckWinWhenBoardHasNoWinsReturnsFalse() {
+    void testCheckWinWhenBoardHasNoWinsReturnsFalse() throws Exception {
         ConnectFourGame game = new ConnectFourGame();
 
         // adding pieces to the board

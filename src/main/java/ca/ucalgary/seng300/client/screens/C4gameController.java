@@ -1,11 +1,15 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Message;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +23,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ca.ucalgary.seng300.games.connectfour.ConnectFourGame;
 import ca.ucalgary.seng300.games.connectfour.ConnectFourBoard;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
@@ -32,9 +37,14 @@ public class C4gameController {
     public GridPane c4grid;
     public Text turnDisplayc4;
 
+    private Timeline boardRefreshTimeline;
+
 
     ConnectFourGame current = new ConnectFourGame();
     Button[][] grid = new Button[6][7];
+
+    private Timeline chatRefreshTimeline;
+    private int lastChatSize = -1;
 
     public void initialize() {
         for (Node node : c4grid.getChildren()) {
@@ -48,9 +58,42 @@ public class C4gameController {
                 if (col == null) {
                     col = 0;
                 }
-
                 grid[row][col] = button;
             }
+        }
+
+        messageInput.setOnAction(event -> onSendMessage());
+        refreshChatDisplay();
+        startChatWatcher();
+        updateBoard();
+        startBoardWatcher();
+    }
+
+    private void syncBoard(){
+        try{
+
+            ConnectFourGame networkGame = Network.getInstance().getC4Game();
+
+            if(networkGame == null){
+                System.out.println("No game created");
+                return;
+            }
+
+            String networkBoard = networkGame.getBoard().toString();
+            String currentBoard = current.getBoard().toString();
+
+            if (networkGame.getGameState() == GameState.PLAYER_WIN || networkGame.getGameState() == GameState.PLAYER_DRAW || networkGame.getGameState() == GameState.PLAYER_LOSE)
+            {
+                gameOver();
+            }
+
+            if(!networkBoard.equals(currentBoard)){
+                current.getBoard().fromString(networkGame.getBoard().toString());
+                updateBoard();
+            }
+
+        } catch (Exception e){
+            System.err.println("Failed to sync board from network: " + e.getMessage());
         }
     }
 
@@ -58,12 +101,23 @@ public class C4gameController {
     @FXML
     protected void onSendMessage() {
         String text = messageInput.getText();
-        if (text != null && !text.isEmpty()) {
-            Message newMessage = new Message(text, "Player 1");
+        if (text != null && !text.trim().isEmpty()) {
+            //Message newMessage = new Message(text, "Player 1");
+            String sender = ActivePlayer.getInstance().getUsername();
 
-            ChatRegistry.getInstance().addMessage(newMessage);
+            if(sender == null || sender.isBlank()){
+                sender = "Player";
+            }
+
+            try{
+                Network.getInstance().queueRequest(Network.send_chat, new String[]{text.trim()});
+                System.out.println("chat message sent");
+            } catch(Exception e){
+                System.err.println("Failed to send chat message: " + e.getMessage());
+            }
+
+
             messageInput.clear();
-            refreshChatDisplay();
         }
     }
 
@@ -87,6 +141,27 @@ public class C4gameController {
         chatScrollPane.setVvalue(1.0);
     }
 
+    private void startChatWatcher(){
+        chatRefreshTimeline = new Timeline(
+                new KeyFrame(Duration.millis(250), event ->{
+                    int currentSize = ChatRegistry.getInstance().ListAll().size();
+                    if(currentSize != lastChatSize){
+                        refreshChatDisplay();
+                        lastChatSize = currentSize;
+                    }
+                })
+        );
+
+        chatRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        chatRefreshTimeline.play();
+    }
+
+    private void stopChatWatcher() {
+        if (chatRefreshTimeline != null) {
+            chatRefreshTimeline.stop();
+        }
+    }
+
     private void updateBoard(){
         ConnectFourBoard board = current.getBoard(); //loops through the board
         for (int i = 0; i < 6; i++) {
@@ -100,8 +175,23 @@ public class C4gameController {
         }
     }
 
+    private void startBoardWatcher(){
+        System.out.println("Starting board watcher");
+        boardRefreshTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> syncBoard()));
+
+        boardRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        boardRefreshTimeline.play();
+    }
+
+    private void stopBoardWatcher() {
+        if (boardRefreshTimeline != null) {
+            boardRefreshTimeline.stop();
+        }
+    }
+
     protected void gameOver(){ //copy of the button version
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
@@ -117,15 +207,6 @@ public class C4gameController {
             stage.setResizable(false);
             stage.show();
 
-
-            // Create Match Record (Not sure where to get player info, will be needed to make a match record)
-
-            // MatchRecord matchRecord = new MatchRecord();
-
-            // Update Leaderboard
-
-            // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
-
             ChatRegistry.getInstance().clearChat();
 
         } catch (IOException e) {
@@ -136,6 +217,7 @@ public class C4gameController {
     @FXML
     protected void onGameOverButtonClick(ActionEvent event) {
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
@@ -154,14 +236,6 @@ public class C4gameController {
             stage.setResizable(false);
             stage.show();
 
-            // Create Match Record (Not sure where to get player info, will be needed to make a match record)
-
-            // MatchRecord matchRecord = new MatchRecord();
-
-            // Update Leaderboard
-
-            // TODO Need to communicate with someone on my team for this part, their code is hard for me to understand
-
             ChatRegistry.getInstance().clearChat();
 
         } catch (IOException e) {
@@ -172,6 +246,7 @@ public class C4gameController {
     @FXML
     protected void onBackButtonClick(ActionEvent event) {
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/C4opponentSelectPage.fxml"));
             Parent opponentRoot = loader.load();
@@ -217,7 +292,7 @@ public class C4gameController {
     }
 
     @FXML
-    protected void onGridButtonClick(ActionEvent event) {
+    protected void onGridButtonClick(ActionEvent event) throws Exception {
         char player = current.getCurrentPlayer(); //gets whose turn it is
         Button clicked = (Button) event.getSource(); //gets what button was clicked
         int i = 8; //four, so if not intialized, the turn shouldn't count
@@ -231,12 +306,6 @@ public class C4gameController {
         }
         if (current.makeMove(i,player)) { //updates if the move was valid
             turnDisplayc4.setText("Yippee!");
-            if (current.getGameState() == GameState.PLAYER_WIN){
-                gameOver(); //ends game if someone wins
-            } else if (current.getGameState() == GameState.PLAYER_DRAW) {
-                gameOver(); //ends game if draw
-            }
-//            current.switchTurn();
         }else{
             turnDisplayc4.setText("Please make a valid move");
         }
