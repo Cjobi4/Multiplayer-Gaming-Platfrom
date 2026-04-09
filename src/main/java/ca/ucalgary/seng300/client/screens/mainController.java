@@ -268,7 +268,7 @@ public class mainController {
                 "The program tracks wins and matches to place players on aleaderboard, " +
                 "ensuring competitive matchmaking or allowing for direct online challenges.\n\n" +
 
-                "Version: 6.7\n" +
+                "Version: 3.1.5\n" +
 
                 "---------------------------------------------------------\n\n" +
                 "HOW TO MATCHMAKE:\n" +
