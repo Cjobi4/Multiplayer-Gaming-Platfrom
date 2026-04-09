@@ -2,12 +2,16 @@ package ca.ucalgary.seng300.core;
 
 import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
+import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
+import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -31,18 +35,19 @@ public class SessionTest {
         // if no connection is made, the rest of the tests will be skipped as they WILL fail with no connection
     }
 
-    // this BeforeAll is effectively a test in itself, which tests if a connection can be made
 
     /**
     If the BeforeAll fails, then NONE of these tests are run
      */
+
+
     @Test
     void testSuccessfulAndFailedAccountCreation() throws Exception {
         //attempt to connect to the server
         Network connect = Network.getInstance("127.0.0.1", 14001);
-
         // test creating an account
-        String[] testAcc = {"testusername", "password123"};
+        String[] testAcc = {"testuser_" + System.currentTimeMillis(), "password123"};
+        // simply generates a unique username because we actually do edit the database when running this test
 
         // send request to the server
         int result = (Integer) connect.queueRequest(Network.CREATE_ACCOUNT, testAcc).get();
@@ -78,17 +83,37 @@ public class SessionTest {
 
     @Test
     void testLeaderboardRetrieval() throws Exception {
+        Network connect = Network.getInstance("127.0.0.1", 14001);
 
+        // queue request for TTT leaderboard
+        // cast the CompletableFuture result back into a List
+        List<LeaderboardEntry> board =
+                (List) connect.queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"}).get();
+
+        // assert something was sent back
+        Assertions.assertNotNull(board);
     }
 
     @Test
     void testMatchRecordRetrieval() throws Exception {
+        Network connect = Network.getInstance("127.0.0.1", 14001);
 
+        // test username to search for
+        String usernameToSearch = "testusername";
+
+        List<MatchRecord> records = connect.getMatchRecords(usernameToSearch);
+
+        // assert something was sent back
+        Assertions.assertNotNull(records);
     }
 
     @Test
     void testShutdown() throws Exception {
+        Network connect = Network.getInstance("127.0.0.1", 14001);
 
+        // send the logout byte to the server
+        connect.queueRequest(Network.LOGOUT, null).get();
+        // may be impossible to check for a logout but here just in case
     }
 
     // Matchmaking tests should be an entity of their own, so I will not be testing them.
