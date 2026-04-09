@@ -357,17 +357,21 @@ public class mainController {
         imageView.setFitHeight(70);
         alert.setGraphic(imageView);
 
-        String information = "DEVELOPED BY: \n" +
+        String information = "DEVELOPED BY: \n\n" +
                 "Platform Core Team:\n" +
-                "Owen Hilton, Sanmeet Braich, Weikai Chen, Anh Nguyen \n" +
+                "Owen Hilton, Sanmeet Braich, Weikai Chen, Anh Nguyen \n\n" +
+                "---------------------------------------------------------\n\n" +
                 "Client-U Team:\n" +
-                "Rebecca Glover, Aanya Ahmed, Cj Obi, Heeyoun Han \n" +
+                "Rebecca Glover, Aanya Ahmed, Cj Obi, Heeyoun Han \n\n" +
+                "---------------------------------------------------------\n\n" +
                 "Quality-Testing Team:\n" +
-                "Jordan Tran, Shubhangi Babu, Jaspreet Sandhu \n" +
+                "Jordan Tran, Shubhangi Babu, Jaspreet Sandhu \n\n" +
+                "---------------------------------------------------------\n\n" +
                 "Rules-Validation Team:\n" +
-                "Sajan Johal, Hoang Khoi Nguyen, Jonathan Hooi \n" +
+                "Sajan Johal, Hoang Khoi Nguyen, Jonathan Hooi \n\n" +
+                "---------------------------------------------------------\n\n" +
                 "Integration Team:\n" +
-                "Justin Ma, Anh Tuan Vo, Dai Toan Dang\n";
+                "Justin Ma, Anh Tuan Vo, Dai Toan Dang\n\n";
 
         alert.setContentText(information);
 
