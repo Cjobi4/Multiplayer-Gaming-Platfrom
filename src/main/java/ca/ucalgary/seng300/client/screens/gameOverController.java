@@ -50,7 +50,7 @@ public class gameOverController {
 
         usernameLabel.setText(activeUsername);
         scoreValueLabel.setText("Loading...");
-        winLossLabel.setText("Loading");
+        winLossLabel.setText("Loading...");
         rankingListView.getItems().clear();
         rankingListView.getItems().add("Loading rankings...");
 //        usernameLabel.setText(ActivePlayer.getInstance().getUsername());

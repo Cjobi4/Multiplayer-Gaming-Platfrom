@@ -194,7 +194,9 @@ public class C4gameController {
 
     protected void gameOver(String result){ //copy of the button version
         try {
+            System.out.println("Game is over");
             stopChatWatcher();
+            stopBoardWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
