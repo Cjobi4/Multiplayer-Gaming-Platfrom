@@ -198,6 +198,34 @@ public class TTTgameController {
         updateBoard();
     }
 
+    @FXML
+    protected void onGameOverButtonClick(ActionEvent event) {
+        try {
+            //Load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
+            Parent gameOverRoot = loader.load();
+
+
+            gameOverController controller = loader.getController();
+            controller.setGameType(GameType.CONNECT4);
+
+            //Get current stage from the button click
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            //Create new scene and set it on the stage
+            Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
+            stage.setScene(gameOverScene);
+            stage.setTitle("Game Over"); //Change stage title to reflect current scene
+            stage.setResizable(false);
+            stage.show();
+
+            ChatRegistry.getInstance().clearChat();
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
+        }
+    }
+
 
 
 }

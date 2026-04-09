@@ -53,6 +53,7 @@
                                         <Font name="Dubai Medium" size="23.0" />
                                     </font>
                                 </Text>
+                        <Button fx:id="gameOverButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onGameOverButtonClick" prefHeight="35.0" prefWidth="108.0" styleClass="bypass-button" text="BYPASS" />
                             </children>
                         </AnchorPane>
                     </children>
