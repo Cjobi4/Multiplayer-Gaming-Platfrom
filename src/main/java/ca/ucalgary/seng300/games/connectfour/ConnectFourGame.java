@@ -1,5 +1,6 @@
 package ca.ucalgary.seng300.games.connectfour;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.games.GameState;
 
 /**
@@ -71,6 +72,21 @@ public class ConnectFourGame {
             return true;
         }
         return false;
+    }
+
+    public boolean moveOnSend(int col){
+        boolean moved = makeMove(col, currentPlayer);
+
+        if (moved) {
+            try{
+                Network.getInstance().queueRequest(Network.SEND_MOVE_C4, new String[]{String.valueOf(col)});
+            } catch(Exception e){
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        return moved;
     }
 
     /**
