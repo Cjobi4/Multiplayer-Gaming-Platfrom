@@ -102,6 +102,7 @@ public class TTTgameController {
 
     protected void gameOver(){ //copy of the button version
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
@@ -126,6 +127,7 @@ public class TTTgameController {
     @FXML
     protected void onBackButtonClick(ActionEvent event) {
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TTTopponentSelectPage.fxml"));
             Parent opponentRoot = loader.load();
