@@ -64,12 +64,15 @@ public class ConnectFourGameSession extends Thread {
                     if (game.makeMove(col, activeToken)) {
                         // after every successful move, update both players
                         sendBoardState();
-                        sendGameState();
 
-                        // if game ended, stop loop
+                        // Do not broadcast raw PLAYER_WIN to both clients — that means "game has a winner",
+                        // not "you won". Match TTT: only send per-player WIN/LOSE/DRAW when terminal.
                         if (game.getGameState() == GameState.PLAYER_WIN ||
                                 game.getGameState() == GameState.PLAYER_DRAW) {
+                            sendPerPlayerTerminalStates();
                             isRunning = false;
+                        } else {
+                            sendGameState();
                         }
                     }
                 } catch (NumberFormatException e) {
@@ -109,29 +112,33 @@ public class ConnectFourGameSession extends Thread {
         }
     }
 
+    /** Win/lose/draw from each client's perspective (already sent before the loop exits). */
+    private void sendPerPlayerTerminalStates() {
+        try {
+            if (game.getGameState() == GameState.PLAYER_WIN) {
+                if (game.getWinner() == 'X') {
+                    playerOne.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_WIN.name()});
+                    playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_LOSE.name()});
+                } else {
+                    playerOne.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_LOSE.name()});
+                    playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_WIN.name()});
+                }
+            } else if (game.getGameState() == GameState.PLAYER_DRAW) {
+                playerOne.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_DRAW.name()});
+                playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_DRAW.name()});
+            }
+        } catch (Exception e) {
+            System.err.println("Terminal state Error: " + e.getMessage());
+        }
+    }
+
     public void sendGameResult() {
         try {
             String winnerUsername = null;
 
-            //if 1 of the players won...
             if (game.getGameState() == GameState.PLAYER_WIN) {
                 Session winner = (game.getWinner() == 'X') ? playerOne : playerTwo;
                 winnerUsername = winner.getUsername();
-
-                //send the results of the game to the players
-                if (game.getWinner() == 'X')        //if player 1 won
-                {
-                    playerOne.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_WIN.name()});
-                    playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_LOSE.name()});
-                }else       //if player 2 won
-                {
-                    playerOne.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_LOSE.name()});
-                    playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_WIN.name()});
-                }
-            } else if (game.getGameState() == GameState.PLAYER_DRAW)    //if it was a draw...
-            {
-                playerOne.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_DRAW.name()});
-                playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_DRAW.name()});
             }
 
             //hold the date in a string variable
