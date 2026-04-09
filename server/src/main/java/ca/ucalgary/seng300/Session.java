@@ -2,6 +2,7 @@ package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.games.ConnectFourGameSession;
 import ca.ucalgary.seng300.games.TTTServerSession;
+import ca.ucalgary.seng300.games.TestClass;
 
 import javax.crypto.SecretKey;
 import java.net.Socket;
@@ -201,7 +202,7 @@ public class Session extends Thread
     private void processRequest(int requestType, SecretKey AESKey, Request req) throws Exception
     {
         int messageLength;
-        byte[] messageBytes;
+        byte[] messageBytes = new byte[4];
         String message;
         String[] chatMessage;
         int result;
@@ -593,10 +594,52 @@ public class Session extends Thread
                     //String move = req.getResult();
                     //notify client it's their time
                     client.getOutputStream().write(19);
-                    System.out.println("Asking for move");
+                    System.out.println("Asking for move from " + username);
 
-                    //collect their move
-                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    //collect the first byte of the next received message
+                    int possibleReq = client.getInputStream().read();
+                    System.out.println("possible req is: " + possibleReq);
+
+                    //if it turned out to be a chat message, send it to opp
+                    if (possibleReq == 21)
+                    {
+                        chatMessage = new String[2];
+
+                        //collect the id
+                        messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                        System.out.println("chat ID length: " + messageLength);
+                        messageBytes = client.getInputStream().readNBytes(messageLength);
+                        chatMessage[0] = Network.decrypt(messageBytes, AESKey);
+
+                        System.out.println("id sent to server: " + chatMessage[0]);
+
+                        //collect the contents
+                        messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                        messageBytes = client.getInputStream().readNBytes(messageLength);
+                        chatMessage[1] = Network.decrypt(messageBytes, AESKey);
+
+                        System.out.println("contents sent to server: " + chatMessage[1]);
+
+                        //collect the sender
+//                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+//                    messageBytes = client.getInputStream().readNBytes(messageLength);
+//                    chatMessage[2] = Network.decrypt(messageBytes, AESKey);
+                        //chatMessage[2] = username;
+
+                        //send the message to the recipient
+                        opp.addRequest(22, chatMessage);
+                        System.out.println("Chat request added.");
+                        break;
+                    }
+
+                    //otherwise collect the rest of the message length
+                    byte[] rBytes = client.getInputStream().readNBytes(3);
+                    byte[] fullBytes = {(byte) possibleReq, 0, 0, 0};
+
+                    System.arraycopy(rBytes, 0, fullBytes, 1, 3);
+
+                    //then use that to collect their move
+                    messageLength = ByteBuffer.wrap(fullBytes).getInt();
                     messageBytes = client.getInputStream().readNBytes(messageLength);
                     message = Network.decrypt(messageBytes, AESKey);
 
