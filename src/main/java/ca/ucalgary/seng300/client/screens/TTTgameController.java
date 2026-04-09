@@ -1,11 +1,14 @@
 package ca.ucalgary.seng300.client.screens;
 
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.core.identity.client.Session;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Message;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,12 +16,15 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeBoard;
 import ca.ucalgary.seng300.games.GameState;
+import javafx.util.Duration;
 
 import java.io.IOException;
 
@@ -41,19 +47,37 @@ public class TTTgameController {
     TicTacToeGame current = new TicTacToeGame();
     Button[][] grid;
 
+    private Timeline chatRefreshTimeline;
+    private int lastChatSize = -1;
+
     public void initialize() {
         grid = new Button[][]{{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
+
+        messageInput.setOnAction(event -> onSendMessage());
+        refreshChatDisplay();
+        startChatWatcher();
     }
 
     @FXML
     protected void onSendMessage() {
         String text = messageInput.getText();
-        if (text != null && !text.isEmpty()) {
-            Message newMessage = new Message(text, ActivePlayer.getInstance().getUsername());
+        if (text != null && !text.trim().isEmpty()) {
+            //Message newMessage = new Message(text, "Player 1");
+            String sender = ActivePlayer.getInstance().getUsername();
 
-            ChatRegistry.getInstance().addMessage(newMessage);
+            if(sender == null || sender.isBlank()){
+                sender = "Player";
+            }
+
+            try{
+                Network.getInstance().queueRequest(Network.send_chat, new String[]{text.trim()});
+                System.out.println("chat message sent");
+            } catch(Exception e){
+                System.err.println("Failed to send chat message: " + e.getMessage());
+            }
+
+
             messageInput.clear();
-            refreshChatDisplay();
         }
     }
 
@@ -80,6 +104,7 @@ public class TTTgameController {
 
     protected void gameOver(){ //copy of the button version
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
@@ -104,6 +129,7 @@ public class TTTgameController {
     @FXML
     protected void onBackButtonClick(ActionEvent event) {
         try {
+            stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TTTopponentSelectPage.fxml"));
             Parent opponentRoot = loader.load();
@@ -131,6 +157,12 @@ public class TTTgameController {
         alert.setTitle("How to Play Tic-Tac-Toe");
         alert.setHeaderText("Game Instructions");
 
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
         String instructions = "1. The game is played on a 3x3 grid.\n\n"
                 + "2. If you are X, your opponent is O. If you are O, your opponent is X. Players take turns putting their marks in empty squares.\n\n"
                 + "3. The first player to get 3 of their marks in a row (up, down, across, or diagonally) is the winner.\n\n"
@@ -146,6 +178,27 @@ public class TTTgameController {
 
         alert.showAndWait();
 
+    }
+
+    private void startChatWatcher(){
+        chatRefreshTimeline = new Timeline(
+                new KeyFrame(Duration.millis(250), event ->{
+                    int currentSize = ChatRegistry.getInstance().ListAll().size();
+                    if(currentSize != lastChatSize){
+                        refreshChatDisplay();
+                        lastChatSize = currentSize;
+                    }
+                })
+        );
+
+        chatRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        chatRefreshTimeline.play();
+    }
+
+    private void stopChatWatcher() {
+        if (chatRefreshTimeline != null) {
+            chatRefreshTimeline.stop();
+        }
     }
 
     //Everytime this is called, the board is updated
@@ -188,6 +241,34 @@ public class TTTgameController {
         }
 
         updateBoard();
+    }
+
+    @FXML
+    protected void onGameOverButtonClick(ActionEvent event) {
+        try {
+            //Load fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
+            Parent gameOverRoot = loader.load();
+
+
+            gameOverController controller = loader.getController();
+            controller.setGameType(GameType.CONNECT4);
+
+            //Get current stage from the button click
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+            //Create new scene and set it on the stage
+            Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
+            stage.setScene(gameOverScene);
+            stage.setTitle("Game Over"); //Change stage title to reflect current scene
+            stage.setResizable(false);
+            stage.show();
+
+            ChatRegistry.getInstance().clearChat();
+
+        } catch (IOException e) {
+            System.err.println("Error: Could not load gameOverDisplay.fxml. Check file path!");
+        }
     }
 
 

@@ -59,25 +59,28 @@ public class LeaderBoard {
     public static UserRecord getUserRecord (String username){
         try {
             List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{username}).get();
+            // ArrayList<MatchRecord> records = new ArrayList<MatchRecord>();
+            MatchRecord record1 = new MatchRecord("test", "admin", GameType.TICTACTOE, "test");
+            records.add(record1);
             int winsTTT = 0;
             int winsC4 = 0;
             int matchesTTT = 0;
             int matchesC4 = 0;
 
-            for (MatchRecord record : records){
-                if (record.getGameType() == GameType.TICTACTOE){
+            for (MatchRecord record : records) {
+                if (record.getGameType() == GameType.TICTACTOE) {
                     matchesTTT++;
-                    if (record.isWinner(username)){
+                    if (record.isWinner(username)) {
                         winsTTT++;
                     }
-                }
-                else if (record.getGameType() == GameType.CONNECT4){
+                } else if (record.getGameType() == GameType.CONNECT4) {
                     matchesC4++;
-                    if (record.isWinner(username)){
+                    if (record.isWinner(username)) {
                         winsC4++;
                     }
                 }
             }
+            System.out.print("returning user record" + username);
             return new UserRecord(username, winsTTT, matchesTTT, winsC4, matchesC4);
 
         } catch (Exception e) {

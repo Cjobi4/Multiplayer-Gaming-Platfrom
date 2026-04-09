@@ -5,6 +5,8 @@ import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderBoard;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
+import ca.ucalgary.seng300.rules.leaderboard.UserRecord;
+import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
 import ca.ucalgary.seng300.shared.models.Tag;
@@ -58,6 +60,7 @@ public class mainController {
 
     private GameRegistry games = GameRegistry.getInstance();
     ToggleGroup group = new ToggleGroup();
+    private String currentPlayer = ActivePlayer.getInstance().getUsername();
 
     @FXML
     public void initialize() {
@@ -69,9 +72,7 @@ public class mainController {
         loadCombinedLeaderboard();
         DisplayGameList();
 
-
         // Allow Challenges to be received on this page
-
         try {
             // Register this UI screen to listen for challenges
             Network.getInstance().setChallengeListener((challengerName, gameType) -> {
@@ -82,11 +83,32 @@ public class mainController {
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                     alert.setTitle("Incoming Challenge!");
                     alert.setHeaderText(challengerName + " has challenged you to " + gameType.toUpperCase() + "!");
-                    alert.setContentText("Do you accept?");
+                    alert.setContentText("Would you like to accept this challenge?");
+
+                    Image image = new Image(getClass().getResource("/images/DINOALERT.png").toExternalForm());
+                    ImageView imageView = new ImageView(image);
+                    imageView.setFitWidth(70);
+                    imageView.setFitHeight(70);
+                    alert.setGraphic(imageView);
 
                     ButtonType buttonAccept = new ButtonType("Accept");
                     ButtonType buttonDecline = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
                     alert.getButtonTypes().setAll(buttonAccept, buttonDecline);
+
+                    DialogPane dialogPane = alert.getDialogPane();
+                    dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+                    dialogPane.getStyleClass().add("pane");
+
+                    Button accBtn = (Button) dialogPane.lookupButton(buttonAccept);
+                    Button decBtn = (Button) dialogPane.lookupButton(buttonDecline);
+
+                    if (accBtn != null) {
+                        accBtn.getStyleClass().add("basic-button");
+                    }
+
+                    if (decBtn != null) {
+                        decBtn.getStyleClass().add("basic-button");
+                    }
 
                     Optional<ButtonType> result = alert.showAndWait();
 
@@ -137,14 +159,24 @@ public class mainController {
                     }
                 });
             });
-
         } catch (Exception e) {
             System.err.println("Failed to connect Network listener: " + e.getMessage());
         }
 
+        resetToDefault();
     }
 
-    private void loadCombinedLeaderboard(){
+    private void resetToDefault() {
+        clearDisplay();
+
+        gameTitleLabel.setText("Select a game to view details");
+        gameTitleLabel.setFont(new Font("Dubai Medium", 18));
+        gameTitleLabel.setTextFill(javafx.scene.paint.Color.web("#866B59"));
+        setThumbnailDefault();
+    }
+
+
+    private void loadCombinedLeaderboard() {
         leaderboardBox.getChildren().clear();
 
         Task<List<LeaderboardEntry>> task = new Task<>() {
@@ -174,17 +206,17 @@ public class mainController {
         thread.start();
     }
 
-    public void renderLeaderboard(List<LeaderboardEntry> leaderboard){
+    public void renderLeaderboard(List<LeaderboardEntry> leaderboard) {
         leaderboardBox.getChildren().clear();
 
         for (int i = 0; i < leaderboard.size(); i++) {
             LeaderboardEntry entry = leaderboard.get(i);
-            leaderboardBox.getChildren().add(showLeaderboardRow(i+1, entry));
+            leaderboardBox.getChildren().add(showLeaderboardRow(i + 1, entry));
         }
 
     }
 
-    public HBox showLeaderboardRow(int rank, LeaderboardEntry entry){
+    public HBox showLeaderboardRow(int rank, LeaderboardEntry entry) {
         Label rankLabel = new Label("#" + rank);
         Label nameLabel = new Label(entry.getUsername());
         Label winsLabel = new Label(entry.getWins() + " W");
@@ -202,13 +234,16 @@ public class mainController {
         rowBox.getChildren().addAll(rankLabel, nameLabel, winsLabel, matchesLabel);
 
         rowBox.setStyle("""
-            -fx-background-color: #f3c1cf;
-            -fx-background-radius: 10;
-            -fx-padding: 10;
-        """);
+             -fx-background-color: #f3c1cf;
+                -fx-background-radius: 10;
+                -fx-border-color:   #FCE0D2;
+                -fx-border-radius: 10;
+                -fx-border-width: 1;
+                -fx-padding: 10;
+                        """);
 
         rankLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
-        nameLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
+        nameLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52; -fx-font-weight: bold;");
         winsLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
         matchesLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
 
@@ -221,15 +256,41 @@ public class mainController {
         alert.setTitle("About The Application");
         alert.setHeaderText("Trainwreck!");
 
-        String information = "This is trainwreck weeeewoooooo";
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
+        String information = "Trainwreck is a competitive, online multiplayergame platform that" +
+                "allows users to remotely play minigames together and track their progrss.\n\n" +
+
+                "The program tracks wins and matches to place players on aleaderboard, " +
+                "ensuring competitive matchmaking or allowing for direct online challenges.\n\n" +
+
+                "Version: 6.7\n" +
+
+                "---------------------------------------------------------\n\n" +
+                "HOW TO MATCHMAKE:\n" +
+                "1. Select a game from the game list.\n" +
+                "2. Press the 'Matchmake' button.\n" +
+                "3. Once matched, you can Accept or Decline the game.\n\n" +
+
+                "HOW TO CHALLENGE:\n" +
+                "1. Select a game from the game list.\n" +
+                "2. Press the 'Opponent Select' button.\n" +
+                "3. Wait for the user list to load and select a player.\n" +
+                "4. Use the 'Play' button to send a challenge.\n\n" +
+
+                "NOTE: To receive a challenge, a player must be on the Main Page.";
 
         alert.setContentText(information);
 
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         dialogPane.getStyleClass().add("pane");
-        dialogPane.setMinHeight(400);
-        dialogPane.setMinWidth(450);
+        dialogPane.setMinHeight(550);
+        dialogPane.setMinWidth(550);
 
         alert.showAndWait();
 
@@ -238,10 +299,40 @@ public class mainController {
     @FXML
     private void onViewPlayerStatsClick() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("About The Application");
+        alert.setTitle("Player Stats");
         alert.setHeaderText("Trainwreck!");
+        StringBuilder message = new StringBuilder();
 
-        String information = "This is trainwreck weeeewoooooo";
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
+        String information = " ";
+        try {
+            UserRecord info = LeaderBoard.getUserRecord(currentPlayer);
+            if (info.isEmpty())  {
+                message.append("Couldn't get information.");
+            }else {
+                int C4matches = info.getMatchesC4();
+                int TTTmatches = info.getMatchesTTT();
+                int totalmatches = info.getTotalMatches();
+                int C4wins = info.getWinsC4();
+                int TTTwins = info.getWinsTTT();
+                int totalwins = info.getTotalWins();
+//
+                message.append("Total Matches: " + totalmatches + "\n");
+                message.append("Tic Tac Toe Matches: " + TTTmatches + "\n");
+                message.append("Connect 4 Matches: " + C4matches + "\n");
+                message.append("Total Wins: " + totalwins + "\n");
+                message.append("Connect 4 Wins: " + C4wins + "\n");
+                message.append("Tic Tac Toe Wins: " + TTTwins + "\n");
+            }
+        } catch (Exception e) {
+            message.append("You don't have any info L");
+        }
+        information = message.toString();
 
         alert.setContentText(information);
 
@@ -252,8 +343,6 @@ public class mainController {
         dialogPane.setMinWidth(450);
 
         alert.showAndWait();
-
-
     }
 
     @FXML
@@ -262,7 +351,23 @@ public class mainController {
         alert.setTitle("About The Developers");
         alert.setHeaderText("Trainwreck Developers!");
 
-        String information = "This app was developed by weewoo";
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
+        String information = "DEVELOPED BY: \n" +
+                "Platform Core Team:\n" +
+                "Owen Hilton, Sanmeet Braich, Weikai Chen, Anh Nguyen \n" +
+                "Client-U Team:\n" +
+                "Rebecca Glover, Aanya Ahmed, Cj Obi, Heeyoun Han \n" +
+                "Quality-Testing Team:\n" +
+                "Jordan Tran, Shubhangi Babu, Jaspreet Sandhu \n" +
+                "Rules-Validation Team:\n" +
+                "Sajan Johal, Hoang Khoi Nguyen, Jonathan Hooi \n" +
+                "Integration Team:\n" +
+                "Justin Ma, Anh Tuan Vo, Dai Toan Dang\n";
 
         alert.setContentText(information);
 
@@ -273,6 +378,7 @@ public class mainController {
         dialogPane.setMinWidth(450);
 
         alert.showAndWait();
+
 
     }
 
@@ -294,7 +400,7 @@ public class mainController {
         String input = searchField.getText().trim();
 
         if(input.isEmpty()){
-            clearDisplay(); // Function to be created at the end to clear display from all labels incase of past search
+            resetToDefault(); // Function to be created at the end to clear display from all labels incase of past search
             gameTitleLabel.setText("Please enter a game title");
             return;
         }
@@ -383,6 +489,7 @@ public class mainController {
         gameDescriptionLabel.setText("");
         gameIdLabel.setText("");
         gameTagsLabel.setText("");
+        thumbnail.setImage(null);
     }
 
 
@@ -396,6 +503,11 @@ public class mainController {
         thumbnail.setImage(image);
     }
 
+    private void setThumbnailDefault() {
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        thumbnail.setImage(image);
+    }
+
 
 
 
@@ -404,7 +516,6 @@ public class mainController {
     protected void onSelectButtonSelected(ActionEvent event) {
         errorField.setText("");
     }
-
 
     @FXML
     protected void onGameSelectButtonClick(ActionEvent event) {
@@ -466,6 +577,12 @@ public class mainController {
         alert.setHeaderText("Opponent found: " + opponentName);
         alert.setContentText("Do you want to accept this match for " + game.getTitle() + "?");
 
+        Image image = new Image(getClass().getResource("/images/DINOALERT.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
 
         ButtonType acceptButton = new ButtonType("Accept");
         ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -515,6 +632,7 @@ public class mainController {
     @FXML
     public void updateInfo(ActionEvent event) { //updates the Radio Buttons
         RadioButton selected = (RadioButton) group.getSelectedToggle();
+        errorField.setText("");
 
         if (selected != null) {
             Game selectedGame = findGame(selected.getText());
@@ -549,7 +667,7 @@ public class mainController {
                     .queueRequest(Network.LOGOUT, null)
                     .orTimeout(5, TimeUnit.SECONDS)
                     .whenComplete((result, throwable) -> Platform.runLater(() -> {
-                        if (throwable != null || !Boolean.TRUE.equals(result)) {
+                        if (throwable != null || Boolean.TRUE.equals(result)) {
                             System.err.println("Warning: server logout was not confirmed.");
                         }
 
@@ -589,10 +707,115 @@ public class mainController {
        {
            RadioButton rb = new RadioButton(game.getTitle());
            rb.setToggleGroup(group);
+
+           rb.getStyleClass().add("pink-radio");
+
            gameOptions.getChildren().add(rb);
            rb.setOnAction(this::updateInfo); //updates the info
 
        }
+
+    }
+
+    //DEMONSTRATION ONLY BUTTONS
+    @FXML
+    protected void onDemoOpponentSelectClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("You've been challenged!");
+        alert.setHeaderText("You have been challenged by Garry!");
+        alert.setContentText("Do you want to accept this challenge for Tic-Tac-Toe or Connect-4?");
+
+        Image image = new Image(getClass().getResource("/images/DINOALERT.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
+        ButtonType acceptButton = new ButtonType("Accept", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(acceptButton, declineButton);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+
+        Button accBtn = (Button) dialogPane.lookupButton(acceptButton);
+        Button decBtn = (Button) dialogPane.lookupButton(declineButton);
+
+        if(accBtn != null) {
+            accBtn.getStyleClass().add("basic-button");
+        }
+        if (decBtn != null) {
+            decBtn.getStyleClass().add("basic-button");
+        }
+
+        alert.showAndWait();
+
+    }
+
+    @FXML
+    protected void onDemoMatchMakeClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Match Found!");
+        alert.setHeaderText("Opponent found: " + "Garry");
+        alert.setContentText("Do you want to accept this match for Tic-Tac-Toe or Connect-4?");
+
+        Image image = new Image(getClass().getResource("/images/DINOALERT.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
+        ButtonType acceptButton = new ButtonType("Accept", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(acceptButton, declineButton);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+
+        Button accBtn = (Button) dialogPane.lookupButton(acceptButton);
+        Button decBtn = (Button) dialogPane.lookupButton(declineButton);
+
+        if(accBtn != null) {
+            accBtn.getStyleClass().add("basic-button");
+        }
+        if (decBtn != null) {
+            decBtn.getStyleClass().add("basic-button");
+        }
+
+        alert.showAndWait();
+    }
+
+    @FXML
+    protected void onDemoViewPlayerStatsClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Player Stats");
+        alert.setHeaderText("Trainwreck!");
+
+        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
+        StringBuilder message = new StringBuilder();
+        message.append("Total Matches: 8\n");
+        message.append("Tic Tac Toe Matches: 6 \n");
+        message.append("Connect 4 Matches: 2 \n");
+        message.append("Total Wins: 3 \n");
+        message.append("Connect 4 Wins: 2 \n");
+        message.append("Tic Tac Toe Wins: 1 \n");
+
+        alert.setContentText(message.toString());
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+        dialogPane.setMinHeight(200);
+        dialogPane.setMinWidth(100);
+
+        alert.showAndWait();
 
     }
 }
