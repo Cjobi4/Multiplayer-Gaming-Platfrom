@@ -53,6 +53,8 @@ public class TTTgameController {
 
     private Timeline boardRefreshTimeline;
 
+    private boolean gameOverHandled = false;
+
 
     public void initialize() {
         grid = new Button[][]{{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
@@ -86,6 +88,19 @@ public class TTTgameController {
             if(!networkBoard.equals(currentBoard)){
                 current.getBoard().fromString(networkGame.getBoard().toString());
                 updateBoard();
+            }
+
+            if (!gameOverHandled &&
+                    (networkGame.getGameState() == GameState.PLAYER_WIN ||
+                            networkGame.getGameState() == GameState.PLAYER_DRAW ||
+                            networkGame.getGameState() == GameState.PLAYER_LOSE)) {
+
+                gameOverHandled = true;   // 🔥 prevents multiple triggers
+                stopBoardWatcher();       // 🔥 stop BEFORE switching scene
+                stopChatWatcher();
+
+                gameOver(networkGame.getGameState().name());
+                return; // 🔥 stop further execution
             }
 
         } catch (Exception e){

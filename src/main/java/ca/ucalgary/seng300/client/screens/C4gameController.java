@@ -41,6 +41,8 @@ public class C4gameController {
 
     private Timeline boardRefreshTimeline;
 
+    private boolean gameOverHandled = false;
+
 
     ConnectFourGame current = new ConnectFourGame();
     Button[][] grid = new Button[6][7];
@@ -92,6 +94,19 @@ public class C4gameController {
             if(!networkBoard.equals(currentBoard)){
                 current.getBoard().fromString(networkGame.getBoard().toString());
                 updateBoard();
+            }
+
+            if (!gameOverHandled &&
+                    (networkGame.getGameState() == GameState.PLAYER_WIN ||
+                            networkGame.getGameState() == GameState.PLAYER_DRAW ||
+                            networkGame.getGameState() == GameState.PLAYER_LOSE)) {
+
+                gameOverHandled = true;   // 🔥 prevents multiple triggers
+                stopBoardWatcher();       // 🔥 stop BEFORE switching scene
+                stopChatWatcher();
+
+                gameOver(networkGame.getGameState().name());
+                return; // 🔥 stop further execution
             }
 
         } catch (Exception e){
@@ -200,7 +215,6 @@ public class C4gameController {
 
     protected void gameOver(String result){ //copy of the button version
         try {
-            System.out.println("Game is over");
             stopChatWatcher();
             stopBoardWatcher();
             //Load fxml file
