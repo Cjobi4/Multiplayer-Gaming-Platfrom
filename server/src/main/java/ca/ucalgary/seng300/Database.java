@@ -74,7 +74,7 @@ public class Database
                     + "totalMatchesPlayed INTEGER NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS matchRecord ("
-                    + "gameType TEXT PRIMARY KEY,"
+                    + "gameType TEXT NOT NULL,"
                     + "p1Username TEXT NOT NULL,"
                     + "p2Username TEXT NOT NULL,"
                     + "winnerName TEXT NOT NULL,"
@@ -396,6 +396,8 @@ public class Database
         Enumeration<String> keys = loggedInUsers.keys();
         String key;
 
+        System.out.println("Players are online: " + keys.hasMoreElements());
+
         //go through all the logged-in users
         while (keys.hasMoreElements())
         {
@@ -404,6 +406,7 @@ public class Database
             //add the user's username
             sbuild.append(key);
             sbuild.append("^");
+            System.out.println(key);
         }
 
         //remove the trailing ^ symbol

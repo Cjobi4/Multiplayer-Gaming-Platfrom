@@ -137,7 +137,7 @@ public class mainController {
 
                                                     Scene scene = new Scene(root, 800, 600);
                                                     stage.setScene(scene);
-                                                    stage.setTitle("Playing " + gameType.toUpperCase());
+                                                    stage.setTitle("Playing " + gameType.toUpperCase() + ActivePlayer.getInstance().getUsername());
                                                     stage.setResizable(false);
                                                     stage.show();
 

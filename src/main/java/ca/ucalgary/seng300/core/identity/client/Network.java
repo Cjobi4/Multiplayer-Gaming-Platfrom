@@ -255,16 +255,31 @@ public class Network extends Thread {
                         receiveChallenge();
                     }
                     else if (descriptionByte == SEND_BOARD) {
+                        if (tttGame == null)
+                        {
+                            clearTTTGame();
+                            tttGame = new TicTacToeGame();
+                        }
                         receiveBoard();
                     }
 //                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
                     else if (descriptionByte == PROMPT_MOVE) {
                         //update flag
+                        if (tttGame == null)
+                        {
+                            clearTTTGame();
+                            tttGame = new TicTacToeGame();
+                        }
                         receivedMoveRequest();
                         //System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
                         //sendRequestParameter("dummy_local_move");
                     }
                     else if (descriptionByte == NOTIFY_GAME_STATE) {
+                        if (tttGame == null)
+                        {
+                            clearTTTGame();
+                            tttGame = new TicTacToeGame();
+                        }
                         receiveGameState();
                     }
 
@@ -297,6 +312,7 @@ public class Network extends Thread {
 
     private void receiveGameState() throws Exception {
         String state = readResponseString();
+        System.out.println(state);
         GameState gameState = GameState.valueOf(state);
         tttGame.setGameState(gameState);
     }
@@ -433,8 +449,8 @@ public class Network extends Thread {
         this.tttGame = game;
     }
 
-    public TicTacToeGame getTTTGame(TicTacToeGame game) {
-        return game;
+    public TicTacToeGame getTTTGame() {
+        return this.tttGame;
     }
 
 
@@ -676,7 +692,13 @@ public class Network extends Thread {
 
                 // other player accepts, return 14
                 if (desc == MATCH_ACCEPTED) {
+                    System.out.println("MATCH ACCEPTED");
+                    clearTTTGame();
                     tttGame = new TicTacToeGame();
+                    if (tttGame == null)
+                    {
+                        System.out.println("tttGame is null");
+                    }
                     return MATCH_ACCEPTED;
                 }
                 // other player declined match 15
@@ -767,7 +789,7 @@ public class Network extends Thread {
 
     public void sendMoveTTT(String boardState) throws Exception {
         // send description byte
-        socket.getOutputStream().write(SEND_MOVE_TTT);
+        // socket.getOutputStream().write(SEND_MOVE_TTT);
 
         // send board
         sendRequestParameter(boardState);

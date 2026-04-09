@@ -6,6 +6,7 @@ import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
+import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Message;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -66,19 +67,27 @@ public class TTTgameController {
 
     private void syncBoard(){
         try{
-            TicTacToeGame networkGame = Network.getInstance().getTTTGame(current);
+
+            TicTacToeGame networkGame = Network.getInstance().getTTTGame();
 
             if(networkGame == null){
+                System.out.println("No game created");
                 return;
             }
 
             String networkBoard = networkGame.getBoard().toString();
             String currentBoard = current.getBoard().toString();
 
+            if (networkGame.getGameState() == GameState.PLAYER_WIN || networkGame.getGameState() == GameState.PLAYER_DRAW || networkGame.getGameState() == GameState.PLAYER_LOSE)
+            {
+                gameOver();
+            }
+
             if(!networkBoard.equals(currentBoard)){
-                current = networkGame;
+                current.getBoard().fromString(networkGame.getBoard().toString());
                 updateBoard();
             }
+
         } catch (Exception e){
             System.err.println("Failed to sync board from network: " + e.getMessage());
         }
@@ -128,7 +137,10 @@ public class TTTgameController {
     }
 
 
-    protected void gameOver(){ //copy of the button version
+    protected void gameOver(){
+
+        System.out.println("Loading game over");
+        //copy of the button version
         try {
             stopBoardWatcher();
             stopChatWatcher();
@@ -247,6 +259,7 @@ public class TTTgameController {
     }
 
     private void startBoardWatcher(){
+        System.out.println("Starting board watcher");
         boardRefreshTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> syncBoard()));
 
         boardRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
@@ -260,10 +273,10 @@ public class TTTgameController {
     }
 
     @FXML
-    protected void onGridButtonClick(ActionEvent event) {
+    protected void onGridButtonClick(ActionEvent event) throws Exception {
         char player = current.getCurrentPlayer(); //gets whose turn it is
         Button clicked = (Button) event.getSource(); //gets what button was clicked
-        int i = 4; //four, so if not intialized, the turn shouldn't count
+        int i = 4; //four, so if not initialized, the turn shouldn't count
         int j = 4;
 
         for (int row = 0; row < 3; row++) {
@@ -276,17 +289,10 @@ public class TTTgameController {
         }
         if (current.makeMove(i,j,player)) { //updates if the move was valid
             turnDisplay.setText("Yippee!");
-            if (current.getGameState() == GameState.PLAYER_WIN){
-                gameOver(); //ends game if someone wins
-            } else if (current.getGameState() == GameState.PLAYER_DRAW) {
-                gameOver(); //ends game if draw
-            }
-//            current.switchTurn();
         }else{
             turnDisplay.setText("Please make a valid move");
         }
 
-        //updateBoard();
     }
 
     @FXML
