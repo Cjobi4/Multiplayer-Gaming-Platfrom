@@ -24,7 +24,7 @@
    <center>
       <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #F9EDE1;" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="TOP_CENTER" prefWidth="220.0" spacing="10.0" style="-fx-border-color: #DEB499; -fx-border-radius: 7; -fx-background-color: #FCE0D2;">
+            <VBox alignment="TOP_CENTER" prefHeight="531.0" prefWidth="316.0" spacing="10.0" style="-fx-border-color: #DEB499; -fx-border-radius: 7; -fx-background-color: #FCE0D2;">
                <children>
                   <Label text="Leaderboard" textFill="#866b59">
                      <font>
