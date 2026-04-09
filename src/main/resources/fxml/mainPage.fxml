@@ -56,11 +56,6 @@
                               <Insets left="10.0" />
                            </padding>
                         </VBox>
-                        <ImageView fitHeight="76.0" fitWidth="167.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/newturtle.png" />
-                           </image>
-                        </ImageView>
                      </children>
                      <VBox.margin>
                         <Insets />
@@ -98,9 +93,9 @@
                      <font>
                         <Font name="Dubai Medium" size="12.0" />
                      </font></Label>
-                  <ImageView fitHeight="90.0" fitWidth="171.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="127.0" fitWidth="143.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../images/newtrain.png" />
+                        <Image url="@../images/OGdino.png" />
                      </image>
                   </ImageView>
                </children>

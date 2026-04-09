@@ -508,7 +508,7 @@ public class mainController {
     }
 
     private void setThumbnailDefault() {
-        Image image = new Image(getClass().getResource("/images/OGdino.png").toExternalForm());
+        Image image = new Image(getClass().getResource("/images/dinoAlert.png").toExternalForm());
         thumbnail.setImage(image);
     }
 
