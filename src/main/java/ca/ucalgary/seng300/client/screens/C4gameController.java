@@ -202,6 +202,8 @@ public class C4gameController {
             gameOverController controller = loader.getController();
             controller.setGameType(GameType.CONNECT4);
 
+            controller.setResult(result);
+
 
             Stage stage = (Stage) grid[0][0].getScene().getWindow();
             Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
