@@ -61,4 +61,9 @@ public class welcomeController {
             errorField.setText("Error: could not load " + fxmlPath);
         }
     }
+
+    @FXML
+    private void onByPassButtonClick(ActionEvent event) {
+        switchScene(event, "/fxml/loginPage.fxml", "Login Page");
+    }
 }

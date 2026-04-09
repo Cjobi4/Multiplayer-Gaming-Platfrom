@@ -31,45 +31,38 @@ public class loginController {
         String username = userNameField.getText() == null ? "" : userNameField.getText().trim();
         String password = passwordField.getText() == null ? "" : passwordField.getText().trim();
 
-        if (username.isEmpty()) {
-            errorField.setText("Please enter your username to login!");
-            return;
-        }
-
-        if (password.isEmpty()) {
-            errorField.setText("Please enter your password to login!");
+        if (username.isEmpty() || password.isEmpty()) {
+            errorField.setText("Please enter your username and password to login!");
             return;
         }
 
         try {
             loginButton.setDisable(true);
-            errorField.setText("Logging in...");
+            errorField.setText("Authenticating...");
 
             Network.getInstance()
                     .queueRequest(Network.LOGIN, new String[] {username, password})
                     .orTimeout(10, TimeUnit.SECONDS)
                     .whenComplete((result, throwable) -> Platform.runLater(() -> {
-                        System.out.println("Test 1");
+
                         loginButton.setDisable(false);
+
                         if (throwable != null) {
-                            System.out.println("Test 2");
-                            errorField.setText("Error: Could not log in.");
+                            errorField.setText("Server connection timed out.");
                             return;
                         }
 
-                        if (Boolean.TRUE.equals(result)) {
-                            System.out.println("Test 3");
+                        if(result instanceof Integer & (Integer) result == 1) {
+                            errorField.setText("");
+                            switchSceneLargerScreen(event, "/fxml/mainPage.fxml", "Main Page");
+                        } else {
                             errorField.setText("Invalid username or password.");
-                            return;
                         }
-                        System.out.println("Test 4");
-                        errorField.setText("");
-                        switchSceneLargerScreen(event, "/fxml/mainPage.fxml", "Main Page");
                     }));
 
         } catch (Exception e) {
             loginButton.setDisable(false);
-            errorField.setText("Error: Could not log in.");
+            errorField.setText("Network error occurred.");
         }
     }
 

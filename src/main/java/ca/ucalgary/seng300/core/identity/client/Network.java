@@ -1,7 +1,6 @@
 package ca.ucalgary.seng300.core.identity.client;
 
 import ca.ucalgary.seng300.client.screens.C4opponentSelectController;
-import ca.ucalgary.seng300.client.screens.TTTgameController;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
@@ -42,9 +41,7 @@ public class Network extends Thread {
     private static SecretKey AESKey;
     private static SecureRandom sRan;
     private LinkedBlockingQueue<Request> requestQueue = new LinkedBlockingQueue<>();
-    //public CompletableFuture<String[]> incomingChallenge = new CompletableFuture<>();
-    private TicTacToeGame tttGame = null;
-
+    public CompletableFuture<String[]> incomingChallenge = new CompletableFuture<>();
 
     // private static final String serverIP ="10.2.1.179";
     // private static final int serverPort = 501;
@@ -52,8 +49,7 @@ public class Network extends Thread {
     private String clientID = null;
     private static Network instance;
     private ChallengeListener challengeListener;
-    private C4BoardListener c4BoardListener;
-    private NotifyPlayerTurnListener notifyPlayerTurnListener;
+    private TicTacToeGame tttGame = null;
 
     public static final byte PING = 0;
     public static final byte CREATE_ACCOUNT = 1;
@@ -71,20 +67,19 @@ public class Network extends Thread {
     public static final byte KICKED_FROM_QUEUE = 13;
     public static final byte MATCH_ACCEPTED = 14;
     public static final byte MATCH_REJECTED = 15;
-    public static final byte SEND_CHALLENGE = 16;
-    public static final byte RECEIVE_CHALLENGE = 17;
-    private final int SEND_BOARD = 18;
-    private final int PROMPT_MOVE = 19;
-    private final int NOTIFY_GAME_STATE = 20;
-    private final int SEND_CHAT = 21;
-    private final int RECEIVE_CHAT = 22;
+    //??
 
     public static final byte RESPOND_QUEUE = 35;
+    public static final byte SEND_CHALLENGE = 16;
+    public static final byte RECEIVE_CHALLENGE = 17;
+    public static final byte SEND_BOARD = 18;
+    public static final byte PROMPT_MOVE = 19;
+    public static final byte NOTIFY_GAME_STATE = 20;
 
     // to be added/modified later
     public static final byte SEND_MOVE_TTT = 125;
-    public static final byte send_chat = 126;
-    public static final byte receive_chat = 127;
+    public static final byte send_chat = 21;
+    public static final byte receive_chat = 22;
 
     /*
         HOW TO USE THE NETWORK CLASS
@@ -256,24 +251,20 @@ public class Network extends Thread {
                     else if (descriptionByte == RECEIVE_CHALLENGE) {
                         receiveChallenge();
                     }
-                    else if (descriptionByte == SEND_BOARD) { // 18
-                        String updatedBoard = readResponseString();
+                    else if (descriptionByte == SEND_BOARD) {
+                        receiveBoard();
+                    }
+//                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
+                    else if (descriptionByte == PROMPT_MOVE) {
+                        //update flag
+                        receivedMoveRequest();
+                        //System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
+                        //sendRequestParameter("dummy_local_move");
+                    }
+                    else if (descriptionByte == NOTIFY_GAME_STATE) {
+                        receiveGameState();
+                    }
 
-                        if (c4BoardListener != null) {
-                            c4BoardListener.onC4BoardReceived(updatedBoard);
-                        }
-                    }
-                    else if (descriptionByte == PROMPT_MOVE) { // 19
-                        if (notifyPlayerTurnListener != null) {
-                            notifyPlayerTurnListener.onNotifyPlayerReceived();
-                        } else {
-                            sendRequestParameter("dummy");
-                        }
-                    }
-                    else if (descriptionByte == NOTIFY_GAME_STATE) { // 20
-                        String state = readResponseString();
-                        // TODO: need listener for state but will do later
-                    }
                 }
 
                 catch (SocketTimeoutException e) {
@@ -290,6 +281,26 @@ public class Network extends Thread {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void receivedMoveRequest() {
+        tttGame.switchTurn();
+
+        // handle move making
+
+        // change to not your turn
+        tttGame.switchTurn();
+    }
+
+    private void receiveGameState() throws Exception {
+        String state = readResponseString();
+        GameState gameState = GameState.valueOf(state);
+        tttGame.setGameState(gameState);
+    }
+
+    private void receiveBoard() throws Exception {
+        String updatedBoard = readResponseString();
+        tttGame.getBoard().fromString(updatedBoard);
     }
 
     /** To be called whenever a request is made
@@ -381,7 +392,7 @@ public class Network extends Thread {
                 break;
 
             case send_chat:
-                sendMessage(parameters[0], parameters[1], parameters[2]);
+                sendMessage(parameters[0]);
                 req.future.complete(null);
                 break;
 
@@ -409,7 +420,6 @@ public class Network extends Thread {
 
     }
 
-    // TTT GAME
 
     public void setTTT(TicTacToeGame game) {
         this.tttGame = game;
@@ -636,6 +646,7 @@ public class Network extends Thread {
             if (response) {
                 // tell server match accepted
                 socket.getOutputStream().write(1);
+                System.out.println("Wrote 1 to respond");
 
                 // read server response
                 int desc = socket.getInputStream().read();
@@ -643,6 +654,7 @@ public class Network extends Thread {
 
                 // other player accepts, return 14
                 if (desc == MATCH_ACCEPTED) {
+                    tttGame = new TicTacToeGame();
                     return MATCH_ACCEPTED;
                 }
                 // other player declined match 15
@@ -651,6 +663,7 @@ public class Network extends Thread {
                 }
             } else {
                 socket.getOutputStream().write(0);
+                System.out.println("Wrote 0 to respond");
                 // receive 13 if player declines and is removed from queue
                 int exitQueue = socket.getInputStream().read();
 
@@ -660,6 +673,7 @@ public class Network extends Thread {
             }
             return -1;
         } catch (Exception e) {
+            System.out.println("hi im cj");
             return -1;
         }
     }
@@ -681,24 +695,6 @@ public class Network extends Thread {
 
     public interface ChallengeListener {
         void onChallengeReceived(String challengerName, String gameType);
-    }
-
-    public interface NotifyPlayerTurnListener {
-        void onNotifyPlayerReceived();
-    }
-
-    public void setNotifyPlayerTurnListener(NotifyPlayerTurnListener listener)
-    {
-        this.notifyPlayerTurnListener = listener;
-    }
-
-    public interface C4BoardListener {
-        void onC4BoardReceived(String boardState);
-    }
-
-    public void setC4BoardListener(C4BoardListener listener)
-    {
-        this.c4BoardListener = listener;
     }
 
 
@@ -747,15 +743,17 @@ public class Network extends Thread {
         }
     }
 
-    public void sendMoveTTT(String move) throws Exception {
-        // send board move
-        sendRequestParameter(move);
+    public void sendMoveTTT(String boardState) throws Exception {
+        // send description byte
+        socket.getOutputStream().write(SEND_MOVE_TTT);
+
+        // send board
+        sendRequestParameter(boardState);
     }
 
-    public void updateState() throws Exception {
-        String state = readResponseString();
-        GameState updGameState = GameState.valueOf(state);
-        tttGame.setGameState(updGameState);
+    public String receiveMoveTTT() throws Exception {
+
+        return null;
     }
 
     // LEADERBOARD
@@ -882,23 +880,24 @@ public class Network extends Thread {
 
     /** Method for sending chats
      *
-     * @param id
      * @param content
-     * @param sender
      * @throws Exception
      */
-    public void sendMessage(String id, String content, String sender) throws Exception {
+    public void sendMessage(String content) throws Exception {
 
         // send description byte
         socket.getOutputStream().write(send_chat);
+        System.out.println("message sent");
+        Message m = new Message(content, ActivePlayer.getInstance().getUsername());
 
         // send request parameters as byte[]
-        sendRequestParameter(id);
+        sendRequestParameter(m.getId());
+        System.out.println("message sent");
         sendRequestParameter(content);
-        sendRequestParameter(sender);
+        System.out.println("msg: " + content);
 
         // update local directory
-        ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
+        ChatRegistry.getInstance().addMessage(m);
     }
 
     /**
@@ -909,11 +908,15 @@ public class Network extends Thread {
 
         // interpret each response sent in sequence by server
         String id = readResponseString();
+        System.out.println("received id: " + id);
         String content = readResponseString();
+        System.out.println("received content: " + content);
         String sender = readResponseString();
+        System.out.println("received sender: " + sender);
 
         // update the local chat
         ChatRegistry.getInstance().addMessage(new Message(id, content, sender));
+        System.out.println("Registry updated");
     }
 
 
