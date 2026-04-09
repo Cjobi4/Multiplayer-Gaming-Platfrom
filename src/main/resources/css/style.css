@@ -73,3 +73,19 @@
 .radio-button:selected .radio .dot {
     -fx-background-color: #e83e8c;
 }
+
+.bypass-button {
+    -fx-background-color: #9ECAE1;
+    -fx-font-family: "Dubai Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: #866B59;
+}
+
+.bypass-button:pressed {
+    -fx-background-color: #DEEBF7;
+    -fx-translate-y: 2;
+}
+
+.bypass-button:hover {
+    -fx-background-color: #C8DBEf;
+}

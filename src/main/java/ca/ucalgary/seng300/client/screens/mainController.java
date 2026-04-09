@@ -720,4 +720,74 @@ public class mainController {
        }
 
     }
+
+    //DEMONSTRATION ONLY BUTTONS
+    @FXML
+    protected void onDemoOpponentSelectClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("You've been challenged!");
+        alert.setHeaderText("You have been challenged by Garry!");
+        alert.setContentText("Do you want to accept this challenge for Tic-Tac-Toe or Connect-4?");
+
+        Image image = new Image(getClass().getResource("/images/DINOALERT.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
+        ButtonType acceptButton = new ButtonType("Accept", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(acceptButton, declineButton);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+
+        Button accBtn = (Button) dialogPane.lookupButton(acceptButton);
+        Button decBtn = (Button) dialogPane.lookupButton(declineButton);
+
+        if(accBtn != null) {
+            accBtn.getStyleClass().add("basic-button");
+        }
+        if (decBtn != null) {
+            decBtn.getStyleClass().add("basic-button");
+        }
+
+        alert.showAndWait();
+
+    }
+
+    @FXML
+    protected void onDemoMatchMakeClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Match Found!");
+        alert.setHeaderText("Opponent found: " + "Garry");
+        alert.setContentText("Do you want to accept this match for Tic-Tac-Toe or Connect-4?");
+
+        Image image = new Image(getClass().getResource("/images/DINOALERT.png").toExternalForm());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(70);
+        imageView.setFitHeight(70);
+        alert.setGraphic(imageView);
+
+        ButtonType acceptButton = new ButtonType("Accept", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType declineButton = new ButtonType("Decline", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(acceptButton, declineButton);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+        dialogPane.getStyleClass().add("pane");
+
+        Button accBtn = (Button) dialogPane.lookupButton(acceptButton);
+        Button decBtn = (Button) dialogPane.lookupButton(declineButton);
+
+        if(accBtn != null) {
+            accBtn.getStyleClass().add("basic-button");
+        }
+        if (decBtn != null) {
+            decBtn.getStyleClass().add("basic-button");
+        }
+
+        alert.showAndWait();
+    }
 }
