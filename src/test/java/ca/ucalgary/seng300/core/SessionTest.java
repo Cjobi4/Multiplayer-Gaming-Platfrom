@@ -66,6 +66,8 @@ public class SessionTest {
     void testGameListRetrieval() throws Exception {
         try {
             Network connect = Network.getInstance("10.13.76.142", 14001);
+            String[] login = {"admin", "password"};
+            connect.queueRequest(Network.LOGIN, login).get(); //login
 
             // queue request for game list
             Network.getInstance().queueRequest(Network.GET_GAME_LIST, null).get();
@@ -84,6 +86,8 @@ public class SessionTest {
     @Test
     void testLeaderboardRetrieval() throws Exception {
         Network connect = Network.getInstance("10.13.76.142", 14001);
+        String[] login = {"admin", "password"}; //logging in
+        connect.queueRequest(Network.LOGIN, login).get();
 
         // queue request for TTT leaderboard
         List<LeaderboardEntry> testBoard = (List) connect.queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"}).get();
@@ -95,6 +99,8 @@ public class SessionTest {
     @Test
     void testMatchRecordRetrieval() throws Exception {
         Network connect = Network.getInstance("10.13.76.142", 14001);
+        String[] login = {"admin", "password"}; //logging in
+        connect.queueRequest(Network.LOGIN, login).get();
 
         // test username to search for
         String usernameToSearch = "admin";
