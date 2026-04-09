@@ -2,7 +2,6 @@ package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.games.ConnectFourGameSession;
 import ca.ucalgary.seng300.games.TTTServerSession;
-import ca.ucalgary.seng300.games.TestClass;
 
 import javax.crypto.SecretKey;
 import java.net.Socket;
