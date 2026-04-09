@@ -251,6 +251,12 @@ public class TTTgameController {
         boardRefreshTimeline.play();
     }
 
+    private void stopBoardWatcher() {
+        if (boardRefreshTimeline != null) {
+            boardRefreshTimeline.stop();
+        }
+    }
+
     @FXML
     protected void onGridButtonClick(ActionEvent event) {
         char player = current.getCurrentPlayer(); //gets whose turn it is
