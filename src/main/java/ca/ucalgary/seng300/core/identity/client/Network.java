@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.client.screens.C4opponentSelectController;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
+import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
@@ -71,6 +72,9 @@ public class Network extends Thread {
     public static final byte RESPOND_QUEUE = 35;
     public static final byte SEND_CHALLENGE = 16;
     public static final byte RECEIVE_CHALLENGE = 17;
+    public static final byte SEND_BOARD = 18;
+    public static final byte PROMPT_MOVE = 19;
+    public static final byte NOTIFY_GAME_STATE = 20;
 
     // to be added/modified later
     public static final byte SEND_MOVE_TTT = 125;
@@ -247,11 +251,19 @@ public class Network extends Thread {
                     else if (descriptionByte == RECEIVE_CHALLENGE) {
                         receiveChallenge();
                     }
+                    else if (descriptionByte == SEND_BOARD) {
+                        receiveBoard();
+                    }
 //                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
-//                    else if (descriptionByte == 19) {
-//                        System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
-//                        sendRequestParameter("dummy_local_move");
-//                    }
+                    else if (descriptionByte == PROMPT_MOVE) {
+                        //update flag
+
+                        //System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
+                        //sendRequestParameter("dummy_local_move");
+                    }
+                    else if (descriptionByte == NOTIFY_GAME_STATE) {
+                        receiveGameState();
+                    }
 
                 }
 
@@ -269,6 +281,17 @@ public class Network extends Thread {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void receiveGameState() throws Exception {
+        String state = readResponseString();
+        GameState gameState = GameState.valueOf(state);
+        tttGame.setGameState(gameState);
+    }
+
+    private void receiveBoard() throws Exception {
+        String updatedBoard = readResponseString();
+        tttGame.getBoard().fromString(updatedBoard);
     }
 
     /** To be called whenever a request is made
