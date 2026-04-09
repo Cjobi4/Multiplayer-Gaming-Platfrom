@@ -316,7 +316,7 @@ public class TTTgameController {
 
 
             gameOverController controller = loader.getController();
-            controller.setGameType(GameType.CONNECT4);
+            controller.setGameType(GameType.TICTACTOE);
 
             //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

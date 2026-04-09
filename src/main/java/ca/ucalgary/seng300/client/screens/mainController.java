@@ -551,7 +551,9 @@ public class mainController {
             Game selectedGame = findGame(selected.getText());
             if (selectedGame != null) {
 
-                if (selectedGame.getTitle().equals("TicTacToe"))
+                // Use fxml path (not title): server list uses "Tic Tac Toe" while sample data uses "TicTacToe".
+                String fxmlPrefix = selectedGame.getFxmlPath();
+                if (fxmlPrefix != null && fxmlPrefix.equalsIgnoreCase("TTT"))
                 {
                     errorField.setText("Finding a match...");
                     String joinedTTT = Network.getInstance().queueRequest(Network.JOIN_TTT_QUEUE, null).get().toString();
