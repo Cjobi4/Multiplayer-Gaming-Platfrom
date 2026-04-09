@@ -21,7 +21,7 @@
                   <Font name="Dubai Bold" size="14.0" />
                </font>
             </Label>
-            <ListView fx:id="rankingListView" layoutX="342.0" layoutY="150.0" prefHeight="260.0" prefWidth="240.0" style="-fx-background-color: #FCE0D2;" />
+            <ListView fx:id="rankingListView" layoutX="342.0" layoutY="186.0" prefHeight="260.0" prefWidth="240.0" style="-fx-background-color: #FCE0D2;" />
             <Label fx:id="usernameLabel" layoutX="345.0" layoutY="100.0" prefHeight="17.0" prefWidth="109.0" text="User123452006" textFill="#866b59">
                <font>
                   <Font name="Dubai Regular" size="14.0" />
@@ -37,12 +37,22 @@
                   <Font name="Dubai Regular" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="270.0" layoutY="150.0" text="Rankings: " textFill="#866b59">
+            <Label layoutX="272.0" layoutY="177.0" text="Rankings: " textFill="#866b59">
                <font>
                   <Font name="Dubai Bold" size="14.0" />
                </font>
             </Label>
-            <Button fx:id="returnToMainButton" layoutX="250.0" layoutY="430.0" mnemonicParsing="false" onAction="#onReturnToMainButtonClick" prefHeight="30.0" prefWidth="300.0" styleClass="basic-button" text="Return To Main Menu" />
+            <Button fx:id="returnToMainButton" layoutX="241.0" layoutY="486.0" mnemonicParsing="false" onAction="#onReturnToMainButtonClick" prefHeight="30.0" prefWidth="300.0" styleClass="basic-button" text="Return To Main Menu" />
+            <Label layoutX="269.0" layoutY="152.0" text="Win/Loses:" textFill="#866b59">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="winLossLabel" layoutX="342.0" layoutY="153.0" text="Draw" textFill="#866b59">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
    </children>
