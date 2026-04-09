@@ -150,7 +150,7 @@ public class TicTacToeGameSession extends Thread{
 
         //since the session is active,
         //apply the move using the tic tac toe backend logic (makeMove() function!)
-        boolean moveSuccessCheck = game.makeMove(row, col, playerSymbol);
+        boolean moveSuccessCheck = game.makeMove(row, col);
 
         //if the move failed return false
         if (!moveSuccessCheck) {

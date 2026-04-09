@@ -299,12 +299,8 @@ public class Network extends Thread {
     }
 
     private void receivedMoveRequest() {
-        tttGame.switchTurn();
-
-        // handle move making
-
-        // change to not your turn
-        tttGame.switchTurn();
+        System.out.println("its now the players turn");
+        tttGame.setTurn(true);
     }
 
     private void receiveGameState() throws Exception {
