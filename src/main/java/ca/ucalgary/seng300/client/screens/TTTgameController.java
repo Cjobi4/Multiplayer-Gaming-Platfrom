@@ -80,7 +80,7 @@ public class TTTgameController {
 
             if (networkGame.getGameState() == GameState.PLAYER_WIN || networkGame.getGameState() == GameState.PLAYER_DRAW || networkGame.getGameState() == GameState.PLAYER_LOSE)
             {
-                gameOver();
+                gameOver(networkGame.getGameState().name());
             }
 
             if(!networkBoard.equals(currentBoard)){
@@ -137,7 +137,7 @@ public class TTTgameController {
     }
 
 
-    protected void gameOver(){
+    protected void gameOver(String result){
 
         System.out.println("Loading game over");
         //copy of the button version

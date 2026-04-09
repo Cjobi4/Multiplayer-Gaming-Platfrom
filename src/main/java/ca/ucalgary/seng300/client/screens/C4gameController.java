@@ -86,7 +86,7 @@ public class C4gameController {
 
             if (networkGame.getGameState() == GameState.PLAYER_WIN || networkGame.getGameState() == GameState.PLAYER_DRAW || networkGame.getGameState() == GameState.PLAYER_LOSE)
             {
-                gameOver();
+                gameOver(networkGame.getGameState().name());
             }
 
             if(!networkBoard.equals(currentBoard)){
@@ -191,7 +191,7 @@ public class C4gameController {
         }
     }
 
-    protected void gameOver(){ //copy of the button version
+    protected void gameOver(String result){ //copy of the button version
         try {
             stopChatWatcher();
             //Load fxml file
