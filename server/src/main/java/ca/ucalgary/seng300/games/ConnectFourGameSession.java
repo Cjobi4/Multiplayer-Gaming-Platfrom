@@ -4,7 +4,9 @@ import ca.ucalgary.seng300.Request;
 import ca.ucalgary.seng300.Session;
 import ca.ucalgary.seng300.Database;
 
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 public class ConnectFourGameSession extends Thread {
@@ -35,7 +37,7 @@ public class ConnectFourGameSession extends Thread {
             sendBoardState();
             sendGameState();
 
-            while (isRunning && !Thread.currentThread().isInterrupted()) {
+            while (isRunning) {
 
                 // determine active player
                 Session activeSession = getCurrentPlayerSession();
@@ -111,22 +113,39 @@ public class ConnectFourGameSession extends Thread {
         try {
             String winnerUsername = null;
 
+            //if 1 of the players won...
             if (game.getGameState() == GameState.PLAYER_WIN) {
                 Session winner = (game.getWinner() == 'X') ? playerOne : playerTwo;
                 winnerUsername = winner.getUsername();
 
-                playerOne.addRequest(REQUEST_GAME_STATE, new String[]{"The Winner Is: " + game.getWinner()});
-                playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{"The Winner Is: " + game.getWinner()});
-            } else if (game.getGameState() == GameState.PLAYER_DRAW) {
+                //send the results of the game to the players
+                if (game.getWinner() == 'X')        //if player 1 won
+                {
+                    playerOne.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_WIN.name()});
+                    playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_LOSE.name()});
+                }else       //if player 2 won
+                {
+                    playerOne.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_LOSE.name()});
+                    playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_WIN.name()});
+                }
+            } else if (game.getGameState() == GameState.PLAYER_DRAW)    //if it was a draw...
+            {
                 playerOne.addRequest(REQUEST_GAME_STATE, new String[]{"Game Is A Draw"});
                 playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{"Game Is A Draw"});
             }
 
+            //hold the date in a string variable
+            ZoneId zoneId = ZoneId.of("America/Edmonton");
+            ZonedDateTime now = ZonedDateTime.now(zoneId);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String date = now.format(formatter);
+
+            //update the leaderboard and match record
             Database.addMatchResult(
                     playerOne.getUsername(),
                     playerTwo.getUsername(),
                     winnerUsername,
-                    new Date().toString(),
+                    date,
                     "c4"
             );
         } catch (Exception e) {
