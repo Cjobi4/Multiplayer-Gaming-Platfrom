@@ -23,14 +23,38 @@ public class welcomeController {
 
     @FXML
     protected void onWelcomeButtonClick(ActionEvent event) throws Exception {
-        //Check if the field is empty or contains only whitespace
-        if(IPAdressTextField.getText() == null || IPAdressTextField.getText().trim().isEmpty()) {
-            errorField.setText("Please enter a valid IP Address to login!");
-        } else {
-            Network.getInstance(IPAdressTextField.getText(), 14001);
+        String ipInput = IPAdressTextField.getText().trim();
+        if(ipInput.isEmpty()) {
+            errorField.setText("Please enter an IP Address to login!");
+            return;
+        }
+
+        if(isValidIP(ipInput)) {
+            Network.getInstance(ipInput, 14001);
             errorField.setText("");
             switchScene(event, "/fxml/loginPage.fxml", "Login Screen");
         }
+        else {
+            errorField.setText("Invalid IP.");
+        }
+    }
+
+    private boolean isValidIP(String ip) {
+        String[] parts = ip.split("\\.");
+        if(parts.length != 4) {
+            return false;
+        }
+        try{
+            for(String part : parts) {
+                int value = Integer.parseInt(part);
+                if (value < 0 || value > 255) {
+                    return false;
+                }
+            }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 
     @FXML
