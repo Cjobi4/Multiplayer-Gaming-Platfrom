@@ -3,18 +3,9 @@ package ca.ucalgary.seng300.games;
 import ca.ucalgary.seng300.Request;
 import ca.ucalgary.seng300.Session;
 import ca.ucalgary.seng300.Database;
-import ca.ucalgary.seng300.games.GameState;
-import ca.ucalgary.seng300.games.ConnectFourGame;
 
 import java.util.Date;
 
-/**
- * The Client-side controller for Connect Four.
- * This class handles the communication between the UI and the Game Logic.
- * @author Hoang Khoi Nguyen
- * @email hoangkhoi.nguyen@ucalgary.ca
- * @version 4.0 04/02/2026
- */
 
 public class ConnectFourGameSession extends Thread {
 
@@ -22,6 +13,10 @@ public class ConnectFourGameSession extends Thread {
     private Session playerTwo;
     private ConnectFourGame game;
     private boolean isRunning = true;
+
+    private static final int REQUEST_BOARD_UPDATE = 18;
+    private static final int REQUEST_MOVE_PROMPT = 19;
+    private static final int REQUEST_GAME_STATE = 20;
 
     public ConnectFourGameSession(Session p1, Session p2) {
         this.playerOne = p1;
@@ -36,33 +31,40 @@ public class ConnectFourGameSession extends Thread {
     @Override
     public void run() {
         try {
-            // Initializing Game Setup
+            // send initial game info
             sendBoardState();
+            sendGameState();
 
             while (isRunning && !Thread.currentThread().isInterrupted()) {
 
-                // 1. Determine Active Player & Await Move
+                // determine active player
                 Session activeSession = getCurrentPlayerSession();
                 char activeToken = game.getCurrentPlayer();
 
-                // Create the Request instance from the session
-                Request turnReq = new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
+                // prompt only the active player for a move
+                Request turnReq = new Request(
+                        REQUEST_MOVE_PROMPT,
+                        new String[]{"Your Turn", String.valueOf(activeToken)}
+                );
 
-                // Add the request to the session queue
                 activeSession.addRequest(turnReq);
 
-                // 2. Turn Awaiting Move: Block until move is received
+                // wait for move from client
                 String moveResult = turnReq.getResult();
 
+                if (moveResult == null || moveResult.isBlank()) {
+                    continue;
+                }
+
                 try {
-                    // 3. Turn Validating & Applying Move
-                    int col = Integer.parseInt(moveResult);
+                    int col = Integer.parseInt(moveResult.trim());
 
                     if (game.makeMove(col, activeToken)) {
-                        // Update board for both players (Type 12)
+                        // after every successful move, update both players
                         sendBoardState();
+                        sendGameState();
 
-                        // 4. Turn Check End Conditions
+                        // if game ended, stop loop
                         if (game.getGameState() == GameState.PLAYER_WIN ||
                                 game.getGameState() == GameState.PLAYER_DRAW) {
                             isRunning = false;
@@ -78,6 +80,7 @@ public class ConnectFourGameSession extends Thread {
             Thread.currentThread().interrupt();
         } catch (Exception e) {
             System.err.println("Game Session Error: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             sendGameResult();
             Thread.currentThread().interrupt();
@@ -87,34 +90,42 @@ public class ConnectFourGameSession extends Thread {
     public void sendBoardState() {
         try {
             String boardState = game.getBoard().toString();
-            playerOne.addRequest(12, new String[]{boardState});
-            playerTwo.addRequest(12, new String[]{boardState});
+            playerOne.addRequest(REQUEST_BOARD_UPDATE, new String[]{boardState});
+            playerTwo.addRequest(REQUEST_BOARD_UPDATE, new String[]{boardState});
         } catch (Exception e) {
             System.err.println("Sync Error: " + e.getMessage());
         }
     }
 
+    public void sendGameState() {
+        try {
+            String state = game.getGameState().name();
+            playerOne.addRequest(REQUEST_GAME_STATE, new String[]{state});
+            playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{state});
+        } catch (Exception e) {
+            System.err.println("Game State Error: " + e.getMessage());
+        }
+    }
+
     public void sendGameResult() {
         try {
-            int winnerID = 0;
+            String winnerUsername = null;
+
             if (game.getGameState() == GameState.PLAYER_WIN) {
                 Session winner = (game.getWinner() == 'X') ? playerOne : playerTwo;
-                Session loser = (game.getWinner() == 'X') ? playerTwo : playerOne;
-                winnerID = Integer.parseInt(winner.getUsername());
+                winnerUsername = winner.getUsername();
 
-                // Type 14 Notifications
-                winner.addRequest(14, new String[]{"You won!"});
-                loser.addRequest(14, new String[]{"You lost!"});
-            } else {
-                playerOne.addRequest(14, new String[]{"Draw!"});
-                playerTwo.addRequest(14, new String[]{"Draw!"});
+                playerOne.addRequest(REQUEST_GAME_STATE, new String[]{"The Winner Is: " + game.getWinner()});
+                playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{"The Winner Is: " + game.getWinner()});
+            } else if (game.getGameState() == GameState.PLAYER_DRAW) {
+                playerOne.addRequest(REQUEST_GAME_STATE, new String[]{"Game Is A Draw"});
+                playerTwo.addRequest(REQUEST_GAME_STATE, new String[]{"Game Is A Draw"});
             }
 
-            // Adding the match data to the Database
             Database.addMatchResult(
                     playerOne.getUsername(),
                     playerTwo.getUsername(),
-                    String.valueOf(winnerID),
+                    winnerUsername,
                     new Date().toString(),
                     "c4"
             );
