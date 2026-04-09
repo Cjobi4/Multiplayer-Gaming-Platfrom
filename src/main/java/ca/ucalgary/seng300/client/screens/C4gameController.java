@@ -166,6 +166,7 @@ public class C4gameController {
 
     private void updateBoard(){
         ConnectFourBoard board = current.getBoard(); //loops through the board
+        turnDisplayc4.setText("");
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 7; j++) {
                 if (board.getCell(i, j) == 'X'){ //if its not empty
@@ -220,6 +221,7 @@ public class C4gameController {
     protected void onGameOverButtonClick(ActionEvent event) {
         try {
             stopChatWatcher();
+            stopBoardWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
@@ -301,23 +303,33 @@ public class C4gameController {
 
     @FXML
     protected void onGridButtonClick(ActionEvent event) throws Exception {
-        char player = current.getCurrentPlayer(); //gets whose turn it is
-        Button clicked = (Button) event.getSource(); //gets what button was clicked
-        int i = 8; //four, so if not intialized, the turn shouldn't count
-        int j = 8;
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 7; col++) {
-                if (clicked == grid[row][col]){
-                    i = col;
+
+        if (Network.getInstance().getC4Game().getTurn())
+        {
+            char player = current.getCurrentPlayer(); //gets whose turn it is
+            Button clicked = (Button) event.getSource(); //gets what button was clicked
+            int i = 8; //four, so if not intialized, the turn shouldn't count
+            int j = 8;
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 7; col++) {
+                    if (clicked == grid[row][col]){
+                        i = col;
+                    }
                 }
             }
+            if (current.makeMove(i,player)) { //updates if the move was valid
+                turnDisplayc4.setText("Yippee!");
+                Network.getInstance().getC4Game().setTurn(false);
+            }else{
+                turnDisplayc4.setText("Please make a valid move");
+            }
+
+            updateBoard();
         }
-        if (current.makeMove(i,player)) { //updates if the move was valid
-            turnDisplayc4.setText("Yippee!");
-        }else{
-            turnDisplayc4.setText("Please make a valid move");
+        else
+        {
+            turnDisplayc4.setText("Not Your Turn");
+        }
         }
 
-        updateBoard();
-    }
 }
