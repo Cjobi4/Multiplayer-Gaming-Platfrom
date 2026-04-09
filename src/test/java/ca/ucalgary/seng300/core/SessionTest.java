@@ -68,7 +68,7 @@ public class SessionTest {
             Network connect = Network.getInstance("10.13.76.142", 14001);
 
             // queue request for game list
-            connect.queueRequest(Network.GET_GAME_LIST, null).get();
+            Network.getInstance().queueRequest(Network.GET_GAME_LIST, null).get();
 
             // amount of games in the game registry
             int gameCount = GameRegistry.getInstance().ListAll().size();
@@ -86,12 +86,10 @@ public class SessionTest {
         Network connect = Network.getInstance("10.13.76.142", 14001);
 
         // queue request for TTT leaderboard
-        // cast the CompletableFuture result back into a List
-        List board =
-                (List) connect.queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"}).get();
+        List<LeaderboardEntry> testBoard = (List) connect.queueRequest(Network.GET_LEADERBOARD, new String[]{"ttt"}).get();
 
         // assert something was sent back
-        Assertions.assertNotNull(board);
+        Assertions.assertNotNull(testBoard);
     }
 
     @Test
@@ -99,12 +97,12 @@ public class SessionTest {
         Network connect = Network.getInstance("10.13.76.142", 14001);
 
         // test username to search for
-        String usernameToSearch = "testusename";
+        String usernameToSearch = "admin";
 
-        List<MatchRecord> records = connect.getMatchRecords(usernameToSearch);
+        List<MatchRecord> records = (List<MatchRecord>) Network.getInstance().queueRequest(Network.GET_MATCH_RECORD, new String[]{"admin"}).get();
 
-        // no record for non existing username
-        Assertions.assertNull(records);
+        // using dummy data on the database
+        Assertions.assertNotNull(records);
     }
 
     @Test
