@@ -208,4 +208,8 @@ public class ConnectFourGame {
     public int getMoveCount() {
         return moveCount;
     }
+
+    public void setGameState(GameState newState){
+        this.gameState = newState;
+    }
 }

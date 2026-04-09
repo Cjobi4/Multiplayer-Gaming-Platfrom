@@ -1,6 +1,5 @@
 package ca.ucalgary.seng300.core.identity.client;
 
-import ca.ucalgary.seng300.client.screens.C4opponentSelectController;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
@@ -30,12 +29,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ButtonBar;
-import java.util.Optional;
 
 public class Network extends Thread {
     private static byte[] sharedKey = null;
@@ -71,17 +64,23 @@ public class Network extends Thread {
     public static final byte MATCH_REJECTED = 15;
     //??
 
-    public static final byte RESPOND_QUEUE = 35;
     public static final byte SEND_CHALLENGE = 16;
     public static final byte RECEIVE_CHALLENGE = 17;
-    public static final byte SEND_BOARD = 18;
-    public static final byte PROMPT_MOVE = 19;
-    public static final byte NOTIFY_GAME_STATE = 20;
+    public static final byte SEND_TTT_BOARD = 18;
+    public static final byte PROMPT_TTT_MOVE = 19;
+    public static final byte NOTIFY_TTT_GAME_STATE = 20;
+
+    public static final byte send_chat = 21;
+    public static final byte receive_chat = 22;
+
+    public static final byte SEND_C4_BOARD = 23;
+    public static final byte PROMPT_C4_MOVE = 24;
+    public static final byte NOTIFY_C4_GAME_STATE = 25;
+
+    public static final byte RESPOND_QUEUE = 35;
 
     // to be added/modified later
     public static final byte SEND_MOVE_TTT = 125;
-    public static final byte send_chat = 21;
-    public static final byte receive_chat = 22;
     public static final byte SEND_MOVE_C4 = 126; //
 
     /*
@@ -254,33 +253,61 @@ public class Network extends Thread {
                     else if (descriptionByte == RECEIVE_CHALLENGE) {
                         receiveChallenge();
                     }
-                    else if (descriptionByte == SEND_BOARD) {
+                    else if (descriptionByte == SEND_TTT_BOARD) {
                         if (tttGame == null)
                         {
                             clearTTTGame();
                             tttGame = new TicTacToeGame();
                         }
-                        receiveBoard();
+                        receiveTTTBoard();
                     }
 //                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
-                    else if (descriptionByte == PROMPT_MOVE) {
+                    else if (descriptionByte == PROMPT_TTT_MOVE) {
                         //update flag
                         if (tttGame == null)
                         {
                             clearTTTGame();
                             tttGame = new TicTacToeGame();
                         }
-                        receivedMoveRequest();
+                        receivedTTTMoveRequest();
                         //System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
                         //sendRequestParameter("dummy_local_move");
                     }
-                    else if (descriptionByte == NOTIFY_GAME_STATE) {
+                    else if (descriptionByte == NOTIFY_TTT_GAME_STATE) {
                         if (tttGame == null)
                         {
                             clearTTTGame();
                             tttGame = new TicTacToeGame();
                         }
-                        receiveGameState();
+                        receiveTTTGameState();
+                    }
+                    else if (descriptionByte == SEND_C4_BOARD) {
+                        if (c4Game == null)
+                        {
+                            clearC4Game();
+                            c4Game = new ConnectFourGame();
+                        }
+                        receiveTTTBoard();
+                    }
+//                    // TODO REMOVE THIS AFTER SERVER SIDE TURNS IMPLEMENTED
+                    else if (descriptionByte == PROMPT_C4_MOVE) {
+                        //update flag
+                        if (c4Game == null)
+                        {
+                            clearC4Game();
+                            c4Game = new ConnectFourGame();
+                        }
+                        receivedC4MoveRequest();
+                        //System.out.println("Server is waiting for a move... Auto-skipping to unblock server!");
+                        //sendRequestParameter("dummy_local_move");
+                    }
+                    else if (descriptionByte == NOTIFY_C4_GAME_STATE) {
+                        if (c4Game == null)
+                        {
+                            clearC4Game();
+                            c4Game = new ConnectFourGame();
+                        }
+                        receiveC4GameState();
                     }
 
                 }
@@ -301,7 +328,7 @@ public class Network extends Thread {
         }
     }
 
-    private void receivedMoveRequest() {
+    private void receivedTTTMoveRequest() {
         tttGame.switchTurn();
 
         // handle move making
@@ -310,16 +337,37 @@ public class Network extends Thread {
         tttGame.switchTurn();
     }
 
-    private void receiveGameState() throws Exception {
+    private void receiveTTTGameState() throws Exception {
         String state = readResponseString();
         System.out.println(state);
         GameState gameState = GameState.valueOf(state);
         tttGame.setGameState(gameState);
     }
 
-    private void receiveBoard() throws Exception {
+    private void receiveTTTBoard() throws Exception {
         String updatedBoard = readResponseString();
         tttGame.getBoard().fromString(updatedBoard);
+    }
+
+    private void receivedC4MoveRequest() {
+        c4Game.switchTurn();
+
+        // handle move making
+
+        // change to not your turn
+        c4Game.switchTurn();
+    }
+
+    private void receiveC4GameState() throws Exception {
+        String state = readResponseString();
+        System.out.println(state);
+        GameState gameState = GameState.valueOf(state);
+        c4Game.setGameState(gameState);
+    }
+
+    private void receiveC4Board() throws Exception {
+        String updatedBoard = readResponseString();
+        c4Game.getBoard().fromString(updatedBoard);
     }
 
     /** To be called whenever a request is made
@@ -801,8 +849,13 @@ public class Network extends Thread {
     }
 
     public void sendMoveC4(String boardState) throws Exception {
-        socket.getOutputStream().write(SEND_MOVE_C4);
+        //socket.getOutputStream().write(SEND_MOVE_C4);
         sendRequestParameter(boardState);
+    }
+
+    public String receiveMoveC4() throws Exception {
+
+        return null;
     }
 
     // LEADERBOARD
