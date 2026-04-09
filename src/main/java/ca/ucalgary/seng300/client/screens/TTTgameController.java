@@ -51,7 +51,6 @@ public class TTTgameController {
     private int lastChatSize = -1;
 
     private Timeline boardRefreshTimeline;
-    private String lastBoardString = "";
 
 
     public void initialize() {
@@ -60,12 +59,6 @@ public class TTTgameController {
         messageInput.setOnAction(event -> onSendMessage());
         refreshChatDisplay();
         startChatWatcher();
-
-        try{
-            Network.getInstance().setTTT(current);
-        } catch(Exception e){
-            System.err.println("Could not set initial TTT game: " + e.getMessage());
-        }
 
         updateBoard();
         startBoardWatcher();
@@ -85,8 +78,6 @@ public class TTTgameController {
             if(!networkBoard.equals(currentBoard)){
                 current = networkGame;
                 updateBoard();
-                lastBoardString = networkBoard;
-
             }
         } catch (Exception e){
             System.err.println("Failed to sync board from network: " + e.getMessage());
@@ -139,6 +130,7 @@ public class TTTgameController {
 
     protected void gameOver(){ //copy of the button version
         try {
+            stopBoardWatcher();
             stopChatWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
@@ -165,6 +157,7 @@ public class TTTgameController {
     protected void onBackButtonClick(ActionEvent event) {
         try {
             stopChatWatcher();
+            stopBoardWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TTTopponentSelectPage.fxml"));
             Parent opponentRoot = loader.load();
@@ -299,6 +292,7 @@ public class TTTgameController {
     @FXML
     protected void onGameOverButtonClick(ActionEvent event) {
         try {
+            stopBoardWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
