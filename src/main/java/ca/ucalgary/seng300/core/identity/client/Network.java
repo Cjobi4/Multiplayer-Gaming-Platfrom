@@ -309,6 +309,7 @@ public class Network extends Thread {
 
     private void receiveGameState() throws Exception {
         String state = readResponseString();
+        System.out.println(state);
         GameState gameState = GameState.valueOf(state);
         tttGame.setGameState(gameState);
     }

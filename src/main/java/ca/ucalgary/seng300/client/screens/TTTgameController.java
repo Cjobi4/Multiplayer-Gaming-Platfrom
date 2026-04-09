@@ -6,6 +6,7 @@ import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.games.GameState;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.shared.models.ActivePlayer;
+import ca.ucalgary.seng300.shared.models.Game;
 import ca.ucalgary.seng300.shared.models.Message;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -66,6 +67,7 @@ public class TTTgameController {
 
     private void syncBoard(){
         try{
+
             TicTacToeGame networkGame = Network.getInstance().getTTTGame();
 
             if(networkGame == null){
@@ -76,9 +78,13 @@ public class TTTgameController {
             String networkBoard = networkGame.getBoard().toString();
             String currentBoard = current.getBoard().toString();
 
+            if (networkGame.getGameState() == GameState.PLAYER_WIN || networkGame.getGameState() == GameState.PLAYER_DRAW || networkGame.getGameState() == GameState.PLAYER_LOSE)
+            {
+                gameOver();
+            }
+
             if(!networkBoard.equals(currentBoard)){
-                System.out.println("Updating Board");
-                current = networkGame;
+                current.getBoard().fromString(networkGame.getBoard().toString());
                 updateBoard();
             }
 
@@ -131,7 +137,10 @@ public class TTTgameController {
     }
 
 
-    protected void gameOver(){ //copy of the button version
+    protected void gameOver(){
+
+        System.out.println("Loading game over");
+        //copy of the button version
         try {
             stopBoardWatcher();
             stopChatWatcher();
@@ -239,7 +248,6 @@ public class TTTgameController {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 char value = board.getCellInfo(row, col);
-                System.out.println(row + ", " + col + ", " + board.getCellInfo(row, col));
 
                 if (value == ' ') {
                     grid[row][col].setText("");
@@ -281,12 +289,6 @@ public class TTTgameController {
         }
         if (current.makeMove(i,j,player)) { //updates if the move was valid
             turnDisplay.setText("Yippee!");
-            if (current.getGameState() == GameState.PLAYER_WIN){
-                gameOver(); //ends game if someone wins
-            } else if (current.getGameState() == GameState.PLAYER_DRAW) {
-                gameOver(); //ends game if draw
-            }
-//            current.switchTurn();
         }else{
             turnDisplay.setText("Please make a valid move");
         }
