@@ -23,11 +23,11 @@
    <center>
       <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #F9EDE1;" BorderPane.alignment="CENTER">
          <children>
-            <VBox alignment="TOP_CENTER" prefWidth="220.0" spacing="10.0" style="-fx-border-color: #DEB499; -fx-border-radius: 7; -fx-background-color: #FCE0D2;">
+            <VBox alignment="TOP_CENTER" prefHeight="531.0" prefWidth="361.0" spacing="10.0" style="-fx-border-color: #DEB499; -fx-border-radius: 7; -fx-background-color: #FCE0D2;">
                <children>
                   <Label text="Leaderboard" textFill="#866b59">
                      <font>
-                        <Font name="Dubai Regular" size="18.0" />
+                        <Font name="Dubai Medium" size="18.0" />
                      </font>
                   </Label>
                   <ScrollPane fitToWidth="true" prefHeight="532.0" prefWidth="213.0">
@@ -99,7 +99,7 @@
                   </Label>
                   <StackPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffc7ce" height="150.0" stroke="#ffc7ce" width="200.0" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffc9d100" height="150.0" stroke="#ffc9d100" width="200.0" />
                         <ImageView fx:id="thumbnail" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                      </children>
                   </StackPane>
