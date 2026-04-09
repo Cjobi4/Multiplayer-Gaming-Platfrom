@@ -112,7 +112,7 @@ public class TicTacToeGame {
 
         //after all validation checks
         //we can set the players data ('X' or 'O') onto the board at the specific row and column they want to be at
-        board.setCellInfo(row, col, userGameIdentity);
+        // board.setCellInfo(row, col, userGameIdentity);
 
         //incrament the movecount by 1 after each turn
         moveCount++;

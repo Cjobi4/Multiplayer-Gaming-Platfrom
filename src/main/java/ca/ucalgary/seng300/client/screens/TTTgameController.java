@@ -66,9 +66,10 @@ public class TTTgameController {
 
     private void syncBoard(){
         try{
-            TicTacToeGame networkGame = Network.getInstance().getTTTGame(current);
+            TicTacToeGame networkGame = Network.getInstance().getTTTGame();
 
             if(networkGame == null){
+                System.out.println("No game created");
                 return;
             }
 
@@ -76,9 +77,11 @@ public class TTTgameController {
             String currentBoard = current.getBoard().toString();
 
             if(!networkBoard.equals(currentBoard)){
+                System.out.println("Updating Board");
                 current = networkGame;
                 updateBoard();
             }
+
         } catch (Exception e){
             System.err.println("Failed to sync board from network: " + e.getMessage());
         }
@@ -236,6 +239,7 @@ public class TTTgameController {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 char value = board.getCellInfo(row, col);
+                System.out.println(row + ", " + col + ", " + board.getCellInfo(row, col));
 
                 if (value == ' ') {
                     grid[row][col].setText("");
@@ -264,7 +268,7 @@ public class TTTgameController {
     protected void onGridButtonClick(ActionEvent event) throws Exception {
         char player = current.getCurrentPlayer(); //gets whose turn it is
         Button clicked = (Button) event.getSource(); //gets what button was clicked
-        int i = 4; //four, so if not intialized, the turn shouldn't count
+        int i = 4; //four, so if not initialized, the turn shouldn't count
         int j = 4;
 
         for (int row = 0; row < 3; row++) {

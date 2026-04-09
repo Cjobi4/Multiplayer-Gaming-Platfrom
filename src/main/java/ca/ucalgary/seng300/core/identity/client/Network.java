@@ -440,8 +440,8 @@ public class Network extends Thread {
         this.tttGame = game;
     }
 
-    public TicTacToeGame getTTTGame(TicTacToeGame game) {
-        return game;
+    public TicTacToeGame getTTTGame() {
+        return this.tttGame;
     }
 
     public void clearTTTGame() {
