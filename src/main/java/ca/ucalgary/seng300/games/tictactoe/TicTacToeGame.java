@@ -6,6 +6,7 @@ package ca.ucalgary.seng300.games.tictactoe;
 //
 //
 //import the enums file
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.games.GameState;
 
 //this is for game/move logic for tic tac toe
@@ -70,7 +71,7 @@ public class TicTacToeGame {
     //change to accept a session object
     //check the session object (git userID check it to compare who is playing, make sure a move request is from who (make sure who is playing))
     //
-    public boolean makeMove(int row, int col, char userGameIdentity) {
+    public boolean makeMove(int row, int col, char userGameIdentity) throws Exception {
         //adding gameState integration now (ticket 177)
 
         //if the game is over (win or tie), do not allow any more moves
@@ -148,6 +149,8 @@ public class TicTacToeGame {
 
         //since hte game is still running, set the state back to waiting for the next move
         gameState = GameState.TURN_AWAITING_MOVE;
+
+        Network.getInstance().queueRequest(Network.SEND_MOVE_TTT, new String[]{row + " " + col});
 
         //return true!
         return true;

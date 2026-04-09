@@ -247,6 +247,7 @@ public class TTTgameController {
     }
 
     private void startBoardWatcher(){
+        System.out.println("Starting board watcher");
         boardRefreshTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> syncBoard()));
 
         boardRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
@@ -260,7 +261,7 @@ public class TTTgameController {
     }
 
     @FXML
-    protected void onGridButtonClick(ActionEvent event) {
+    protected void onGridButtonClick(ActionEvent event) throws Exception {
         char player = current.getCurrentPlayer(); //gets whose turn it is
         Button clicked = (Button) event.getSource(); //gets what button was clicked
         int i = 4; //four, so if not intialized, the turn shouldn't count
@@ -286,7 +287,6 @@ public class TTTgameController {
             turnDisplay.setText("Please make a valid move");
         }
 
-        updateBoard();
     }
 
     @FXML
