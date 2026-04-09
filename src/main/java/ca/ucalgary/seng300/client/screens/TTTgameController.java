@@ -60,6 +60,15 @@ public class TTTgameController {
         messageInput.setOnAction(event -> onSendMessage());
         refreshChatDisplay();
         startChatWatcher();
+
+        try{
+            Network.getInstance().setTTT(current);
+        } catch(Exception e){
+            System.err.println("Could not set initial TTT game: " + e.getMessage());
+        }
+
+        updateBoard();
+        startBoardWatcher();
     }
 
     private void syncBoard(){
