@@ -90,6 +90,11 @@ public class ConnectFourGame {
      * @return true if a win is detected.
      */
     public boolean validateWin(char p) {
+        boolean horizontal = checkHorizontal(p);
+        boolean vertical = checkVertical(p);
+        boolean diagonal = checkDiagonal(p);
+        System.out.println("horizontal=" + horizontal + ", vertical=" + vertical +  ", diagonal=" + diagonal);
+
         return checkHorizontal(p) || checkVertical(p) || checkDiagonal(p);
     }
 
