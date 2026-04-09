@@ -240,7 +240,7 @@ public class mainController {
                 -fx-border-radius: 10;
                 -fx-border-width: 1;
                 -fx-padding: 10;
-                        """);
+             """);
 
         rankLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52;");
         nameLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: #6f5a52; -fx-font-weight: bold;");
@@ -262,10 +262,10 @@ public class mainController {
         imageView.setFitHeight(70);
         alert.setGraphic(imageView);
 
-        String information = "Trainwreck is a competitive, online multiplayergame platform that" +
-                "allows users to remotely play minigames together and track their progrss.\n\n" +
+        String information = "Trainwreck is a competitive, online multiplayer game platform that\n" +
+                "allows users to remotely play minigames together and track their progress.\n\n" +
 
-                "The program tracks wins and matches to place players on aleaderboard, " +
+                "The program tracks wins and matches to place players on a leaderboard, " +
                 "ensuring competitive matchmaking or allowing for direct online challenges.\n\n" +
 
                 "Version: 3.1.5\n" +
