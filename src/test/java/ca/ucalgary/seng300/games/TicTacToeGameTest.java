@@ -41,15 +41,15 @@ public class TicTacToeGameTest {
         testGame.setBoard(testBoard);
 
         // testing bounds and character checker
-        Assertions.assertFalse(testGame.makeMove(5,4,'X'));
-        Assertions.assertFalse(testGame.makeMove(-1,-1,'O'));
-        Assertions.assertFalse(testGame.makeMove(1,1, 'E'));
+        Assertions.assertFalse(testGame.makeMove(5,4));
+        Assertions.assertFalse(testGame.makeMove(-1,-1));
+        Assertions.assertFalse(testGame.makeMove(1,1));
 
         // valid move, because empty space in board
-        Assertions.assertTrue(testGame.makeMove(1,1,'O'));
+        Assertions.assertTrue(testGame.makeMove(1,1));
         Assertions.assertEquals('O', testGame.getBoard().getCellInfo(1,1)); // check the proper character was placed
         // should be false because trying to place in a occupied space
-        Assertions.assertFalse(testGame.makeMove(1,1,'X'));
+        Assertions.assertFalse(testGame.makeMove(1,1));
     }
 
 
@@ -61,11 +61,11 @@ public class TicTacToeGameTest {
         TicTacToeGame testGame = new TicTacToeGame();
 
         testGame.setGameState(GameState.PLAYER_WIN); // simulate a player winning
-        Assertions.assertFalse(testGame.makeMove(0,0,'X'));
+        Assertions.assertFalse(testGame.makeMove(0,0));
         // even though theoretically valid move, because it believes a player has won it rejects the move
 
         testGame.setGameState(GameState.PLAYER_DRAW); // draw
-        Assertions.assertFalse(testGame.makeMove(0,0,'X'));
+        Assertions.assertFalse(testGame.makeMove(0,0));
         // same as before
     }
 
@@ -81,12 +81,12 @@ public class TicTacToeGameTest {
 
         testBoard.fromString("X,X, ,O,X,O,X,O,X"); //full board, but X wins
         testGame.setBoard(testBoard);
-        testGame.makeMove(2,2,'X'); // need to make the move to trigger a board change
+        testGame.makeMove(2,2); // need to make the move to trigger a board change
         Assertions.assertFalse(testGame.checkGameTie());
 
         testBoard.fromString("O,X, ,X,O,O,X,O,X"); // tie game, no winner
         testGame.setBoard(testBoard);
-        testGame.makeMove(0,2,'O'); // making the draw move
+        testGame.makeMove(0,2); // making the draw move
         Assertions.assertTrue(testGame.checkGameTie());
     }
 
@@ -172,7 +172,7 @@ public class TicTacToeGameTest {
         // X is one move away from winning
         testBoard.fromString("X,X, , , , , , , ");
         testGame.setBoard(testBoard);
-        testGame.makeMove(0,2,'X'); // make the winning move
+        testGame.makeMove(0,2); // make the winning move
 
         Assertions.assertEquals('X', testGame.getWinner()); // winner is X
         Assertions.assertEquals(GameState.PLAYER_WIN,testGame.getGameState()); // proper game state
