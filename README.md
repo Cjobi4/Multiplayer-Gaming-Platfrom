@@ -160,7 +160,9 @@ project-root/
 │   │   ├── leaderboard/               # Leaderboard design
 │   │   └── move-validation/           # Move validation design
 │   ├── quality-testing/               # Test plans
+│   │   └── test-plans/                # Test plan documents
 │   └── integration-release/           # I&R process docs
+│       └── presentations/             # Presentation materials
 ├── server/                            # Server module (separate Maven project)
 │   ├── pom.xml
 │   └── src/
@@ -171,12 +173,16 @@ project-root/
 │       │   ├── Request.java           # Async request DTO with CompletableFuture
 │       │   ├── ServerMain.java        # Server entry point
 │       │   ├── Session.java           # Per-client session handler (12 request types)
-│       │   └── Games/                 # Server-side game sessions
+│       │   └── Games/                 # Server-side game logic and sessions
 │       │       ├── GameState.java
+│       │       ├── TicTacToeBoard.java
+│       │       ├── TicTacToeGame.java
 │       │       ├── TicTacToeGameSession.java
-│       │       ├── tictactoe/         # Server TTT board and game logic
-│       │       └── connectfour/       # Server C4 board, game, and session
-│       └── test/java/.../             # Server unit tests (Matchmaker)
+│       │       ├── TTTServerSession.java
+│       │       ├── ConnectFourBoard.java
+│       │       ├── ConnectFourGame.java
+│       │       └── ConnectFourGameSession.java
+│       └── test/java/.../             # Server unit tests (Matchmaker, StubSocket)
 ├── src/
 │   ├── main/
 │   │   ├── java/ca/ucalgary/seng300/
@@ -186,6 +192,7 @@ project-root/
 │   │   │   │   └── models/            # Game, Tag, Player, Message, ActivePlayer
 │   │   │   ├── core/
 │   │   │   │   ├── identity/          # Client-side auth and networking
+│   │   │   │   │   └── client/        # Network client and session management
 │   │   │   │   ├── registry/          # Game, Chat, and Player registries
 │   │   │   │   ├── matchmaking/       # Matchmaking (stub, .gitkeep only)
 │   │   │   │   ├── persistence/       # Persistence (stub, .gitkeep only)
@@ -212,10 +219,10 @@ project-root/
 │   │       └── images/               # Static assets
 │   └── test/                          # JUnit 5 test suite
 │       └── java/.../
-│           ├── client/                # UI controller tests
-│           ├── core/                  # Registry and network tests
+│           ├── client/                # UI interface tests
+│           ├── core/                  # Registry, database, network, and session tests
 │           ├── games/                 # Game logic tests (TTT and C4)
-│           ├── rules/                 # Leaderboard tests
+│           ├── rules/                 # Leaderboard and match record tests
 │           └── integration/           # Integration tests (stub)
 ├── scripts/                           # Utility scripts
 ├── .gitlab-ci.yml                     # CI/CD pipeline (build + test, client and server)
@@ -248,4 +255,4 @@ See [team.md](team.md) for the full sub-team roster, leads, and members.
 
 ---
 
-_Last updated: 2026-04-07_
+_Last updated: 2026-04-08_
