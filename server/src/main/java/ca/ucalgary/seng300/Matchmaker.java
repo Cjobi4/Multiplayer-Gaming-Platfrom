@@ -1,6 +1,6 @@
 package ca.ucalgary.seng300;
 
-import ca.ucalgary.seng300.games.TicTacToeGameSession;
+import ca.ucalgary.seng300.games.TTTServerSession;
 import ca.ucalgary.seng300.games.ConnectFourGameSession;
 
 import java.util.LinkedList;
@@ -311,7 +311,7 @@ public class Matchmaker extends Thread
             if (gameName.equals("ttt")) {
                 p1.setOpp(p2);
                 p2.setOpp(p1);
-                TicTacToeGameSession gameSession = new TicTacToeGameSession(p1, p2);
+                TTTServerSession gameSession = new TTTServerSession(p1, p2);
                 gameSession.start();
             } else if (gameName.equals("c4")) {
                 p1.setOpp(p2);

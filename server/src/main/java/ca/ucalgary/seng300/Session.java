@@ -1,7 +1,7 @@
 package ca.ucalgary.seng300;
 
 import ca.ucalgary.seng300.games.ConnectFourGameSession;
-import ca.ucalgary.seng300.games.TicTacToeGameSession;
+import ca.ucalgary.seng300.games.TTTServerSession;
 
 import javax.crypto.SecretKey;
 import java.net.Socket;
@@ -546,7 +546,7 @@ public class Session extends Thread
                         oppSession.setOpp(this);
 
                         if (gameType.equals("ttt")) {
-                            new TicTacToeGameSession(this, oppSession).start();
+                            new TTTServerSession(this, oppSession).start();
                         } else {
                             new ConnectFourGameSession(this, oppSession).start();
                         }
