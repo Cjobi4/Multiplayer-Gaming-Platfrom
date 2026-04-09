@@ -17,6 +17,7 @@ public class ConnectFourGame {
     private char winner;
     private GameState gameState;
     private int moveCount;
+    private boolean myTurn;
 
     /**
      * Initializes a new Connect Four game in the INITIALIZING state.
@@ -27,6 +28,7 @@ public class ConnectFourGame {
         winner = ' ';
         moveCount = 0;
         gameState = GameState.GAME_INITIALIZING;
+        myTurn = false;
     }
 
     /**
@@ -205,5 +207,14 @@ public class ConnectFourGame {
     public void setGameState(GameState newState){
 
         this.gameState = newState;
+    }
+
+    public void setTurn(boolean b) {
+        this.myTurn = b;
+    }
+
+    public boolean getTurn()
+    {
+        return myTurn;
     }
 }
