@@ -286,7 +286,7 @@ public class TTTgameController {
             turnDisplay.setText("Please make a valid move");
         }
 
-        updateBoard();
+        //updateBoard();
     }
 
     @FXML

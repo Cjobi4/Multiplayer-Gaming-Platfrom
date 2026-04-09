@@ -5,6 +5,7 @@ import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
 import ca.ucalgary.seng300.games.GameState;
+import ca.ucalgary.seng300.games.connectfour.ConnectFourGame;
 import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
@@ -50,6 +51,7 @@ public class Network extends Thread {
     private static Network instance;
     private ChallengeListener challengeListener;
     private TicTacToeGame tttGame = null;
+    private ConnectFourGame c4Game = null;
 
     public static final byte PING = 0;
     public static final byte CREATE_ACCOUNT = 1;
@@ -80,6 +82,7 @@ public class Network extends Thread {
     public static final byte SEND_MOVE_TTT = 125;
     public static final byte send_chat = 21;
     public static final byte receive_chat = 22;
+    public static final byte SEND_MOVE_C4 = 126; //
 
     /*
         HOW TO USE THE NETWORK CLASS
@@ -391,6 +394,11 @@ public class Network extends Thread {
                 req.future.complete(null);
                 break;
 
+            case SEND_MOVE_C4:
+                sendMoveC4(parameters[0]);
+                req.future.complete(null);
+                break;
+
             case send_chat:
                 sendMessage(parameters[0]);
                 req.future.complete(null);
@@ -429,8 +437,22 @@ public class Network extends Thread {
         return game;
     }
 
+
     public void clearTTTGame() {
         tttGame = null;
+    }
+
+
+    public void setC4(ConnectFourGame game) {
+        this.c4Game = game;
+    }
+
+    public ConnectFourGame getC4Game() {
+        return c4Game;
+    }
+
+    public void clearC4Game() {
+        c4Game = null;
     }
 
     // LOGIN
@@ -754,6 +776,11 @@ public class Network extends Thread {
     public String receiveMoveTTT() throws Exception {
 
         return null;
+    }
+
+    public void sendMoveC4(String boardState) throws Exception {
+        socket.getOutputStream().write(SEND_MOVE_C4);
+        sendRequestParameter(boardState);
     }
 
     // LEADERBOARD
