@@ -11,6 +11,11 @@ out/
 *.iml
 *.ipr
 
+### Eclipse ###
+.project
+.classpath
+.settings/
+
 ### VS Code ###
 .vscode/
 
@@ -43,6 +48,8 @@ hs_err_pid*.log
 *.swp
 *.swo
 *~
+*.bak
+*.orig
 
 ### Environment ###
 .env

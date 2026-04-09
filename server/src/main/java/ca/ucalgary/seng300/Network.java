@@ -119,7 +119,6 @@ public class Network
                  */
 
                 //finally encrypt the newly created clientID and give it to the client
-                clientID = UUID.randomUUID();
                 clientIDBytes = encrypt(clientID.toString(), AESKey);
                 client.getOutputStream().write(ByteBuffer.allocate(4).putInt(clientIDBytes.length).array());
                 client.getOutputStream().write(clientIDBytes);

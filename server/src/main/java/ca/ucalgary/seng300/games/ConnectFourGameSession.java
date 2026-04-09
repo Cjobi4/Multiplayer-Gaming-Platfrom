@@ -1,8 +1,11 @@
-package ca.ucalgary.seng300.games.connectfour;
+package ca.ucalgary.seng300.games;
 
+import ca.ucalgary.seng300.Request;
 import ca.ucalgary.seng300.Session;
 import ca.ucalgary.seng300.Database;
 import ca.ucalgary.seng300.games.GameState;
+import ca.ucalgary.seng300.games.ConnectFourGame;
+
 import java.util.Date;
 
 /**
@@ -43,7 +46,7 @@ public class ConnectFourGameSession extends Thread {
                 char activeToken = game.getCurrentPlayer();
 
                 // Create the Request instance from the session
-                Session.Request turnReq = activeSession.new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
+                Request turnReq = new Request(13, new String[]{"P" + (activeToken == 'X' ? "1" : "2") + "'s turn"});
 
                 // Add the request to the session queue
                 activeSession.addRequest(turnReq);
@@ -97,7 +100,7 @@ public class ConnectFourGameSession extends Thread {
             if (game.getGameState() == GameState.PLAYER_WIN) {
                 Session winner = (game.getWinner() == 'X') ? playerOne : playerTwo;
                 Session loser = (game.getWinner() == 'X') ? playerTwo : playerOne;
-                winnerID = winner.getUserID();
+                winnerID = Integer.parseInt(winner.getUsername());
 
                 // Type 14 Notifications
                 winner.addRequest(14, new String[]{"You won!"});
@@ -109,9 +112,9 @@ public class ConnectFourGameSession extends Thread {
 
             // Adding the match data to the Database
             Database.addMatchResult(
-                    playerOne.getUserID(),
-                    playerTwo.getUserID(),
-                    winnerID,
+                    playerOne.getUsername(),
+                    playerTwo.getUsername(),
+                    String.valueOf(winnerID),
                     new Date().toString(),
                     "c4"
             );

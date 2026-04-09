@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+
 public class Session extends Thread
 {
     private SecretKey AESKey = null;
@@ -37,6 +38,11 @@ public class Session extends Thread
     //private final int KICKED_FROM_QUEUE = 13;
     //private final int MATCH_ACCEPTED = 14;
     //private final int MATCH_REJECTED = 15;
+    //private final int SEND_CHALLENGE = 16;
+    //private final int RECEIVE_CHALLENGE = 17;
+    //private final int SEND_BOARD = 18;
+    //private final int PROMPT_MOVE = 19;
+    //private final int NOTIFY_GAME_STATE = 20;
 
     /**
      * Class constructor, creates a new session object to handle the client.
@@ -64,25 +70,16 @@ public class Session extends Thread
         requestQueue.put(req);
     }
 
-    //this function adds a request to the session queue AND waits for a response from the client
-    //we need this because addRequest() only sends data, but does NOT wait for a reply
-    //this function allows the server (game session) to ask the client for something (like a move)
-    //and then pause until the client responds with a result
-    public String addRequestAndWait(int type, String[] parameters) throws Exception {
+    /**
 
-        //create a new request object with a specific type and parameters
-        Request req = new Request(type, parameters);
-
-        //initialize a future object so we can wait for the client's response later
-        //this is what allows getResult() to "block" until a result is returned
-        req.future = new CompletableFuture<>();
-
-        //add the request to the request queue so it gets sent to the client
+     Adds a request to the queue for the Session to execute. This should be used when a result IS needed. The Request
+     object MUST be created before being passed into the function for result retrieval.
+     @param req The Request object to be added into the queue.
+     @throws Exception NullPointerException if the request is null, or InterruptedException if is interrupted while
+     waiting*/
+    public void addRequest(Request req) throws Exception
+    {
         requestQueue.put(req);
-
-        //wait for the client to respond and return the result
-        //this will pause execution here until the client sends back a response
-        return req.getResult();
     }
 
     @Override
@@ -101,7 +98,7 @@ public class Session extends Thread
             {
                 try //listen for incoming transmissions
                 {
-                    client.setSoTimeout(3000);  //server pauses checking every 3 seconds
+                    client.setSoTimeout(1000);  //server pauses checking every 1 seconds
 
                     //see what type of request it is
                     requestType = client.getInputStream().read();
@@ -202,6 +199,8 @@ public class Session extends Thread
 
                 break;
             case 1:     //if it was a register account request...
+                System.out.println("Account register request ");
+
                 //collect the username
                 messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
                 messageBytes = client.getInputStream().readNBytes(messageLength);
@@ -222,9 +221,11 @@ public class Session extends Thread
                 }
 
                 //only one Session can run this block at a time
-                synchronized (Session.class) {
+                synchronized (Session.class)
+                {
                     //check if it was successful
                     result = Database.createAccount(newUsername, newPassword, this);
+                    System.out.println("Register result: " + result);
                 }
 
                 //if it was, save the username for the session
@@ -359,10 +360,16 @@ public class Session extends Thread
                         } while (rs.next());
 
                         //notify the client of success
-                        client.getOutputStream().write(1);
+                        messageBytes = Network.encrypt("1", AESKey);
+                        client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                        client.getOutputStream().write(messageBytes);
+                        System.out.println("1 sent");
                     } else //if something went wrong and no leaderboard data was found, notify client
                     {
-                        client.getOutputStream().write(0);
+                        messageBytes = Network.encrypt("0", AESKey);
+                        client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                        client.getOutputStream().write(messageBytes);
+                        System.out.println("0 sent");
                     }
                     break;
                 case 6:    //if it was a request for match record's from a specific user
@@ -460,6 +467,129 @@ public class Session extends Thread
                     client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
                     client.getOutputStream().write(messageBytes);
                     System.out.println("player list sent");  //for debug
+                    break;
+                case 12:    //if a match has been found...
+                    //notify client
+                    client.getOutputStream().write(12);
+
+                    //send username of opp
+                    messageBytes = Network.encrypt(req.getParameters()[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("opp username sent");
+
+                    //check if user accepted/declined
+                    result = client.getInputStream().read();
+                    System.out.println("Match response from " + username + " is: " + result);
+                    req.setFuture(Integer.toString(result));
+                    break;
+                case 13:    //if has been kicked from queue...
+                    //let client know
+                    client.getOutputStream().write(13);
+
+                    //reset queue booleans
+                    if (inTttQueue)
+                    {
+                        inTttQueue = false;
+                    } else if (inC4Queue)
+                    {
+                       inC4Queue = false;
+                    }
+                    break;
+                case 14:    //if match has been accepted...
+                    //let client know
+                    client.getOutputStream().write(14);
+
+                    //reset queue booleans
+                    if (inTttQueue)
+                    {
+                        inTttQueue = false;
+                    } else if (inC4Queue)
+                    {
+                        inC4Queue = false;
+                    }
+                    break;
+                case 15:    //if has been declined...
+                    //let client know
+                    client.getOutputStream().write(15);
+                    break;
+                case 16:    //if it was a direct challenge...
+                    //collect the username of the opp to be challenged
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    String name = Network.decrypt(messageBytes, AESKey);
+
+                    //collect the desired game type
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    String gameType = Network.decrypt(messageBytes, AESKey);
+
+                    //create a challenge and send it
+                    req = new Request(17, new String[]{username});
+                    Database.getSession(name).addRequest(req);
+
+                    //see if accepted or declined
+                    result = Integer.parseInt(req.getResult());
+
+                    //if accepted make game
+                    if (result == 14)
+                    {
+                        if (gameType.equals("ttt"))
+                        {
+                            Database.getTttMatchmaker().createMatch(this, Database.getSession(name));
+                        }else
+                        {
+                            Database.getC4Matchmaker().createMatch(this, Database.getSession(name));
+                        }
+                        client.getOutputStream().write(14);
+                    }else
+                    {
+                        client.getOutputStream().write(15);
+                    }
+                    break;
+                case 17:    //if receiving direct challenge...
+                    client.getOutputStream().write(17);
+
+                    //send response to server
+                    result = client.getInputStream().read();
+                    req.setFuture(Integer.toString(result));
+
+                    break;
+                case 18:    //if sending board string...
+                    //p1.addRequest(18, new String[]{boardString});
+                    //notify client of incoming board
+                    client.getOutputStream().write(18);
+
+                    //send the board
+                    messageBytes = Network.encrypt(req.getParameters()[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("board sent");
+                    break;
+                case 19:    //if asking for a move from client...
+                    //Request req = new Request(18, new String[]{boardString});
+                    //p1.addRequest(req);
+                    //String move = req.getResult();
+                    //notify client it's their time
+                    client.getOutputStream().write(19);
+
+                    //collect their move
+                    messageLength = ByteBuffer.wrap(client.getInputStream().readNBytes(4)).getInt();
+                    messageBytes = client.getInputStream().readNBytes(messageLength);
+                    message = Network.decrypt(messageBytes, AESKey);
+
+                    req.setFuture(message);
+                    break;
+                case 20:    //if sending game state to client...
+                    //p1.addRequest(20, new String[]{gameStateString});
+                    //notify client of incoming game state
+                    client.getOutputStream().write(20);
+
+                    //send the game state
+                    messageBytes = Network.encrypt(req.getParameters()[0], AESKey);
+                    client.getOutputStream().write(ByteBuffer.allocate(4).putInt(messageBytes.length).array());
+                    client.getOutputStream().write(messageBytes);
+                    System.out.println("game state sent");
                     break;
             }
         }

@@ -6,10 +6,7 @@ import ca.ucalgary.seng300.core.registry.PlayerRegistry;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
-import ca.ucalgary.seng300.shared.models.Game;
-import ca.ucalgary.seng300.shared.models.Message;
-import ca.ucalgary.seng300.shared.models.Player;
-import ca.ucalgary.seng300.shared.models.Tag;
+import ca.ucalgary.seng300.shared.models.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyAgreement;
@@ -384,7 +381,11 @@ public class Network extends Thread {
             sendRequestParameter(pwd);
 
             // interpret whether the login attempt was successful or not
-            return socket.getInputStream().read();
+            int response = socket.getInputStream().read();
+            if (response == 1) {
+                ActivePlayer.getInstance().setUsername(username);
+            }
+            return response;
         } catch (Exception e) {
             return -1;
         }
@@ -423,7 +424,12 @@ public class Network extends Thread {
             sendRequestParameter(password);
 
             // interpret whether registration was successful or not
-            return socket.getInputStream().read();
+            int response = socket.getInputStream().read();
+            if (response == 1) {
+                ActivePlayer.getInstance().setUsername(username);
+            }
+
+            return response;
         } catch (Exception e) {
             return -1;
         }
@@ -943,6 +949,16 @@ public class Network extends Thread {
         return clientKeyPair.getPublic().getEncoded();
     }
 
+
+    /**
+     * Initializes encryption with a dummy key for unit testing.
+     * This bypasses the Diffie-Hellman key exchange that requires a live server.
+     * @throws Exception if key generation fails.
+     */
+    public static void setupTestEncryption() throws Exception {
+        sharedKey = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+        generateAESKey();
+    }
 
     /** Turning the shared key into a usable AES encryption key
      *
