@@ -37,6 +37,7 @@ public class ConnectFourGame {
         if (gameState == GameState.PLAYER_WIN || gameState == GameState.PLAYER_DRAW) return false;
         if (userGameIdentity != currentPlayer) return false;
 
+
         gameState = GameState.TURN_VALIDATING_MOVE;
         if (col < 0 || col >= board.getCols() || board.isColumnFull(col)) return false;
 
