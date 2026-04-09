@@ -4,6 +4,7 @@ import ca.ucalgary.seng300.client.screens.C4opponentSelectController;
 import ca.ucalgary.seng300.core.registry.ChatRegistry;
 import ca.ucalgary.seng300.core.registry.GameRegistry;
 import ca.ucalgary.seng300.core.registry.PlayerRegistry;
+import ca.ucalgary.seng300.games.tictactoe.TicTacToeGame;
 import ca.ucalgary.seng300.rules.leaderboard.GameType;
 import ca.ucalgary.seng300.rules.leaderboard.LeaderboardEntry;
 import ca.ucalgary.seng300.rules.leaderboard.MatchRecord;
@@ -47,6 +48,7 @@ public class Network extends Thread {
     private String clientID = null;
     private static Network instance;
     private ChallengeListener challengeListener;
+    private TicTacToeGame tttGame = null;
 
     public static final byte PING = 0;
     public static final byte CREATE_ACCOUNT = 1;
@@ -383,6 +385,19 @@ public class Network extends Thread {
 
         }
 
+    }
+
+
+    public void setTTT(TicTacToeGame game) {
+        this.tttGame = game;
+    }
+
+    public TicTacToeGame getTTTGame(TicTacToeGame game) {
+        return game;
+    }
+
+    public void clearTTTGame() {
+        tttGame = null;
     }
 
     // LOGIN
