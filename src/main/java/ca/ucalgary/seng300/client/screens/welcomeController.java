@@ -21,6 +21,7 @@ public class welcomeController {
     public TextField IPAdressTextField;
     public Label errorField;
 
+    //From Welcome Page -> Login page
     @FXML
     protected void onWelcomeButtonClick(ActionEvent event) throws Exception {
         String ipInput = IPAdressTextField.getText().trim();
@@ -59,14 +60,20 @@ public class welcomeController {
 
     @FXML
     protected void onCreateAccountButtonClick(ActionEvent event) throws Exception {
-        if(IPAdressTextField.getText() == null || IPAdressTextField.getText().trim().isEmpty()) {
-            errorField.setText("Please enter a valid IP Address to create an account!");
-        } else {
-            Network.getInstance(IPAdressTextField.getText(), 14001);
+        String ipInput = IPAdressTextField.getText().trim();
+        if(ipInput.isEmpty()) {
+            errorField.setText("Please enter an IP Address to login!");
+            return;
+        }
+
+        if(isValidIP(ipInput)) {
+            Network.getInstance(ipInput, 14001);
             errorField.setText("");
             switchScene(event, "/fxml/createAccountPage.fxml", "Create Account");
         }
-
+        else {
+            errorField.setText("Invalid IP.");
+        }
     }
 
     private void switchScene(ActionEvent event, String fxmlPath, String title) {
