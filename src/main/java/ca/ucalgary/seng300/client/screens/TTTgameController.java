@@ -228,12 +228,17 @@ public class TTTgameController {
     }
 
     //Everytime this is called, the board is updated
-    private void updateBoard(){
-       TicTacToeBoard board = current.getBoard();
+    private void updateBoard() {
+        TicTacToeBoard board = current.getBoard();
+
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                if (!board.isCellEmpty(row, col)){
-                    grid[row][col].setText(String.valueOf(board.getCellInfo(row,col)));
+                char value = board.getCellInfo(row, col);
+
+                if (value == ' ') {
+                    grid[row][col].setText("");
+                } else {
+                    grid[row][col].setText(String.valueOf(value));
                 }
             }
         }
