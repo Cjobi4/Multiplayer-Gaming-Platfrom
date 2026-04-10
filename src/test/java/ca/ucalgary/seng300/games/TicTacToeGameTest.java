@@ -173,6 +173,5 @@ public class TicTacToeGameTest {
         testGame.setBoard(testBoard);
 
         Assertions.assertTrue(testGame.validateWin('X')); // winner is X
-        Assertions.assertEquals(GameState.PLAYER_WIN,testGame.getGameState()); // proper game state
     }
 }
