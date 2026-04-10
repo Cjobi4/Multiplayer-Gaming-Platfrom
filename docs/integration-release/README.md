@@ -23,6 +23,6 @@ Integration and release process documentation, integration issue logs, and tutor
 
 ## Key Processes
 
-- Branching workflow: `<team-prefix>/<type>/<issue#>-<short-description>`
+- Branching workflow: `<team-prefix>/<type>/<issue#>/<short-description>`
 - Merge priority order: shared -> core -> rules -> client -> games -> tests -> docs
 - MR template: `.gitlab/merge_request_templates/default.md`

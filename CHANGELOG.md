@@ -4,7 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [v1.0.0] - 2026-04-10
+
+### Fixed
+
+- **Integration:** Fixed `GameState.java` package declaration mismatch in server module (`ca.ucalgary.seng300.Games` vs `ca.ucalgary.seng300.games`) causing server compilation failure.
+- **Rules & Validation:** Fixed `TicTacToeGame` constructor not initializing `currentPlayer` to `'X'`, causing `getCurrentPlayer()` to return the null character on new games.
+- **Rules & Validation:** Fixed double `switchTurn()` call in `ConnectFourGame.makeMove()` that caused the current player to remain unchanged after a valid move.
+- **Quality & Testing:** Added `StubSocket` test utility to server test sources to resolve `MatchmakerTest` compilation failure.
+
+### Added
+
+- **Platform Core:** Server-side `ConnectFourGameSession` with turn management, board state updates, move handling, and result recording (#265). Turn-based system for Tic-Tac-Toe with server-side turn management via `TTTServerSession` (#292). Connect Four request handling added to client and server `Network` classes (#265). Game result string parameter added to `gameOver()` function (#265).
+- **Client/UI:** Turn-based interaction for Tic-Tac-Toe with periodic board sync from server (#284, #292). Turn-based interaction for Connect Four with board sync and turn checking (#293). Game over screen showing win, loss, or draw for both Tic-Tac-Toe and Connect Four. Turn indicator showing whose turn it is during gameplay. IP address validation on login and create account screens (#295). Board watcher with automatic stop on page transitions.
+- **Quality & Testing:** Session tests covering live server connections (#203). Iteration 3 test plan documents for Connect Four, LeaderBoard, Registry, and Tic-Tac-Toe.
+
+### Changed
+
+- **Platform Core:** Changed match date format saved to match record by TTT (#265). Adjusted `ConnectFourGameSession` request numbers and added gameover instructions (#265). Removed unused `m` class variable in `Matchmaker` (#265). Updated server class diagram (#265).
+- **Client/UI:** Updated `switchTurn` function in game controllers. Updated error field on welcome page. Updated developer credits and fixed typos across client screens. Added info icon for Connect Four game page (#288).
+- **Quality & Testing:** Commented out obsolete tests that no longer matched source code changes. Minor adjustments to `ConnectFourGame` for test compatibility.
+
+### Fixed
+
+- **Client/UI:** Fixed diagonal win checking in Connect Four. Fixed horizontal win checking in Connect Four. Fixed win/loss reporting at end of Connect Four games. Fixed board sync not stopping on page transitions. Fixed game over display rendering for Tic-Tac-Toe and Connect Four.
+- **Platform Core:** Fixed game state being sent to clients twice after match ends (#265). Fixed chat messages interfering with turn-based moves (#265). Fixed small bugs in client-side network class. Fixed `ConnectFourGameSession` sending incorrect request numbers (#265).
+- **Integration:** Fixed compilation errors from merge conflict resolution.
 
 ## [v0.3.0] - 2026-04-06
 

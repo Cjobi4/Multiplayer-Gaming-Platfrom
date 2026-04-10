@@ -74,7 +74,7 @@ public class Database
                     + "totalMatchesPlayed INTEGER NOT NULL);");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS matchRecord ("
-                    + "gameType TEXT PRIMARY KEY,"
+                    + "gameType TEXT NOT NULL,"
                     + "p1Username TEXT NOT NULL,"
                     + "p2Username TEXT NOT NULL,"
                     + "winnerName TEXT NOT NULL,"
@@ -105,9 +105,9 @@ public class Database
                 pstmt.setString(2, hashedPassword);
                 pstmt.executeUpdate();
 
-                //add in a sample gameInfo
-                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(0, \"Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^TTT^YES\")");
-                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(1, \"Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^C4^YES\")");
+                // Format must match client Network.getGames(): id^title^description^tags^fxmlPrefix
+                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(0, \"0^Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^C4\")");
+                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(1, \"1^Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^TTT\")");
                 stmt.executeUpdate("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(\"admin\", 999, 999, 999, 999, 999, 999)");
                 stmt.executeUpdate("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(\"test\", 0, 0, 0, 0, 0, 0)");
                 stmt.executeUpdate("INSERT INTO matchRecord(gameType, p1Username, p2Username, winnerName, date) VALUES(\"gameType\", \"admin\", \"test\", \"Tic-Tac-Toe\", \"date\")");
@@ -396,6 +396,8 @@ public class Database
         Enumeration<String> keys = loggedInUsers.keys();
         String key;
 
+        System.out.println("Players are online: " + keys.hasMoreElements());
+
         //go through all the logged-in users
         while (keys.hasMoreElements())
         {
@@ -404,6 +406,7 @@ public class Database
             //add the user's username
             sbuild.append(key);
             sbuild.append("^");
+            System.out.println(key);
         }
 
         //remove the trailing ^ symbol
@@ -412,6 +415,11 @@ public class Database
         return sbuild.toString();
     }
 
+    /**
+     * Given a username, returns the associated Session object
+     * @param username The username of the Session to be searched
+     * @return The Session object with the matching username
+     */
     public static Session getSession(String username)
     {
         return loggedInUsers.get(username);
@@ -452,11 +460,19 @@ public class Database
                     loser = playerOne;
                 }
 
-                //update the leaderboard entries
-                stmt.execute("UPDATE leaderboard SET " + game + "Wins = " + game + "Wins + 1, " +
-                        game + "MatchesPlayed = " + game + "MatchesPlayed + 1 WHERE username = " + winner + ";");
-                stmt.execute("UPDATE leaderboard SET " + game + "Wins = " + game + "Wins - 1, " +
-                        game + "MatchesPlayed = " + game + "MatchesPlayed + 1 WHERE username = " + loser + ";");
+                // Winner gets a win and both players get a played match.
+                pstmt = conn.prepareStatement("UPDATE leaderboard SET " + game + "Wins = " + game + "Wins + 1, "
+                        + game + "MatchesPlayed = " + game + "MatchesPlayed + 1, "
+                        + "totalWins = totalWins + 1, totalMatchesPlayed = totalMatchesPlayed + 1 "
+                        + "WHERE username = ?");
+                pstmt.setString(1, winner);
+                pstmt.executeUpdate();
+
+                pstmt = conn.prepareStatement("UPDATE leaderboard SET " + game + "MatchesPlayed = " + game + "MatchesPlayed + 1, "
+                        + "totalMatchesPlayed = totalMatchesPlayed + 1 "
+                        + "WHERE username = ?");
+                pstmt.setString(1, loser);
+                pstmt.executeUpdate();
             } catch (Exception e)   //if the match result couldn't be saved...
             {
                 System.out.println("Match results not saved.");

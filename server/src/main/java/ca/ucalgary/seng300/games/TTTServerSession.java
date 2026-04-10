@@ -17,9 +17,9 @@ public class TTTServerSession extends Thread{
 
     //request type constants (temporary until confirmed with platform core)
     //TEMPORARY TILL HELP
-    private static final int REQUEST_BOARD_UPDATE = 12;
-    private static final int REQUEST_MOVE_PROMPT = 13;
-    private static final int REQUEST_GAME_STATE = 14;
+    private static final int REQUEST_BOARD_UPDATE = 18;
+    private static final int REQUEST_MOVE_PROMPT = 19;
+    private static final int REQUEST_GAME_STATE = 20;
 
     //this stores the session for player one
     private Session playerOneSession;
@@ -121,21 +121,26 @@ public class TTTServerSession extends Thread{
 
         //if a player has won, send a win message
         if (game.getGameState() == GameState.PLAYER_WIN) {
-
-            //send the winner to player one
-            playerOneSession.addRequest(REQUEST_GAME_STATE, new String[]{"The Winner Is: " + game.getWinner()});
-
-            //send the winner to player two
-            playerTwoSession.addRequest(REQUEST_GAME_STATE, new String[]{"The Winner Is: " + game.getWinner()});
+            if (game.getWinner() == 'X')
+            {
+                //send players the outcome
+                playerOneSession.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_WIN.name()});
+                playerTwoSession.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_LOSE.name()});
+            }else
+            {
+                //send players the outcome
+                playerOneSession.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_LOSE.name()});
+                playerTwoSession.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_WIN.name()});
+            }
 
             //if a player has tied send a tie message
         } else if (game.getGameState() == GameState.PLAYER_DRAW) {
 
             //send the draw to player one
-            playerOneSession.addRequest(REQUEST_GAME_STATE, new String[]{"Game Is A Draw"});
+            playerOneSession.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_DRAW.name()});
 
             //send the draw to player two
-            playerTwoSession.addRequest(REQUEST_GAME_STATE, new String[]{"Game Is A Draw"});
+            playerTwoSession.addRequest(REQUEST_GAME_STATE, new String[]{GameState.PLAYER_DRAW.name()});
         }
     }
 
@@ -147,10 +152,18 @@ public class TTTServerSession extends Thread{
         sendBoardState();
 
         //send the current turn
-        sendCurrentTurn();
+        //sendCurrentTurn();
 
-        //send the current game state
-        sendGameState();
+        //if the game ends (so a win or a tie/draw)
+        if (game.getGameState() == GameState.PLAYER_WIN || game.getGameState() == GameState.PLAYER_DRAW) {
+
+            //handle game over situations
+            gameOverHandler();
+        }else   //if game is still ongoing send the current game state
+        {
+            sendGameState();
+        }
+
     }
 
     //this is my function for handling the situation when the game is over
@@ -169,7 +182,7 @@ public class TTTServerSession extends Thread{
         String winnerUserName = null;
 
         //hold the date in a string variable
-        ZoneId zoneId = ZoneId.of("Canada/Edmonton");
+        ZoneId zoneId = ZoneId.of("America/Edmonton");
         ZonedDateTime now = ZonedDateTime.now(zoneId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String date = now.format(formatter);
@@ -199,6 +212,10 @@ public class TTTServerSession extends Thread{
 
         //set the active session to false
         activeSession = false;
+
+        //reset the Sessions' opponents
+        playerOneSession.setOpp(null);
+        playerTwoSession.setOpp(null);
 
         //close the thread
         Thread.currentThread().interrupt();
@@ -268,6 +285,8 @@ public class TTTServerSession extends Thread{
             return false;
         }
 
+
+        //this handles:
         //since the session is active,
         //apply the move using the tic tac toe backend logic (makeMove() function!)
         boolean moveSuccessCheck = game.makeMove(row, col, playerSymbol);
@@ -283,13 +302,6 @@ public class TTTServerSession extends Thread{
         //send a game update to both players
         sendGameUpdate();
 
-        //if the game ends (so a win or a tie/draw)
-        if (game.getGameState() == GameState.PLAYER_WIN || game.getGameState() == GameState.PLAYER_DRAW) {
-
-            //handle game over situations
-            gameOverHandler();
-        }
-
         //return true bc move has been completed/processed successfully
         return true;
     }
@@ -302,6 +314,7 @@ public class TTTServerSession extends Thread{
 
         //ask the active player for their move and wait for the result
         Request req = new Request(REQUEST_MOVE_PROMPT, new String[]{"Your Turn", String.valueOf(game.getCurrentPlayer())});
+        activePlayerSession.addRequest(req);
         String moveString = req.getResult();
 
         //if no move came back, do nothing this loop
@@ -319,14 +332,16 @@ public class TTTServerSession extends Thread{
     @Override
     public void run() {
         try{
-            //send the initial board state to both players
-            sendBoardState();
 
-            //send the initial turn to both players
-            sendCurrentTurn();
-
-            //send the initial game state to both players
-            sendGameState();
+            sendGameUpdate();
+//            //send the initial board state to both players
+//            sendBoardState();
+//
+//            //send the initial turn to both players
+//            sendCurrentTurn();
+//
+//            //send the initial game state to both players
+//            sendGameState();
 
             //loop that runs until game is over
             while (!Thread.currentThread().isInterrupted() && activeSession) {

@@ -139,7 +139,7 @@ public class TicTacToeGameSession extends Thread{
     //TODO PLATFORM TEAM DATABASE HELP ME
     //this function is for processing a move that comes from the db
     //this can be called once incoming move parsing is finished (next function)
-    public boolean moveProcessor(int row, int col, char playerSymbol) {
+    public boolean moveProcessor(int row, int col, char playerSymbol) throws Exception {
 
         //valiation to make sure a session is active
         if (!activeSession) {
@@ -150,7 +150,7 @@ public class TicTacToeGameSession extends Thread{
 
         //since the session is active,
         //apply the move using the tic tac toe backend logic (makeMove() function!)
-        boolean moveSuccessCheck = game.makeMove(row, col, playerSymbol);
+        boolean moveSuccessCheck = game.makeMove(row, col);
 
         //if the move failed return false
         if (!moveSuccessCheck) {

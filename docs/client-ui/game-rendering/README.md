@@ -8,7 +8,7 @@ Board rendering conventions and shared UI components for the sample games (Tic-T
 
 ## Contents
 
-No design artifacts yet. This directory will contain rendering conventions, board layout designs, and shared game UI component specifications.
+No standalone design artifacts. Game board rendering was implemented directly in FXML layouts (`TTTgamePage.fxml`, `C4gamePage.fxml`) and their corresponding controllers rather than through a shared rendering layer.
 
 ## Naming Conventions
 

@@ -10,7 +10,7 @@ UI/UX design artifacts including screen flows, wireframes, component designs, an
 
 | Directory | Contents | Status |
 |---|---|---|
-| `screens/` | Screen-level designs (login, lobby, game info, admin console, leaderboard, game registry UI flow) | Not Started |
+| `screens/` | Screen-level designs (login, lobby, game pages, leaderboard, game registry UI flow) | Complete |
 | `game-rendering/` | Board rendering conventions, shared UI components for sample games | Not Started |
 
 ## Cross-References

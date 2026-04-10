@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -99,7 +98,10 @@ class LeaderBoardTest {
         MatchRecord test1 = new MatchRecord(username1, username2, GameType.CONNECT4, username1);
         MatchRecord test2 = new MatchRecord(username1, username2, GameType.CONNECT4, username2);
         MatchRecord test3 = new MatchRecord(username1, username2, GameType.TICTACTOE, username1);
-        List<MatchRecord> records = List.of(test1, test2, test3);
+        List<MatchRecord> records = new ArrayList<>();
+        records.add(test1);
+        records.add(test2);
+        records.add(test3);
 
         stubNetwork.setResponse(records);
 

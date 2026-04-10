@@ -10,11 +10,11 @@ Test plans, test architecture, demo scripts, and testing strategy.
 
 | Directory | Contents | Status |
 |---|---|---|
-| `test-plans/` | Test plan documents, test case specifications, coverage reports | Not Started |
+| `test-plans/` | Test plan documents, test case specifications, coverage reports | Complete |
 
 ## Test Framework
 
-- Framework: JUnit 5 (to be added to `pom.xml`)
+- Framework: JUnit 5
 - Test source: `src/test/java/ca/ucalgary/seng300/`
 - Integration tests: `src/test/java/ca/ucalgary/seng300/integration/`
 

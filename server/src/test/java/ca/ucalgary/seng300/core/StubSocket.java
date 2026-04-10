@@ -1,39 +1,45 @@
 package ca.ucalgary.seng300.core;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-// Stub connection so we don't need to rely on a real connection
-// Allows me to fake an output to test Network methods
+/**
+ * Stub socket for server-side unit tests, allowing test code to create
+ * Session objects without a real network connection.
+ */
 public class StubSocket extends Socket {
 
-    // fake output to the server
     private final ByteArrayOutputStream fakeOutputStream;
-
-    // fake input from the server back to the user
     private final ByteArrayInputStream fakeInputStream;
 
-    // pass in the fake response we want to simulate
+    /**
+     * Creates a StubSocket with a simulated server response.
+     *
+     * @param simulatedServerResponse the bytes to return from getInputStream()
+     */
     public StubSocket(byte[] simulatedServerResponse) {
         this.fakeOutputStream = new ByteArrayOutputStream();
         this.fakeInputStream = new ByteArrayInputStream(simulatedServerResponse);
     }
 
-    // override the talking pipe, stops us from trying to call the actual server
     @Override
     public OutputStream getOutputStream() {
         return fakeOutputStream;
     }
 
-    // override the listening pipe, stops us from trying to call the actual server
     @Override
     public InputStream getInputStream() {
         return fakeInputStream;
     }
 
-    // helper method so our test can easily read what the Network class sent
+    /**
+     * Returns the bytes written to this socket's output stream.
+     *
+     * @return captured output bytes
+     */
     public byte[] getCapturedOutput() {
         return fakeOutputStream.toByteArray();
     }

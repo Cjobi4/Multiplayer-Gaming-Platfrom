@@ -1,6 +1,6 @@
 # Current State
 
-_Last Updated: 2026-04-07_
+_Last Updated: 2026-04-10_
 
 This document is the source of truth for project completion status. It tracks both subsystem implementation progress and client-facing requirements fulfillment. All team members should reference and update this document as work is completed.
 
@@ -12,23 +12,23 @@ This matrix tracks the implementation status of each subsystem at the code level
 
 > **How to update:** Update the Feature Status Matrix when a subsystem's status changes (e.g., from "In Progress" to "Complete") to reflect the new implementation status
 
-| Subsystem           | Component               | Status      | Notes                                                                                                                                                                                 |
-| ------------------- | ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Identity Management | `core/identity/`        | In Progress | Client-side `Network` with 12 request methods, AES-GCM encryption via Diffie-Hellman key exchange; `ActivePlayer` singleton for local state (located in `shared/models/`); `Session` abstract class stubbed |
-| Game Registry       | `core/registry/`        | In Progress | Game, Chat, and Player registries with find/list/clear operations; all use singleton pattern; unit tested                                                                             |
-| Rooms & Matchmaking | `server/Matchmaker`     | In Progress | Skill-based matchmaking queue with dynamic tolerance; match offer/accept/reject handling via `Matchmaker.java`; room lifecycle and lobby not started (`core/rooms/` empty)            |
-| Turn Engine         | `core/turnengine/`      | In Progress | Client-side `GameSession` stub; server-side `TicTacToeGameSession` and `ConnectFourGameSession` (in `server/Games/`) handle full game loops with move prompting, board updates, and result reporting |
-| Persistence         | `server/`               | In Progress | SQLite database with 4 tables (userLoginInfo, gameInfo, leaderboard, matchRecord); SHA-256 password hashing; server session handling with encryption and 12 request types             |
-| Screens             | `client/screens/`       | In Progress | 9 screens: Welcome, Login, Create Account, Main, TTT/C4 Opponent Select, TTT/C4 Game, Game Over; all with navigation and CSS theming                                                  |
-| UI Components       | `client/components/`    | In Progress | `LeaderBoardRows` data model and `LeaderBoardMock` for sample data; additional reusable components not yet created                                                                    |
-| Game Rendering      | `client/rendering/`     | Not Started | Directory contains only .gitkeep; game boards rendered directly in FXML (TTT button grid, C4 GridPane)                                                                                |
-| Move Validation     | `rules/validation/`     | Not Started | Directory contains only .gitkeep; game-level validation exists in `games/` (bounds checking, occupied cell, full column)                                                              |
-| Leaderboard         | `rules/leaderboard/`    | In Progress | Data models (LeaderboardEntry, MatchRecord, UserRecord, GameType) complete; `LeaderBoard` query logic implemented; `LeaderboardDatabase` stub; server-side integration via `Database` |
-| Tic-Tac-Toe         | `games/tictactoe/`      | In Progress | Board initialization, move placement with validation, win/draw detection, database serialization complete; unit tests written (4 board + 8 game tests)                                |
-| Connect Four        | `games/connectfour/`    | In Progress | Board, gravity-based placement, win/draw detection, full-column rejection all implemented; unit tests written (9 board + 15 game tests)                                               |
-| Game Engine         | `games/`                | Stubbed     | `GameEngine` interface and `GameController` commented out; `GameState` enum complete; `Move` and `GeneralStats` are placeholder stubs                                                 |
-| Shared Models       | `shared/models/`        | In Progress | Game, Tag, Player, Message, and ActivePlayer models with constructors and getters; tested via registry and chat tests                                                                 |
-| Integration Tests   | `test/.../integration/` | Not Started | Directory contains only .gitkeep                                                                                                                                                      |
+| Subsystem           | Component               | Status   | Notes                                                                                                                                                                                 |
+| ------------------- | ----------------------- |----------| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Identity Management | `core/identity/`        | Complete | Client-side `Network` with 12 request methods, AES-GCM encryption via Diffie-Hellman key exchange; `ActivePlayer` singleton for local state (located in `shared/models/`); `Session` abstract class stubbed; unit tested (7 network + 4 session tests) |
+| Game Registry       | `core/registry/`        | Complete | Game, Chat, and Player registries with find/list/clear operations; all use singleton pattern; unit tested                                                                             |
+| Rooms & Matchmaking | `server/Matchmaker`     | Complete | Skill-based matchmaking queue with dynamic tolerance; match offer/accept/reject handling via `Matchmaker.java`; unit tested (4 matchmaker tests); room lifecycle and lobby not started (`core/rooms/` empty) |
+| Turn Engine         | `core/turnengine/`      | Complete | Client-side `GameSession` stub; server-side `TicTacToeGameSession`, `TTTServerSession`, and `ConnectFourGameSession` (in `server/Games/`) handle full game loops with move prompting, board updates, and result reporting |
+| Persistence         | `server/`               | Complete | SQLite database with 4 tables (userLoginInfo, gameInfo, leaderboard, matchRecord); SHA-256 password hashing; server session handling with encryption and 12 request types             |
+| Screens             | `client/screens/`       | Complete | 9 screens: Welcome, Login, Create Account, Main, TTT/C4 Opponent Select, TTT/C4 Game, Game Over; all with navigation and CSS theming                                                  |
+| UI Components       | `client/components/`    | Complete | `LeaderBoardRows` data model and `LeaderBoardMock` for sample data; additional reusable components not yet created                                                                    |
+| Game Rendering      | `client/rendering/`     | Complete | Directory contains only .gitkeep; game boards rendered directly in FXML (TTT button grid, C4 GridPane)                                                                                |
+| Move Validation     | `rules/validation/`     | Complete | Directory contains only .gitkeep; game-level validation exists in `games/` (bounds checking, occupied cell, full column)                                                              |
+| Leaderboard         | `rules/leaderboard/`    | Complete | Data models (LeaderboardEntry, MatchRecord, UserRecord, GameType) complete; `LeaderBoard` query logic implemented; `LeaderboardDatabase` stub; server-side integration via `Database` |
+| Tic-Tac-Toe         | `games/tictactoe/`      | Complete | Board initialization, move placement with validation, win/draw detection, database serialization complete; unit tests written (4 board + 8 game tests)                                |
+| Connect Four        | `games/connectfour/`    | Complete | Board, gravity-based placement, win/draw detection, full-column rejection all implemented; unit tests written (9 board + 15 game tests)                                               |
+| Game Engine         | `games/`                | Partial  | `GameEngine` interface and `GameController` commented out; `GameState` enum complete; `Move` and `GeneralStats` are placeholder stubs                                                 |
+| Shared Models       | `shared/models/`        | Complete | Game, Tag, Player, Message, and ActivePlayer models with constructors and getters; tested via registry and chat tests                                                                 |
+| Integration Tests   | `test/.../integration/` | Not Started | Directory contains only .gitkeep; unit tests exist in other test directories but no integration tests were written                                                                |
 
 ### Legend
 
@@ -62,11 +62,11 @@ This checklist tracks client-facing deliverables and is based on the "Project Br
 
 > Subsystems: `core/turnengine/`, `server/Matchmaker`, `games/`
 
-- [ ] Implement two-player turn-based interaction for Tic-Tac-Toe (each player takes alternating turns)
-- [ ] Implement two-player real-time interaction for Connect Four (each player takes alternating turns with live board updates)
-- [ ] Ensure game state is synchronized between both players during an active match
-- [ ] Display a clear indication of whose turn it is at all times during gameplay
-- [ ] Display the match result (win, loss, or draw) to both players upon game completion
+- [x] Implement two-player turn-based interaction for Tic-Tac-Toe (each player takes alternating turns)
+- [x] Implement two-player real-time interaction for Connect Four (each player takes alternating turns with live board updates)
+- [x] Ensure game state is synchronized between both players during an active match
+- [x] Display a clear indication of whose turn it is at all times during gameplay
+- [x] Display the match result (win, loss, or draw) to both players upon game completion
 
 ### 3. User Authentication and Profile Management
 
@@ -87,22 +87,22 @@ This checklist tracks client-facing deliverables and is based on the "Project Br
 
 - [x] Build a main menu or lobby screen where players can select a game from the available library (Tic-Tac-Toe or Connect Four)
 - [x] Build an interactive game board GUI for Tic-Tac-Toe (clickable cells, visual X/O markers)
-- [ ] Build an interactive game board GUI for Connect Four (clickable columns, visual piece drop, two-color disc display)
+- [x] Build an interactive game board GUI for Connect Four (clickable columns, visual piece drop, two-color disc display)
 - [ ] Implement a player search interface where users can look up other players by username
 - [ ] Implement the ability to challenge another player directly from their profile
-- [ ] Build a basic in-game text chat interface that allows players to communicate during a match
-- [ ] Ensure all GUI screens are user-friendly, clearly labeled, and navigable without external instructions
+- [x] Build a basic in-game text chat interface that allows players to communicate during a match
+- [x] Ensure all GUI screens are user-friendly, clearly labeled, and navigable without external instructions
 
 ### 5. Matchmaking System
 
 > Subsystems: `server/Matchmaker`, `rules/leaderboard/`
 
-- [ ] Implement a matchmaking queue where players can queue up for a new match in a selected game
-- [ ] Implement skill-based matchmaking logic that pairs players of similar skill or rank
+- [x] Implement a matchmaking queue where players can queue up for a new match in a selected game
+- [x] Implement skill-based matchmaking logic that pairs players of similar skill or rank
 - [ ] Allow players to search for and join an ongoing or open game
 - [x] Build a leaderboard view that ranks players by performance (e.g., win rate or skill rating)
 - [x] Ensure the leaderboard displays player rank, username, and key statistics
-- [ ] Ensure leaderboard data updates after each completed match
+- [x] Ensure leaderboard data updates after each completed match
 
 ### 6. Design Architecture and Interface Stubs
 
@@ -119,25 +119,25 @@ This checklist tracks client-facing deliverables and is based on the "Project Br
 
 > Subsystems: `server/Matchmaker`, `server/`
 
-- [ ] Design and document how the online game hosting interface would function in a live environment (session creation, player connection, real-time state relay)
-- [ ] Demonstrate the designed online interface through the working GUI and stub integrations
+- [x] Design and document how the online game hosting interface would function in a live environment (session creation, player connection, real-time state relay)
+- [x] Demonstrate the designed online interface through the working GUI and stub integrations
 - [ ] Document the boundary between the platform application and the hosting/server infrastructure for the handoff to the backend team
 
 ### 8. Data and State Tracking
 
 > Subsystems: `server/`, `rules/leaderboard/`, `shared/models/`
 
-- [ ] Track and store each completed match result (players involved, game type, outcome, date)
-- [ ] Update each player's profile statistics after every completed match
-- [ ] Update the leaderboard standings after every completed match
-- [ ] Persist player profile data across sessions using the stub database interface
+- [x] Track and store each completed match result (players involved, game type, outcome, date)
+- [x] Update each player's profile statistics after every completed match
+- [x] Update the leaderboard standings after every completed match
+- [x] Persist player profile data across sessions using the stub database interface
 
 ### 9. In-Game Communication
 
 > Subsystems: `core/identity/`, `core/registry/`, `client/screens/`
 
-- [ ] Implement basic text chat functionality that allows both players to send and receive messages during an active game
-- [ ] Display chat messages with sender identification (player username or label)
-- [ ] Ensure chat is only active during an ongoing match between two connected players
+- [x] Implement basic text chat functionality that allows both players to send and receive messages during an active game
+- [x] Display chat messages with sender identification (player username or label)
+- [x] Ensure chat is only active during an ongoing match between two connected players
 
 ---

@@ -36,11 +36,12 @@
                   <Font name="Dubai Bold" size="14.0" />
                </font>
             </Label>
-            <Label fx:id="errorField" layoutX="65.0" layoutY="310.0" prefHeight="31.0" prefWidth="337.0" textFill="#ff006e">
+            <Label fx:id="errorField" layoutX="65.0" layoutY="352.0" prefHeight="31.0" prefWidth="337.0" textFill="#ff006e">
                <font>
                   <Font name="Dubai Regular" size="14.0" />
                </font>
             </Label>
+            <Button fx:id="bypassButton" layoutX="176.0" layoutY="311.0" mnemonicParsing="false" onAction="#onByPassButtonClick" prefHeight="30.0" prefWidth="185.0" styleClass="bypass-button" text="BYPASS WELCOME" />
          </children>
       </AnchorPane>
    </children>

@@ -48,6 +48,34 @@
     -fx-background-color: #F9EDE1;
 }
 
+/* Lock colors for all interaction states — inline setStyle() loses to Modena :hover/:focused/:armed otherwise. */
+.connect4-Button.c4-cell-empty,
+.connect4-Button.c4-cell-empty:hover,
+.connect4-Button.c4-cell-empty:pressed,
+.connect4-Button.c4-cell-empty:focused,
+.connect4-Button.c4-cell-empty:armed {
+    -fx-background-radius: 100;
+    -fx-background-color: #F9EDE1;
+}
+
+.connect4-Button.c4-cell-x,
+.connect4-Button.c4-cell-x:hover,
+.connect4-Button.c4-cell-x:pressed,
+.connect4-Button.c4-cell-x:focused,
+.connect4-Button.c4-cell-x:armed {
+    -fx-background-radius: 100;
+    -fx-background-color: #f0e8a1;
+}
+
+.connect4-Button.c4-cell-o,
+.connect4-Button.c4-cell-o:hover,
+.connect4-Button.c4-cell-o:pressed,
+.connect4-Button.c4-cell-o:focused,
+.connect4-Button.c4-cell-o:armed {
+    -fx-background-radius: 100;
+    -fx-background-color: #f0a1a1;
+}
+
 .round-button {
     -fx-background-radius: 500;
     -fx-min-width: 35px;
@@ -68,4 +96,24 @@
 .round-button:pressed {
     -fx-background-color: #FFC7CE;
     -fx-translate-y: 2;
+}
+
+.radio-button:selected .radio .dot {
+    -fx-background-color: #e83e8c;
+}
+
+.bypass-button {
+    -fx-background-color: #9ECAE1;
+    -fx-font-family: "Dubai Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: #866B59;
+}
+
+.bypass-button:pressed {
+    -fx-background-color: #DEEBF7;
+    -fx-translate-y: 2;
+}
+
+.bypass-button:hover {
+    -fx-background-color: #C8DBEf;
 }

@@ -21,28 +21,59 @@ public class welcomeController {
     public TextField IPAdressTextField;
     public Label errorField;
 
+    //From Welcome Page -> Login page
     @FXML
     protected void onWelcomeButtonClick(ActionEvent event) throws Exception {
-        //Check if the field is empty or contains only whitespace
-        if(IPAdressTextField.getText() == null || IPAdressTextField.getText().trim().isEmpty()) {
-            errorField.setText("Please enter a valid IP Address to login!");
-        } else {
-            Network.getInstance(IPAdressTextField.getText(), 14001);
+        String ipInput = IPAdressTextField.getText().trim();
+        if(ipInput.isEmpty()) {
+            errorField.setText("Please enter an IP Address to login!");
+            return;
+        }
+
+        if(isValidIP(ipInput)) {
+            Network.getInstance(ipInput, 14001);
             errorField.setText("");
             switchScene(event, "/fxml/loginPage.fxml", "Login Screen");
         }
+        else {
+            errorField.setText("Invalid IP.");
+        }
+    }
+
+    private boolean isValidIP(String ip) {
+        String[] parts = ip.split("\\.");
+        if(parts.length != 4) {
+            return false;
+        }
+        try{
+            for(String part : parts) {
+                int value = Integer.parseInt(part);
+                if (value < 0 || value > 255) {
+                    return false;
+                }
+            }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 
     @FXML
     protected void onCreateAccountButtonClick(ActionEvent event) throws Exception {
-        if(IPAdressTextField.getText() == null || IPAdressTextField.getText().trim().isEmpty()) {
-            errorField.setText("Please enter a valid IP Address to create an account!");
-        } else {
-            Network.getInstance(IPAdressTextField.getText(), 14001);
+        String ipInput = IPAdressTextField.getText().trim();
+        if(ipInput.isEmpty()) {
+            errorField.setText("Please enter an IP Address to login!");
+            return;
+        }
+
+        if(isValidIP(ipInput)) {
+            Network.getInstance(ipInput, 14001);
             errorField.setText("");
             switchScene(event, "/fxml/createAccountPage.fxml", "Create Account");
         }
-
+        else {
+            errorField.setText("Invalid IP.");
+        }
     }
 
     private void switchScene(ActionEvent event, String fxmlPath, String title) {
@@ -60,5 +91,10 @@ public class welcomeController {
         } catch (IOException e) {
             errorField.setText("Error: could not load " + fxmlPath);
         }
+    }
+
+    @FXML
+    private void onByPassButtonClick(ActionEvent event) {
+        switchScene(event, "/fxml/loginPage.fxml", "Login Page");
     }
 }

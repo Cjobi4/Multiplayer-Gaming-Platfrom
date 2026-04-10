@@ -1,6 +1,12 @@
 package ca.ucalgary.seng300.games.tictactoe;
 
+
+//make smth to tell the player that it is their turn or the game is over or whatever that stuff
+//make the client side part
+//
+//
 //import the enums file
+import ca.ucalgary.seng300.core.identity.client.Network;
 import ca.ucalgary.seng300.games.GameState;
 
 //this is for game/move logic for tic tac toe
@@ -21,12 +27,14 @@ public class TicTacToeGame {
     //This counts the total number of moves made within the game
     private int moveCount;
 
+    private boolean myTurn;
+
     //this creates the game with a new board
     public TicTacToeGame(){
         //create a new gameboard
         board = new TicTacToeBoard();
 
-        //set the current player to X
+        //set the first player to 'X' (X always goes first)
         currentPlayer = 'X';
 
         //set the value of the winner (string) to nothing because there is no winner at the start of the game
@@ -37,6 +45,18 @@ public class TicTacToeGame {
 
         //this sets the movecount to 0 as no moves by the start of the game
         moveCount = 0;
+
+        myTurn = false;
+    }
+
+    public boolean getMyTurn()
+    {
+        return myTurn;
+    }
+
+    public void setTurn(boolean turn)
+    {
+        this.myTurn = turn;
     }
 
     //this returns the board that is being used during the game
@@ -45,27 +65,11 @@ public class TicTacToeGame {
         return board;
     }
 
-    //new function for changing turns
-    public void switchTurn() {
-        //if the player currently is X,
-        if (currentPlayer == 'X') {
-
-            //make the current player O
-            currentPlayer = 'O';
-
-        //if the player currently is O
-        } else {
-
-            //make the current player X
-            currentPlayer = 'X';
-        }
-    }
-
     //this is my function for making a move and VALIDATING the move!
     //change to accept a session object
     //check the session object (git userID check it to compare who is playing, make sure a move request is from who (make sure who is playing))
     //
-    public boolean makeMove(int row, int col, char userGameIdentity) {
+    public boolean makeMove(int row, int col) throws Exception {
         //adding gameState integration now (ticket 177)
 
         //if the game is over (win or tie), do not allow any more moves
@@ -85,14 +89,6 @@ public class TicTacToeGame {
             return false;
         }
 
-        //make sure that the user has a valid identity ('X' or 'O')
-        if (userGameIdentity != 'X' && userGameIdentity != 'O') {
-            //GAMESTATE INFO
-            gameState = GameState.TURN_AWAITING_MOVE;
-            //if not, return false
-            return false;
-        }
-
         //make sure that the cell the player is trying to get to is not already occupied
         if (!board.isCellEmpty(row, col)) {
             //GAMESTATE INFO
@@ -106,7 +102,7 @@ public class TicTacToeGame {
 
         //after all validation checks
         //we can set the players data ('X' or 'O') onto the board at the specific row and column they want to be at
-        board.setCellInfo(row, col, userGameIdentity);
+        // board.setCellInfo(row, col, userGameIdentity);
 
         //incrament the movecount by 1 after each turn
         moveCount++;
@@ -114,40 +110,47 @@ public class TicTacToeGame {
         //now check if the users move has ended the game or not (win tie)
         gameState = GameState.TURN_CHECK_END_CONDITIONS;
 
-        //if the user has wone
-        if (validateWin(userGameIdentity)) {
-
-            //set the user as the winner
-            winner = userGameIdentity;
-
-            //set the gameState to a win state
-            gameState = GameState.PLAYER_WIN;
-
-            //return true
-            return true;
-        }
-
-        //tie condition check
-        //if the game is a tie
-        if (checkGameTie()) {
-
-            //if the game has tied, set gameState to DRAW
-            gameState = GameState.PLAYER_DRAW;
-
-            //return true
-            return true;
-        }
-
-        //if the game is not over pending the previous checks, switch the players turn!
-        switchTurn();
-
         //since hte game is still running, set the state back to waiting for the next move
         gameState = GameState.TURN_AWAITING_MOVE;
+
+        Network.getInstance().queueRequest(Network.SEND_MOVE_TTT, new String[]{row + " " + col});
+        System.out.println("Not users turn");
+
 
         //return true!
         return true;
     }
 
+
+    //FOR SANMEET
+    //this function converts the full tic tac toe game state into a string for database storage
+    public String toDataString() {
+
+        //this combines the board string, current player, winner, game state, and move count into one string
+        return board.toString() + "|" + currentPlayer + "|" + winner + "|" + gameState.name() + "|" + moveCount;
+    }
+
+    //this function restores the full tic tac toe game state from a database string
+    public void fromDataString(String gameDataString) {
+
+        //split the full game data string using | as the separator
+        String[] specificGameItem = gameDataString.split("\\|");
+
+        //restore the board using the first part of the string
+        board.fromString(specificGameItem[0]);
+
+        //restore the current player from the second part
+        currentPlayer = specificGameItem[1].charAt(0);
+
+        //restore the winner from the third part
+        winner = specificGameItem[2].charAt(0);
+
+        //restore the game state using the enum value from the fourth part
+        gameState = GameState.valueOf(specificGameItem[3]);
+
+        //restore the move count from the fifth part
+        moveCount = Integer.parseInt(specificGameItem[4]);
+    }
     //GETTERS for new functions
 
     //this getter gets the current player (X, O, ' ')

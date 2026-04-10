@@ -8,7 +8,7 @@ Utility scripts for build, release, or development tasks that do not belong in t
 
 ## Contents
 
-No scripts yet. This directory will contain release dry-run helpers, database setup scripts, and other development utilities.
+No utility scripts were created. Build, test, and run tasks are handled through the Maven wrapper (`mvnw` / `mvnw.cmd`) and documented in the root `README.md`.
 
 ## Usage
 

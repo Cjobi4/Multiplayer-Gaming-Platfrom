@@ -10,8 +10,8 @@ Design artifacts for the move validation pipeline and leaderboard subsystem.
 
 | Directory | Contents | Status |
 |---|---|---|
-| `move-validation/` | Move validation pipeline, per-game rule sets, server-side validation | Not Started -- critical gap |
-| `leaderboard/` | Leaderboard subsystem design | Stubbed |
+| `move-validation/` | Move validation pipeline, per-game rule sets, server-side validation | Not Started |
+| `leaderboard/` | Leaderboard subsystem design | Complete |
 
 ## Cross-References
 
