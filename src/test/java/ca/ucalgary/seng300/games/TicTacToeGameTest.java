@@ -41,15 +41,15 @@ public class TicTacToeGameTest {
         testGame.setBoard(testBoard);
 
         // testing bounds and character checker
-        Assertions.assertFalse(testGame.makeMove(5,4,'X'));
-        Assertions.assertFalse(testGame.makeMove(-1,-1,'O'));
-        Assertions.assertFalse(testGame.makeMove(1,1, 'E'));
+        Assertions.assertFalse(testGame.makeMove(5,4));
+        Assertions.assertFalse(testGame.makeMove(-1,-1));
+        Assertions.assertFalse(testGame.makeMove(1,1));
 
         // valid move, because empty space in board
-        Assertions.assertTrue(testGame.makeMove(1,1,'O'));
+        Assertions.assertTrue(testGame.makeMove(1,1));
         Assertions.assertEquals('O', testGame.getBoard().getCellInfo(1,1)); // check the proper character was placed
         // should be false because trying to place in a occupied space
-        Assertions.assertFalse(testGame.makeMove(1,1,'X'));
+        Assertions.assertFalse(testGame.makeMove(1,1));
     }
     */
 
@@ -62,11 +62,11 @@ public class TicTacToeGameTest {
         TicTacToeGame testGame = new TicTacToeGame();
 
         testGame.setGameState(GameState.PLAYER_WIN); // simulate a player winning
-        Assertions.assertFalse(testGame.makeMove(0,0,'X'));
+        Assertions.assertFalse(testGame.makeMove(0,0));
         // even though theoretically valid move, because it believes a player has won it rejects the move
 
         testGame.setGameState(GameState.PLAYER_DRAW); // draw
-        Assertions.assertFalse(testGame.makeMove(0,0,'X'));
+        Assertions.assertFalse(testGame.makeMove(0,0));
         // same as before
     }
 

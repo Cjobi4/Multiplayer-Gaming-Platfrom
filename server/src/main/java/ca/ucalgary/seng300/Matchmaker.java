@@ -11,7 +11,6 @@ public class Matchmaker extends Thread
     private LinkedBlockingQueue<Session> mQueue = new LinkedBlockingQueue<>();      //matchmaking queue
     private LinkedBlockingQueue<Session> quittersQueue = new LinkedBlockingQueue<>();       //list of players trying to leave
     private String gameName;
-    private boolean m = false;
 
 
     //constructor

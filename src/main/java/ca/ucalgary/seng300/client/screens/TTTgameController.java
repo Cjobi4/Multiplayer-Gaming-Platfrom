@@ -53,6 +53,8 @@ public class TTTgameController {
 
     private Timeline boardRefreshTimeline;
 
+    private boolean gameOverHandled = false;
+
 
     public void initialize() {
         grid = new Button[][]{{ttt00, ttt01, ttt02},{ttt10, ttt11, ttt12},{ttt20, ttt21, ttt22}};
@@ -86,6 +88,19 @@ public class TTTgameController {
             if(!networkBoard.equals(currentBoard)){
                 current.getBoard().fromString(networkGame.getBoard().toString());
                 updateBoard();
+            }
+
+            if (!gameOverHandled &&
+                    (networkGame.getGameState() == GameState.PLAYER_WIN ||
+                            networkGame.getGameState() == GameState.PLAYER_DRAW ||
+                            networkGame.getGameState() == GameState.PLAYER_LOSE)) {
+
+                gameOverHandled = true;   // 🔥 prevents multiple triggers
+                stopBoardWatcher();       // 🔥 stop BEFORE switching scene
+                stopChatWatcher();
+
+                gameOver(networkGame.getGameState().name());
+                return; // 🔥 stop further execution
             }
 
         } catch (Exception e){
@@ -150,6 +165,8 @@ public class TTTgameController {
 
             gameOverController controller = loader.getController();
             controller.setGameType(GameType.TICTACTOE);
+
+            controller.setResult(result);
 
             Stage stage = (Stage) ttt00.getScene().getWindow();
             Scene gameOverScene = new Scene(gameOverRoot, 800, 600);
@@ -244,6 +261,7 @@ public class TTTgameController {
     //Everytime this is called, the board is updated
     private void updateBoard() {
         TicTacToeBoard board = current.getBoard();
+        turnDisplay.setText("");
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
@@ -274,24 +292,34 @@ public class TTTgameController {
 
     @FXML
     protected void onGridButtonClick(ActionEvent event) throws Exception {
-        char player = current.getCurrentPlayer(); //gets whose turn it is
-        Button clicked = (Button) event.getSource(); //gets what button was clicked
-        int i = 4; //four, so if not initialized, the turn shouldn't count
-        int j = 4;
 
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (clicked == grid[row][col]){
-                    i = row;
-                    j = col;
-                }
-            }
-        }
-        if (current.makeMove(i,j,player)) { //updates if the move was valid
-            turnDisplay.setText("Yippee!");
-        }else{
-            turnDisplay.setText("Please make a valid move");
-        }
+         if (Network.getInstance().getTTTGame().getMyTurn())
+         {
+             Button clicked = (Button) event.getSource(); //gets what button was clicked
+             int i = 4; //four, so if not initialized, the turn shouldn't count
+             int j = 4;
+
+             for (int row = 0; row < 3; row++) {
+                 for (int col = 0; col < 3; col++) {
+                     if (clicked == grid[row][col]){
+                         i = row;
+                         j = col;
+                     }
+                 }
+             }
+             if (current.makeMove(i,j)) { //updates if the move was valid
+                 turnDisplay.setText("Yippee!");
+                 Network.getInstance().getTTTGame().setTurn(false);
+             }else{
+                 turnDisplay.setText("Please make a valid move");
+             }
+         }
+         else
+         {
+             turnDisplay.setText("Not Your Turn");
+         }
+
+
 
     }
 
@@ -305,7 +333,7 @@ public class TTTgameController {
 
 
             gameOverController controller = loader.getController();
-            controller.setGameType(GameType.CONNECT4);
+            controller.setGameType(GameType.TICTACTOE);
 
             //Get current stage from the button click
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

@@ -41,6 +41,8 @@ public class C4gameController {
 
     private Timeline boardRefreshTimeline;
 
+    private boolean gameOverHandled = false;
+
 
     ConnectFourGame current = new ConnectFourGame();
     Button[][] grid = new Button[6][7];
@@ -92,6 +94,19 @@ public class C4gameController {
             if(!networkBoard.equals(currentBoard)){
                 current.getBoard().fromString(networkGame.getBoard().toString());
                 updateBoard();
+            }
+
+            if (!gameOverHandled &&
+                    (networkGame.getGameState() == GameState.PLAYER_WIN ||
+                            networkGame.getGameState() == GameState.PLAYER_DRAW ||
+                            networkGame.getGameState() == GameState.PLAYER_LOSE)) {
+
+                gameOverHandled = true;   // 🔥 prevents multiple triggers
+                stopBoardWatcher();       // 🔥 stop BEFORE switching scene
+                stopChatWatcher();
+
+                gameOver(networkGame.getGameState().name());
+                return; // 🔥 stop further execution
             }
 
         } catch (Exception e){
@@ -165,14 +180,21 @@ public class C4gameController {
     }
 
     private void updateBoard(){
-        ConnectFourBoard board = current.getBoard(); //loops through the board
+        ConnectFourBoard board = current.getBoard();
+        turnDisplayc4.setText("");
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 7; j++) {
-                if (board.getCell(i, j) == 'X'){ //if its not empty
-                    grid[i][j].setStyle( "-fx-background-color: #f0e8a1;"); //yellow
-                } else if (board.getCell(i, j) == 'O') {
-                    grid[i][j].setStyle( "-fx-background-color: #f0a1a1;"); //red
+                var styles = grid[i][j].getStyleClass();
+                styles.removeAll("c4-cell-x", "c4-cell-o", "c4-cell-empty");
+                char cell = board.getCell(i, j);
+                if (cell == 'X') {
+                    styles.add("c4-cell-x");
+                } else if (cell == 'O') {
+                    styles.add("c4-cell-o");
+                } else {
+                    styles.add("c4-cell-empty");
                 }
+                grid[i][j].setStyle(null);
             }
         }
     }
@@ -194,12 +216,15 @@ public class C4gameController {
     protected void gameOver(String result){ //copy of the button version
         try {
             stopChatWatcher();
+            stopBoardWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
 
             gameOverController controller = loader.getController();
             controller.setGameType(GameType.CONNECT4);
+
+            controller.setResult(result);
 
 
             Stage stage = (Stage) grid[0][0].getScene().getWindow();
@@ -220,6 +245,7 @@ public class C4gameController {
     protected void onGameOverButtonClick(ActionEvent event) {
         try {
             stopChatWatcher();
+            stopBoardWatcher();
             //Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/gameOverDisplay.fxml"));
             Parent gameOverRoot = loader.load();
@@ -301,23 +327,33 @@ public class C4gameController {
 
     @FXML
     protected void onGridButtonClick(ActionEvent event) throws Exception {
-        char player = current.getCurrentPlayer(); //gets whose turn it is
-        Button clicked = (Button) event.getSource(); //gets what button was clicked
-        int i = 8; //four, so if not intialized, the turn shouldn't count
-        int j = 8;
-        for (int row = 0; row < 6; row++) {
-            for (int col = 0; col < 7; col++) {
-                if (clicked == grid[row][col]){
-                    i = col;
+
+        if (Network.getInstance().getC4Game().getTurn())
+        {
+            char player = current.getCurrentPlayer(); //gets whose turn it is
+            Button clicked = (Button) event.getSource(); //gets what button was clicked
+            int i = 8; //four, so if not intialized, the turn shouldn't count
+            int j = 8;
+            for (int row = 0; row < 6; row++) {
+                for (int col = 0; col < 7; col++) {
+                    if (clicked == grid[row][col]){
+                        i = col;
+                    }
                 }
             }
+            if (current.makeMove(i,player)) { //updates if the move was valid
+                turnDisplayc4.setText("Yippee!");
+                Network.getInstance().getC4Game().setTurn(false);
+            }else{
+                turnDisplayc4.setText("Please make a valid move");
+            }
+
+            updateBoard();
         }
-        if (current.makeMove(i,player)) { //updates if the move was valid
-            turnDisplayc4.setText("Yippee!");
-        }else{
-            turnDisplayc4.setText("Please make a valid move");
+        else
+        {
+            turnDisplayc4.setText("Not Your Turn");
+        }
         }
 
-        updateBoard();
-    }
 }

@@ -33,6 +33,9 @@ public class gameOverController {
     private Label scoreValueLabel;
 
     @FXML
+    private Label winLossLabel;
+
+    @FXML
     private ListView<String> rankingListView;
 
     private GameType currentGameType;
@@ -47,6 +50,7 @@ public class gameOverController {
 
         usernameLabel.setText(activeUsername);
         scoreValueLabel.setText("Loading...");
+        winLossLabel.setText("Loading...");
         rankingListView.getItems().clear();
         rankingListView.getItems().add("Loading rankings...");
 //        usernameLabel.setText(ActivePlayer.getInstance().getUsername());
@@ -92,15 +96,7 @@ public class gameOverController {
                 task.getException().printStackTrace();
 
             }
-//            usernameLabel.setText(ActivePlayer.getInstance().getUsername());
-//            scoreValueLabel.setText("0 Wins");
-//            rankingListView.getItems().clear();
-//            rankingListView.getItems().add("Failed to load rankings");
-//
-//
-//            if (task.getException() != null) {
-//                task.getException().printStackTrace();
-//            }
+
         });
         Thread thread = new Thread(task);
         thread.setDaemon(true);
@@ -150,6 +146,27 @@ public class gameOverController {
 
     private String getLocalUsername() {
         return ActivePlayer.getInstance().getUsername();
+    }
+
+    public void setResult(String result){
+        if(result == null){
+            winLossLabel.setText("Unknown");
+        }
+
+        switch (result) {
+            case "PLAYER_WIN":
+                winLossLabel.setText("You Win!");
+                break;
+            case "PLAYER_LOSE":
+                winLossLabel.setText("You Lose!");
+                break;
+            case "PLAYER_DRAW":
+                winLossLabel.setText("Draw!");
+                break;
+            default:
+                winLossLabel.setText(result);
+        }
+
     }
 
     @FXML

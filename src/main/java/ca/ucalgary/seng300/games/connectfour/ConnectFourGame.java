@@ -17,6 +17,7 @@ public class ConnectFourGame {
     private char winner;
     private GameState gameState;
     private int moveCount;
+    private boolean myTurn;
 
     /**
      * Initializes a new Connect Four game in the INITIALIZING state.
@@ -27,6 +28,7 @@ public class ConnectFourGame {
         winner = ' ';
         moveCount = 0;
         gameState = GameState.GAME_INITIALIZING;
+        myTurn = false;
     }
 
     /**
@@ -57,12 +59,12 @@ public class ConnectFourGame {
             if (validateWin(userGameIdentity)) {
                 winner = userGameIdentity;
                 gameState = GameState.PLAYER_WIN;
-                return true;
-            }
-
-            if (board.isFull()) {
+            } else if (board.isFull()) {
                 gameState = GameState.PLAYER_DRAW;
-                return true;
+            } else {
+                gameState = GameState.TURN_DETERMINE_ACTIVE_PLAYER;
+                switchTurn();
+                gameState = GameState.TURN_AWAITING_MOVE;
             }
 
             // Switch turn
@@ -83,6 +85,15 @@ public class ConnectFourGame {
             return true;
         }
         return false;
+    }
+
+    /** Sends column to server when connected; no-op if Network is not initialized (e.g. unit tests). */
+    private void notifyServerMove(int col) {
+        try {
+            Network.getInstance().queueRequest(Network.SEND_MOVE_C4, new String[]{String.valueOf(col)});
+        } catch (Exception ignored) {
+            // Win/draw moves must still call this when online — see makeMove. Offline/tests skip.
+        }
     }
 
 
@@ -144,8 +155,7 @@ public class ConnectFourGame {
     private boolean checkHorizontal(char p) {
         for (int r = 0; r < board.getRows(); r++) {
             for (int c = 0; c < board.getCols() - 3; c++) {
-                if (board.getCell(r, c) == p && board.getCell(r, c + 1) == p &&
-                        board.getCell(r, c + 2) == p && board.getCell(r, c + 3) == p)
+                if (board.getCell(r, c) == p && board.getCell(r, c + 1) == p && board.getCell(r, c + 2) == p && board.getCell(r, c + 3) == p)
                     return true;
             }
         }
@@ -156,8 +166,7 @@ public class ConnectFourGame {
     private boolean checkVertical(char p) {
         for (int c = 0; c < board.getCols(); c++) {
             for (int r = 0; r < board.getRows() - 3; r++) {
-                if (board.getCell(r, c) == p && board.getCell(r + 1, c) == p &&
-                        board.getCell(r + 2, c) == p && board.getCell(r + 3, c) == p)
+                if (board.getCell(r, c) == p && board.getCell(r + 1, c) == p && board.getCell(r + 2, c) == p && board.getCell(r + 3, c) == p)
                     return true;
             }
         }
@@ -187,26 +196,41 @@ public class ConnectFourGame {
 
     // Getters
     public ConnectFourBoard getBoard() {
+
         return board;
     }
 
     public char getCurrentPlayer() {
+
         return currentPlayer;
     }
 
     public char getWinner() {
+
         return winner;
     }
 
     public GameState getGameState() {
+
         return gameState;
     }
 
     public int getMoveCount() {
+
         return moveCount;
     }
 
     public void setGameState(GameState newState){
+
         this.gameState = newState;
+    }
+
+    public void setTurn(boolean b) {
+        this.myTurn = b;
+    }
+
+    public boolean getTurn()
+    {
+        return myTurn;
     }
 }

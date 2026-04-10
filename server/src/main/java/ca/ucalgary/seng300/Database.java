@@ -105,9 +105,9 @@ public class Database
                 pstmt.setString(2, hashedPassword);
                 pstmt.executeUpdate();
 
-                //add in a sample gameInfo
-                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(0, \"Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^TTT^YES\")");
-                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(1, \"Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^C4^YES\")");
+                // Format must match client Network.getGames(): id^title^description^tags^fxmlPrefix
+                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(0, \"0^Connect Four^Description1^Multiplayer`PINK`Turn Based`PINK^C4\")");
+                stmt.executeUpdate("INSERT INTO gameInfo(gameid, gameData) VALUES(1, \"1^Tic Tac Toe^Description1^Multiplayer`PINK`Turn Based`PINK^TTT\")");
                 stmt.executeUpdate("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(\"admin\", 999, 999, 999, 999, 999, 999)");
                 stmt.executeUpdate("INSERT INTO leaderboard(username, tttWins, c4Wins, tttMatchesPlayed, c4MatchesPlayed, totalWins, totalMatchesPlayed) VALUES(\"test\", 0, 0, 0, 0, 0, 0)");
                 stmt.executeUpdate("INSERT INTO matchRecord(gameType, p1Username, p2Username, winnerName, date) VALUES(\"gameType\", \"admin\", \"test\", \"Tic-Tac-Toe\", \"date\")");
