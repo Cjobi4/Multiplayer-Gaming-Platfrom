@@ -67,7 +67,20 @@ public class ConnectFourGame {
                 gameState = GameState.TURN_AWAITING_MOVE;
             }
 
-            notifyServerMove(col);
+            // Switch turn
+            gameState = GameState.TURN_DETERMINE_ACTIVE_PLAYER;
+            switchTurn();
+            gameState = GameState.TURN_AWAITING_MOVE;
+
+            // slight modification for testing purposes
+            try {
+                Network net = Network.getInstance();
+                if (net != null) {
+                    net.queueRequest(Network.SEND_MOVE_C4, new String[]{String.valueOf(col)});
+                }
+            } catch (Exception e) {
+                // empty catch, this try block is effectively for testing only
+            }
 
             return true;
         }

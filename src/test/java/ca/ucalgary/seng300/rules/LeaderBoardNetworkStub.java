@@ -17,12 +17,6 @@ public class LeaderBoardNetworkStub extends Network {
 
     @Override
     public CompletableFuture<Object> queueRequest(int type, String[] parameters) throws Exception {
-        // If response is already a CompletableFuture, return it
-        if (response instanceof CompletableFuture) {
-            return (CompletableFuture<Object>) response;
-        }
-
-        // Otherwise wrap it
         return CompletableFuture.completedFuture(response);
     }
 

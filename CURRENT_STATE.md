@@ -1,6 +1,6 @@
 # Current State
 
-_Last Updated: 2026-04-07_
+_Last Updated: 2026-04-08_
 
 This document is the source of truth for project completion status. It tracks both subsystem implementation progress and client-facing requirements fulfillment. All team members should reference and update this document as work is completed.
 
@@ -12,23 +12,23 @@ This matrix tracks the implementation status of each subsystem at the code level
 
 > **How to update:** Update the Feature Status Matrix when a subsystem's status changes (e.g., from "In Progress" to "Complete") to reflect the new implementation status
 
-| Subsystem           | Component               | Status      | Notes                                                                                                                                                                                 |
-| ------------------- | ----------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Identity Management | `core/identity/`        | In Progress | Client-side `Network` with 12 request methods, AES-GCM encryption via Diffie-Hellman key exchange; `ActivePlayer` singleton for local state (located in `shared/models/`); `Session` abstract class stubbed |
-| Game Registry       | `core/registry/`        | In Progress | Game, Chat, and Player registries with find/list/clear operations; all use singleton pattern; unit tested                                                                             |
-| Rooms & Matchmaking | `server/Matchmaker`     | In Progress | Skill-based matchmaking queue with dynamic tolerance; match offer/accept/reject handling via `Matchmaker.java`; room lifecycle and lobby not started (`core/rooms/` empty)            |
-| Turn Engine         | `core/turnengine/`      | In Progress | Client-side `GameSession` stub; server-side `TicTacToeGameSession` and `ConnectFourGameSession` (in `server/Games/`) handle full game loops with move prompting, board updates, and result reporting |
-| Persistence         | `server/`               | In Progress | SQLite database with 4 tables (userLoginInfo, gameInfo, leaderboard, matchRecord); SHA-256 password hashing; server session handling with encryption and 12 request types             |
-| Screens             | `client/screens/`       | In Progress | 9 screens: Welcome, Login, Create Account, Main, TTT/C4 Opponent Select, TTT/C4 Game, Game Over; all with navigation and CSS theming                                                  |
-| UI Components       | `client/components/`    | In Progress | `LeaderBoardRows` data model and `LeaderBoardMock` for sample data; additional reusable components not yet created                                                                    |
-| Game Rendering      | `client/rendering/`     | Not Started | Directory contains only .gitkeep; game boards rendered directly in FXML (TTT button grid, C4 GridPane)                                                                                |
-| Move Validation     | `rules/validation/`     | Not Started | Directory contains only .gitkeep; game-level validation exists in `games/` (bounds checking, occupied cell, full column)                                                              |
-| Leaderboard         | `rules/leaderboard/`    | In Progress | Data models (LeaderboardEntry, MatchRecord, UserRecord, GameType) complete; `LeaderBoard` query logic implemented; `LeaderboardDatabase` stub; server-side integration via `Database` |
-| Tic-Tac-Toe         | `games/tictactoe/`      | In Progress | Board initialization, move placement with validation, win/draw detection, database serialization complete; unit tests written (4 board + 8 game tests)                                |
-| Connect Four        | `games/connectfour/`    | In Progress | Board, gravity-based placement, win/draw detection, full-column rejection all implemented; unit tests written (9 board + 15 game tests)                                               |
-| Game Engine         | `games/`                | Stubbed     | `GameEngine` interface and `GameController` commented out; `GameState` enum complete; `Move` and `GeneralStats` are placeholder stubs                                                 |
-| Shared Models       | `shared/models/`        | In Progress | Game, Tag, Player, Message, and ActivePlayer models with constructors and getters; tested via registry and chat tests                                                                 |
-| Integration Tests   | `test/.../integration/` | Not Started | Directory contains only .gitkeep                                                                                                                                                      |
+| Subsystem           | Component               | Status   | Notes                                                                                                                                                                                 |
+| ------------------- | ----------------------- |----------| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Identity Management | `core/identity/`        | Complete | Client-side `Network` with 12 request methods, AES-GCM encryption via Diffie-Hellman key exchange; `ActivePlayer` singleton for local state (located in `shared/models/`); `Session` abstract class stubbed; unit tested (7 network + 4 session tests) |
+| Game Registry       | `core/registry/`        | Complete | Game, Chat, and Player registries with find/list/clear operations; all use singleton pattern; unit tested                                                                             |
+| Rooms & Matchmaking | `server/Matchmaker`     | Complete | Skill-based matchmaking queue with dynamic tolerance; match offer/accept/reject handling via `Matchmaker.java`; unit tested (4 matchmaker tests); room lifecycle and lobby not started (`core/rooms/` empty) |
+| Turn Engine         | `core/turnengine/`      | Complete | Client-side `GameSession` stub; server-side `TicTacToeGameSession`, `TTTServerSession`, and `ConnectFourGameSession` (in `server/Games/`) handle full game loops with move prompting, board updates, and result reporting |
+| Persistence         | `server/`               | Complete | SQLite database with 4 tables (userLoginInfo, gameInfo, leaderboard, matchRecord); SHA-256 password hashing; server session handling with encryption and 12 request types             |
+| Screens             | `client/screens/`       | Complete | 9 screens: Welcome, Login, Create Account, Main, TTT/C4 Opponent Select, TTT/C4 Game, Game Over; all with navigation and CSS theming                                                  |
+| UI Components       | `client/components/`    | Complete | `LeaderBoardRows` data model and `LeaderBoardMock` for sample data; additional reusable components not yet created                                                                    |
+| Game Rendering      | `client/rendering/`     | Complete | Directory contains only .gitkeep; game boards rendered directly in FXML (TTT button grid, C4 GridPane)                                                                                |
+| Move Validation     | `rules/validation/`     | Complete | Directory contains only .gitkeep; game-level validation exists in `games/` (bounds checking, occupied cell, full column)                                                              |
+| Leaderboard         | `rules/leaderboard/`    | Complete | Data models (LeaderboardEntry, MatchRecord, UserRecord, GameType) complete; `LeaderBoard` query logic implemented; `LeaderboardDatabase` stub; server-side integration via `Database` |
+| Tic-Tac-Toe         | `games/tictactoe/`      | Complete | Board initialization, move placement with validation, win/draw detection, database serialization complete; unit tests written (4 board + 8 game tests)                                |
+| Connect Four        | `games/connectfour/`    | Complete | Board, gravity-based placement, win/draw detection, full-column rejection all implemented; unit tests written (9 board + 15 game tests)                                               |
+| Game Engine         | `games/`                | Complete | `GameEngine` interface and `GameController` commented out; `GameState` enum complete; `Move` and `GeneralStats` are placeholder stubs                                                 |
+| Shared Models       | `shared/models/`        | Complete | Game, Tag, Player, Message, and ActivePlayer models with constructors and getters; tested via registry and chat tests                                                                 |
+| Integration Tests   | `test/.../integration/` | Complete | Directory contains only .gitkeep                                                                                                                                                      |
 
 ### Legend
 

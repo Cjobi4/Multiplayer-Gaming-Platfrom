@@ -58,6 +58,8 @@ public class MatchRecord {
     public String getDate(){
         return this.date;
     }
+    public String getPlayerOne(){ return this.username1; } // basic getters
+    public String getPlayerTwo(){ return this.username2; }
 
     /**
      * to store in the database (under the userID, one user can have multiple Match Record)
@@ -67,9 +69,10 @@ public class MatchRecord {
         // matchID + playerOneID + playerTwoID + gameType + winnerID + date
         return username1 + " " + username2 + " " + gameType + " " + winner + " " + date;
     }
+
     public boolean isEmtpy() {
         if (username1 == null || username1.isEmpty()) return true;
-        else if (username2 == null   || username2.isEmpty()) return true;
+        else if (username2 == null || username2.isEmpty()) return true;
         else return winner == null || winner.isEmpty();
     }
 }

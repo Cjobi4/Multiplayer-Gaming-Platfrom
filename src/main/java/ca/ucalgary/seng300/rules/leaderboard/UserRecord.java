@@ -41,8 +41,10 @@ public class UserRecord {
     public int getTotalMatches(){
         return totalMatches;
     }
+
+
     public boolean isEmpty(){
         if (username == null || username.isEmpty()) return true;
-        return false;
+        return totalMatches == 0;
     }
 }
