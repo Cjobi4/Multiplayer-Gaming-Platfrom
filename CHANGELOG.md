@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [v1.0.0] - 2026-04-10
 
+### Fixed
+
+- **Integration:** Fixed `GameState.java` package declaration mismatch in server module (`ca.ucalgary.seng300.Games` vs `ca.ucalgary.seng300.games`) causing server compilation failure.
+- **Rules & Validation:** Fixed `TicTacToeGame` constructor not initializing `currentPlayer` to `'X'`, causing `getCurrentPlayer()` to return the null character on new games.
+- **Rules & Validation:** Fixed double `switchTurn()` call in `ConnectFourGame.makeMove()` that caused the current player to remain unchanged after a valid move.
+- **Quality & Testing:** Added `StubSocket` test utility to server test sources to resolve `MatchmakerTest` compilation failure.
+
 ### Added
 
 - **Platform Core:** Server-side `ConnectFourGameSession` with turn management, board state updates, move handling, and result recording (#265). Turn-based system for Tic-Tac-Toe with server-side turn management via `TTTServerSession` (#292). Connect Four request handling added to client and server `Network` classes (#265). Game result string parameter added to `gameOver()` function (#265).

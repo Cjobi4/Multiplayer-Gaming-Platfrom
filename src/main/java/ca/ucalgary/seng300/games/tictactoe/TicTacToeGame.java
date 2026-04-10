@@ -34,6 +34,9 @@ public class TicTacToeGame {
         //create a new gameboard
         board = new TicTacToeBoard();
 
+        //set the first player to 'X' (X always goes first)
+        currentPlayer = 'X';
+
         //set the value of the winner (string) to nothing because there is no winner at the start of the game
         winner = ' ';
 

@@ -1,4 +1,4 @@
-package ca.ucalgary.seng300.Games;
+package ca.ucalgary.seng300.games;
 
 /**
  * Game State Enumeration
