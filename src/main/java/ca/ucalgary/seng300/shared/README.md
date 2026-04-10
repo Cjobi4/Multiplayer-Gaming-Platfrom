@@ -12,8 +12,8 @@ implementation package.
 
 | Sub-Package | Contents | Status |
 |-------------|----------|--------|
-| `interfaces/` | Java interfaces: `PersistenceService`, `Game`, `MoveValidator`, `UserRepository`, etc. | Not started |
-| `models/` | Shared domain objects: `Player`, `Game`, `GameDTO`, `Tag`, `LeaderboardEntry`, `LaunchConfigs` | Stubs created |
+| `interfaces/` | Java interfaces: `PersistenceService`, `Game`, `MoveValidator`, `UserRepository`, etc. | Not started (contains only .gitkeep) |
+| `models/` | Shared domain objects: `Game`, `Tag`, `Player`, `Message`, `ActivePlayer` | Complete |
 
 ## Rules
 

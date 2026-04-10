@@ -24,8 +24,8 @@ Each sub-team Lead coordinates their team's work, manages merge requests, and re
 
 | Sub-Team              | Responsibilities                                                                        |
 | --------------------- | --------------------------------------------------------------------------------------- |
-| Platform Core         | Identity management, game registry, rooms and matchmaking, turn engine, and persistence |
-| Client/UI             | Login/signup, lobby, game info screen, leaderboard dashboard, and admin console         |
-| Rules & Validation    | Move validation pipeline and leaderboard scoring                                        |
-| Quality & Testing     | End-to-end test planning                                                                |
-| Integration & Release | Branching/merging workflow, peer review process, and versioning management              |
+| Platform Core         | Server networking, encryption, database, session handling, matchmaking, and game sessions |
+| Client/UI             | Screen design, game board UI, navigation, leaderboard display, and chat interface         |
+| Rules & Validation    | Game logic (Tic-Tac-Toe, Connect Four), move validation, and leaderboard scoring models   |
+| Quality & Testing     | Unit testing, test planning, and test infrastructure                                      |
+| Integration & Release | Branching/merging workflow, cross-team integration, documentation, and CI/CD              |

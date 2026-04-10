@@ -10,11 +10,11 @@ Design artifacts for all Platform Core subsystems.
 
 | Directory | Subsystem | Status |
 |---|---|---|
-| `identity/` | Identity management and authentication | Not Started |
-| `game-registry/` | Game registry data layer | Stubbed |
-| `rooms-and-matchmaking/` | Room lifecycle, lobby, matchmaking | Not Started |
-| `turn-engine/` | Turn progression and game state management | Stubbed |
-| `persistence/` | Database design, server/network architecture | Not Started |
+| `identity/` | Identity management and authentication | Complete |
+| `game-registry/` | Game registry data layer | Complete |
+| `rooms-and-matchmaking/` | Room lifecycle, lobby, matchmaking | Complete |
+| `turn-engine/` | Turn progression and game state management | Complete |
+| `persistence/` | Database design, server/network architecture | Complete |
 
 ## Top-Level Artifacts
 

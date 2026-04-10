@@ -182,7 +182,7 @@ project-root/
 │       │       ├── ConnectFourBoard.java
 │       │       ├── ConnectFourGame.java
 │       │       └── ConnectFourGameSession.java
-│       └── test/java/.../             # Server unit tests (Matchmaker, StubSocket)
+│       └── test/java/.../             # Server unit tests
 ├── src/
 │   ├── main/
 │   │   ├── java/ca/ucalgary/seng300/
@@ -247,12 +247,12 @@ See [team.md](team.md) for the full sub-team roster, leads, and members.
 
 | Sub-Team              | Package                | Responsibilities                                                                        |
 | --------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
-| Platform Core         | `core/`, `server/`     | Identity management, game registry, rooms and matchmaking, turn engine, and persistence |
-| Client/UI             | `client/`              | Login/signup, lobby, game info screen, leaderboard dashboard, and admin console         |
-| Rules & Validation    | `rules/`, `games/`     | Move validation pipeline and leaderboard scoring                                        |
-| Quality & Testing     | `test/`                | End-to-end test planning                                                                |
-| Integration & Release | Root files, `scripts/` | Branching/merging workflow, peer review process, and versioning management              |
+| Platform Core         | `core/`, `server/`     | Server networking, encryption, database, session handling, matchmaking, and game sessions |
+| Client/UI             | `client/`              | Screen design, game board UI, navigation, leaderboard display, and chat interface         |
+| Rules & Validation    | `rules/`, `games/`     | Game logic (Tic-Tac-Toe, Connect Four), move validation, and leaderboard scoring models   |
+| Quality & Testing     | `test/`                | Unit testing, test planning, and test infrastructure                                      |
+| Integration & Release | Root files, `scripts/` | Branching/merging workflow, cross-team integration, documentation, and CI/CD              |
 
 ---
 
-_Last updated: 2026-04-08_
+_Last updated: 2026-04-10_
